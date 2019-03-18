@@ -1,0 +1,10 @@
+{
+    "localCRISM_PDSrootDir" : "",
+    "localCATrootDir"       : "/../cat/CAT_v7_4/",
+    "CAT_ver"               : "7.4",
+    "local_fldsys"          : "pds_unified",
+    "remote_fldsys"         : "pds_mro",
+    "pds_unified_URL"       : "crism_pds_archive/",
+    "pds_mro_URL"           : "pds-geosciences.wustl.edu/mro/",
+    "LUT_OBSID2YYYY"        : "LUT_OBSID2YYYY_DOY.mat"
+}
