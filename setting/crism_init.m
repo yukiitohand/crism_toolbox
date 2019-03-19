@@ -1,4 +1,4 @@
-function crism_setup()
+function crism_init()
     global crism_env_vars
     str = fileread('crismToolbox.json');
     crism_env_vars = jsondecode(str);
