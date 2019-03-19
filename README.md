@@ -27,6 +27,7 @@ What you should specify is `localCRISM_PDSrootDir` where the local databse is cr
 ```
 [localCRISM_PDSrootDir]/crism_pds_archive/
 ```
+Please look at more info at [crism_toolbox_json_moreinfo.md](https://github.com/yukiitohand/crism_toolbox/blob/crism_toolbox_json_moreinfo.md)
 
 ### Add paths
 Second, Add all the subfolders to matlab search paths
