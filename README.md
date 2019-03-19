@@ -23,11 +23,11 @@ First you need to customize your setting/crismToolbox_default.json:
     "LUT_OBSID2YYYY"        : "LUT_OBSID2YYYY_DOY.mat"
 }
 ```
-What you should specify is `localCRISM_PDSrootDir` where the local databse is created and `localCATrootDir` where CAT_ENVI/ is stored. The others do not need to be changed unless you want to a specific database structure. CAT Toolbox needs to be independently and manually downloaded and set up. CAT toolbox may not be necessary, but it is recommended to download it. If you opt to use a different remote server, please contact me. With this setup, local database will be created at
+What you should specify is `localCRISM_PDSrootDir` where the local databse is created and `localCATrootDir` where CAT_ENVI/ is stored (like `[localCATrootDir]/CAT_ENVI/`). The others do not need to be changed unless you want a specific database structure. CAT Toolbox needs to be independently and manually downloaded and set up. CAT toolbox may not be necessary, but it is recommended to download it. With this setup, local database will be created at
 ```
 [localCRISM_PDSrootDir]/crism_pds_archive/
 ```
-Please look at more info at [crism_toolbox_json_moreinfo.md](https://github.com/yukiitohand/crism_toolbox/blob/master/crism_toolbox_json_moreinfo.md)
+Please look at more info at [crism_toolbox_json_moreinfo.md](https://github.com/yukiitohand/crism_toolbox/blob/master/crism_toolbox_json_moreinfo.md). If you opt to use a different remote server, please contact me.
 
 ### Add paths
 Second, Add all the subfolders to matlab search paths
