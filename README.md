@@ -1,7 +1,7 @@
 # crism_toolbox
 MRO CRISM data analysis toolkit
 
-This toolbox is an MATLAB interface for handling MRO CRISM database([http://pds-geosciences.wustl.edu/missions/mro/crism.htm](http://pds-geosciences.wustl.edu/missions/mro/crism.htm)). You can download images into your local database organized in a same (or similar) way as the pds server. Resolving image locations and filenames can be simply done. You can directly work with PDS file without converting into CAT format. If you work on a large number of images, then this will be useful.
+This toolbox is an MATLAB interface for handling MRO CRISM database([http://pds-geosciences.wustl.edu/missions/mro/crism.htm](http://pds-geosciences.wustl.edu/missions/mro/crism.htm)). You can download images into your local database organized in a same (or similar) way as the pds server. Resolving image locations and filenames can be simply done. You can directly work with PDS file without converting into CAT format. If you work on a large number of images given observation IDs, then this will be useful.
 
 ## Requirement
 Some of my tooboxes are necessary.
