@@ -7,11 +7,13 @@ function [wv_sweetspot,wv_sweetspot_rownum] = getWV_sweetspotfromSW(WAdata,varar
 %   Optinonal input
 %    'band_inverse': boolean, whether or not invert bands
 %                    (default) false
+%    'sensor_id'   : {'S', 'L'}
+%            (default) 'L'
 %   Output: 
 %     wv_sweetspot: sweetspot wavelength, 1d-array
 %     wv_sweetspot_rownum: ROWNUMTABLE, 1d-array
 %   
-
+sensor_id = 'L';
 is_band_inverse = false;
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -20,6 +22,8 @@ else
         switch upper(varargin{i})
             case 'BAND_INVERSE'
                 is_band_inverse = varargin{i+1};
+            case 'SENSOR_ID'
+                sensor_id = varargin{i+1};
         end
     end
 end
@@ -32,7 +36,14 @@ propWA = getProp_basenameCDR4(WAdata.basename);
 wv_tab = WVdata.readTAB();
 sw_tab = SWdata.readTAB();
 
-wv_field = sprintf('IR_FILTER_%d',propWA.wavelength_filter);
+switch upper(sensor_id)
+    case 'L'
+        wv_field = sprintf('IR_FILTER_%d',propWA.wavelength_filter);
+    case 'S'
+        wv_field = sprintf('VNIR_FILTER_%d',propWA.wavelength_filter);
+    otherwise
+        error('undefined sensor_id %s',sensor_id);
+end
 wv_filter = [wv_tab.data.(wv_field)]';
 wv_filter = boolean(wv_filter);
 
