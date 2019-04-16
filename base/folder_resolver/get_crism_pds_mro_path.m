@@ -23,11 +23,13 @@ dt = datetime(yyyy,MM,dd);
 grp = find(and(dt>=range_mat(:,1),dt<=range_mat(:,2)));
 
 if isempty(grp)
-    error('the specified yyyy_doy does not exist.');
+    % fprintf('the specified yyyy_doy does not exist.\n');
+    subpath = '';
+else
+    folder_name = folder_func(grp);
+    subpath = joinPath(root_subpath,folder_name);
 end
 
-folder_name = folder_func(grp);
 
-subpath = joinPath(root_subpath,folder_name);
 
 end
