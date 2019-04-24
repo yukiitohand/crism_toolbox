@@ -230,7 +230,7 @@ switch obs_classType
         obs_counter_un = '02';
     case 'FFC'
         obs_counter = '0[13]{1}';
-        obs_counter_df = '0[02]{1}';
+        obs_counter_df = '0[024]{1}';
         % this could be switched.
         obs_counter_epf = '';
         fprintf('no epf for obervation type FFC\n');
