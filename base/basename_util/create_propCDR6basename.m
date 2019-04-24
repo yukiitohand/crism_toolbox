@@ -33,11 +33,11 @@ level                 = 6;
 partition             = '(?<partition>[\d]{1})';
 sclk                  = '(?<sclk>[\d]{10})';
 acro_calibration_type = '(?<acro_calibration_type>[a-zA-Z]{2})';
-frame_rate            = '(?<frame_rate>[0-4]{1})';
-binning               = '(?<binning>[0-3]{1})';
-exposure              = '(?<exposure>[0-9]{3})';
-wavelength_filter     = '(?<wavelength_filter>[0-3]{1})';
-side                  = '(?<side>[0-2]{1})';
+% frame_rate            = '(?<frame_rate>[0-4]{1})';
+% binning               = '(?<binning>[0-3]{1})';
+% exposure              = '(?<exposure>[0-9]{3})';
+% wavelength_filter     = '(?<wavelength_filter>[0-3]{1})';
+% side                  = '(?<side>[0-2]{1})';
 sensor_id             = '(?<sensor_id>[sljSLJ]{1})';
 vr                    = '(?<version>[0-9]{1})';
 
