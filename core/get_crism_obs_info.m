@@ -193,7 +193,7 @@ else
 end
 
 % zero-padding if not
-obs_id = pad_obs_id(obs_id);
+obs_id = upper(pad_obs_id(obs_id));
 
 if isempty(yyyy_doy) || isempty(obs_classType)
     [ yyyy_doy,obs_classType2 ] = searchOBSID2YYYY_DOY(obs_id);
@@ -213,7 +213,7 @@ dirname = [obs_classType obs_id];
 if isempty(sensor_id)
     error('"SENOSER_ID" is necessary');
 end
-base_dir = [obs_classType obs_id];
+base_dir = upper([obs_classType obs_id]);
 
 
 switch obs_classType
