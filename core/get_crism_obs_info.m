@@ -233,9 +233,13 @@ switch obs_classType
         obs_counter_df = '0[024]{1}';
         % this could be switched.
         obs_counter_epf = '';
-        fprintf('no epf for obervation type FFC\n');
+        if verbose
+            fprintf('no epf for obervation type FFC\n');
+        end
         if dwld_epf==1
-            fprintf('DOWNLOAD_EPFRA is inactivated\n');
+            if verbose
+                fprintf('DOWNLOAD_EPFRA is inactivated\n');
+            end
         end
         
     case 'CAL'
