@@ -45,6 +45,10 @@ nCols = obj_table.COLUMNS;
 nRows = obj_table.ROWS;
 colinfo = obj_table.OBJECT_COLUMN;
 
+if length(colinfo)==1
+    colinfo = {colinfo};
+end
+
 nameList = cell(1,length(colinfo));
 
 [name] = mod_fieldname(colinfo{1}.NAME);
@@ -156,7 +160,11 @@ switch lower(readmode)
         error('Undefined mode %s',readmode);
 end
 
-colinfo2 = merge_struct(colinfo{:});
+if length(colinfo)==1
+    colinfo2 = colinfo;
+else
+    colinfo2 = merge_struct(colinfo{:});
+end
 
 colinfo_names = [];
 for i=1:length(colinfo2)
@@ -169,6 +177,6 @@ function [name_m] = mod_fieldname(name)
 if ~isempty(regexpi(name,'^[\d]+.*','ONCE'))
     name = ['COLNAME_' name];
 end
-name = replace(name,{' ',':'},'_');
+name = replace(name,{',',' ',':','(',')'},'_');
 name_m = replace(name,{';','^','/'},'');
 end
