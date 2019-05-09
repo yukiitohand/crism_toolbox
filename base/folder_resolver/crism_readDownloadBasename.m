@@ -18,6 +18,7 @@ function [basename] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir
 %                         (default) ''
 %      'Force'          : binary, whether or not to force performing
 %                         pds_downloader. (default) false
+%      'Overwrite'      : binary, whether or not to overwrite the image
 %  Output parameters
 %    basename: real basename matched.
 
@@ -28,6 +29,7 @@ url_local_root = crism_env_vars.url_local_root;
 force = 0;
 outfile = '';
 mtch_exact = false;
+overwrite = 0;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -40,6 +42,8 @@ else
                 force = varargin{i+1};
             case 'OUT_FILE'
                 outfile = varargin{i+1};
+            case 'OVERWRITE'
+                overwrite = varargin{i+1};
             otherwise
                 error(['Unrecognized option: ''' varargin{i} '''']);
         end
@@ -54,7 +58,7 @@ if dwld>0
     if (isempty(basename) && (dwld>0)) || force
         [dirs,files] = pds_downloader(subdir_local,...
             'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
-            'DWLD',dwld,'OUT_FILE',outfile);
+            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite);
     %     fnamelist = dir(dir_ddr);
         [basename] = extractMatchedBasename_v2(basenamePtr,files);
     end

@@ -31,6 +31,7 @@ dwld = 0;
 force = 0;
 outfile = '';
 mtch_exact = false;
+overwrite = false;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -45,6 +46,8 @@ else
                 force = varargin{i+1};
             case 'OUT_FILE'
                 outfile = varargin{i+1};
+            case 'OVERWRITE'
+                overwrite = varargin{i+1};
         end
     end
 end
@@ -75,7 +78,7 @@ subdir_remote = get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
 [basenamePtrn] = get_basenameOBS_fromProp(propOBS);
 [basenameOBS] = crism_readDownloadBasename(basenamePtrn,...
                     subdir_local,subdir_remote,dwld,'Match_Exact',mtch_exact,...
-                    'Force',force,'Out_File',outfile);
+                    'Force',force,'Out_File',outfile,'overwrite',overwrite);
 
 
 dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);

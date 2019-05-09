@@ -58,6 +58,8 @@ else
                 dirskip = varargin{i+1};
             case 'PROTOCOL'
                 protocol = varargin{i+1};
+            case 'OVERWRITE'
+                overwrite = varargin{i+1};
             case 'HTML_FILE'
                 html_file = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
