@@ -7,6 +7,7 @@ function [A,option] = libstruct_convoluter(spclib,wv,methodid,varargin)
 %    methodid:  method Id number
 %               0 - interp1
 %               1 - interpCRISMspc
+%               2 - interpGaussConv_v2
 %  Optional Parameters
 %    'RETAINRATIO' : used for methodid, input to "interpCRISMspc.m"
 %                    (default) 0.1
@@ -28,6 +29,7 @@ fldnm_x = 'wavelength';
 fldnm_y = 'reflectance';
 retainRatio = 0.1;
 sb = 'none';
+fwhm = 'none';
 xmult = 1;
 batch_opt = 0;
 if (rem(length(varargin),2)==1)
@@ -39,6 +41,8 @@ else
                 retainRatio = varargin{i+1};
             case 'SB'
                 sb = varargin{i+1};
+            case 'FWHM'
+                fwhm = varargin{i+1};
             case 'XFIELDNAME'
                 fldnm_x = varargin{i+1};
             case 'XMULT'
@@ -76,6 +80,14 @@ else
                         end
                         [ rflspc_rsmp ] = interpCRISMspc_v2( wvspc(valid_wv_idx)*xmult,rflspc(valid_wv_idx),wv,sb,...
                                                                 'RETAINRATIO',retainRatio);
+                    case 2
+                        % convolution with gaussian convolution
+                        [ rflspc_rsmp ] = interpGaussConv_v2( wvspc(valid_wv_idx)*xmult,rflspc(valid_wv_idx),wv,fwhm,...
+                                                                'RETAINRATIO',retainRatio);
+                    case 3
+                        % convolution with gaussian convolution
+                        [ rflspc_rsmp ] = interpGaussConv( wvspc(valid_wv_idx)*xmult,rflspc(valid_wv_idx),wv,fwhm,...
+                                                                'RETAINRATIO',retainRatio);
                     otherwise
                         error('method %d is not defined');
                 end
@@ -89,7 +101,7 @@ else
             end
             valid_wv_idx = find(wvspc>1e-5);
             switch methodid
-                case 0
+                case {0,2}
                     error('The Batch option %d doesnt work with method interp1.',batch_opt);
                 case 1
                     % convolution using CDR file
@@ -107,11 +119,17 @@ else
     end
 
     switch methodid
-    case 0
-        option.method = 'interp1';
-    case 1
-        option.method = 'interpCRISMspc';
-        option.retainRatio = retainRatio;
+        case 0
+            option.method = 'interp1';
+        case 1
+            option.method = 'interpCRISMspc';
+            option.retainRatio = retainRatio;
+        case 2
+            option.method = 'interpGaussConv_v2';
+            option.retainRatio = retainRatio;
+        case 3
+            option.method = 'interpGaussConv';
+            option.retainRatio = retainRatio;
     otherwise
         error('method %d is not defined');
     end
