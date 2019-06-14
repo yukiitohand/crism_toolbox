@@ -1,9 +1,17 @@
 function [latitude_MAP,longitude_MAP,lat_NS,lon_EW] = create_grid_equirectangular(r,latd0,range_latd,range_lond,pixel_size)
 
-coslatd0 = cosd(latd0);
-
-lat_dstep = pixel_size/(r*pi) * 180;
-lon_dstep = lat_dstep / coslatd0;
+if isscalar(r)
+    coslatd0 = cosd(latd0);
+    lat_dstep = pixel_size/(r*pi) * 180;
+    lon_dstep = lat_dstep / coslatd0;
+elseif isvector(r) && length(r)==3
+    %% r is assumed to be radii (x,y,z)
+    coslatd0 = cosd(latd0);
+    lat_dstep = pixel_size/(r(3)*pi) * 180;
+    lon_dstep = pixel_size/( (r(1)+r(2))/2 * pi) * 180 / coslatd0;
+else
+    error('Unrecognized r');
+end
 
 length_NS = abs(range_latd(2) - range_latd(1));
 length_EW = abs(range_lond(2) - range_lond(1));
