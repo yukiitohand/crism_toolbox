@@ -45,12 +45,11 @@ if isnumeric(wv_filter)
     wv_filter = sprintf('%1d',wv_filter);
 end
 
-% if length(obs_id_short)>5
-%     if ~strcmp(obs_id_short(1:3),'000') || ~strcmp(obs_id_short(1:3),'')
-%         error('The obs_id %s is invalid',obs_id_short);
-%     end
-%     obs_id_short = obs_id_short(4:8);
-% end
+if length(obs_id_short)>5 && strcmp(obs_id_short(1:3),'000') 
+    obs_id_short = obs_id_short(4:8);
+elseif length(obs_id_short)<5
+    obs_id_short = sprintf('%05s',obs_id_short);
+end
 
 if isnumeric(vr)
     vr = sprintf('%1d',vr);
