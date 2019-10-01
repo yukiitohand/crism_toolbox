@@ -47,6 +47,9 @@ elseif isfield(lbl_info,'OBJECT_TABLE')
 elseif isfield(lbl_info,'OBJECT_WAVELENGTH_SOURCE_TABLE')
     obj_file_table = [];
     obj_table = lbl_info.OBJECT_WAVELENGTH_SOURCE_TABLE;
+elseif isfield(lbl_info,'OBJECT_INDEX_TABLE')
+    obj_file_table = [];
+    obj_table = lbl_info.OBJECT_INDEX_TABLE;
 else
     obj_file_table = [];
 end

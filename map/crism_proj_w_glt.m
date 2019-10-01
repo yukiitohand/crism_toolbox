@@ -31,6 +31,7 @@ default_bands = []; % if this is empty, estimated with "get_default_bands.m"
 save_dir = in_crismdata.dirpath; % default is the same directory as the input image.
 force = 0;
 skip_ifexist = false;
+set_default_bands = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -46,6 +47,8 @@ else
                 band_inverse = varargin{i+1};
             case 'DEFAULT_BANDS'
                 default_bands = varargin{i+1};
+            case 'SET_DEFAULT_BANDS'
+                set_default_bands = varargin{i+1};
             case 'SUFFIX'
                 suffix = varargin{i+1};
                 if ~strcmpi(suffix(1),'_')
@@ -134,9 +137,15 @@ else
 end
 
 B = length(bands);
-hdr_proj.wavelength = hdr_proj.wavelength(bands);
-hdr_proj.bbl = hdr_proj.bbl(bands);
-hdr_proj.fwhm = hdr_proj.fwhm(bands);
+if isfield(hdr_proj,'wavelength')
+    hdr_proj.wavelength = hdr_proj.wavelength(bands);
+end
+if isfield(hdr_proj,'bbl')
+    hdr_proj.bbl = hdr_proj.bbl(bands);
+end
+if isfield(hdr_proj,'fwhm')
+    hdr_proj.fwhm = hdr_proj.fwhm(bands);
+end
 if band_inverse
     hdr_proj.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),(hdr_proj.bands-bands+1),...
     'UniformOutput',false);
@@ -147,13 +156,19 @@ end
 hdr_proj.samples = GLTdata.hdr.samples;
 hdr_proj.lines = GLTdata.hdr.lines;
 hdr_proj.bands = B;
-hdr_proj.cat_history = [hdr_proj.cat_history '_MAP'];
+if isfield(hdr_proj,'cat_history')
+    hdr_proj.cat_history = [hdr_proj.cat_history '_MAP'];
+end
 hdr_proj.cat_input_files = [in_crismdata.basename ', ' GLTdata.basename];
 hdr_proj.map_info = GLTdata.hdr.map_info;
 hdr_proj.projection_info = GLTdata.hdr.projection_info;
 
-if isempty(default_bands)
-    hdr_proj.default_bands = get_default_bands(hdr_proj.wavelength);
+if set_default_bands
+    if isempty(default_bands)
+        hdr_proj.default_bands = get_default_bands(hdr_proj.wavelength);
+    else
+        hdr_proj.default_bands = default_bands;
+    end
 end
 
 %% saving the image

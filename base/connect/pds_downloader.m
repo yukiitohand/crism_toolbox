@@ -84,7 +84,8 @@ url_local = joinPath(url_local_root,subdir_local);
 localTargetDir = joinPath(localrootDir,url_local);
 if isempty(subdir_remote)
    if strcmpi(local_fldsys,remote_fldsys)
-        url_remote = url_local;
+       subdir_remote = subdir_local;
+       url_remote = joinPath(url_remote_root, subdir_remote);
    else
        error('specified file systems for the local and remote computers are different."subdir_remote" cannot be empty.');
    end

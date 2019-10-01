@@ -1,4 +1,4 @@
-function [ tab ] = crismTABread(fdpath,lbl)
+function [ tab ] = crismTABread(fdpath,lbl,varargin)
 % [ tab ] = crismTABread( dirpath,lbl )
 %   Read TABLE (TAB) file and stores it in the struct.
 %   Inputs
@@ -11,6 +11,25 @@ function [ tab ] = crismTABread(fdpath,lbl)
 %         colinfo_names - meta information of column, easy accss with NAME
 %         of each column
 %       if no table data is found, [] is returned.
+
+
+skip_line = 0;
+readmode = 'normal';
+if (rem(length(varargin),2)==1)
+    error('Optional parameters should always go by pairs');
+else
+    for i=1:2:(length(varargin)-1)
+        switch upper(varargin{i})
+            case 'SKIP_LINE'
+                skip_line = varargin{i+1};
+            case 'MODE'
+                readmode = varargin{i+1};
+            otherwise
+                % Hmmm, something wrong with the parameter string
+                error(['Unrecognized option: ''' varargin{i} '''']);
+        end
+    end
+end
 
 
 % determine obj_table
@@ -27,7 +46,8 @@ if ~isempty(obj_file_table)
     end
     obj_TAB = obj_file_table.OBJECT_TABLE;
 
-    [data,colinfo,colinfo_names] = crismTABread_sub(fpath,obj_TAB); 
+    [data,colinfo,colinfo_names] = crismTABread_sub(fpath,obj_TAB,...
+        'SKIP_LINE',skip_line,'MODE',readmode);
 
     tab=[];
     tab.colinfo = colinfo;
@@ -35,7 +55,8 @@ if ~isempty(obj_file_table)
     tab.data = data;
 else
     if ~isempty(obj_table)
-        [data,colinfo,colinfo_names] = crismTABread_sub(fdpath,obj_table);
+        [data,colinfo,colinfo_names] = crismTABread_sub(fdpath,obj_table,...
+            'SKIP_LINE',skip_line,'MODE',readmode);
         tab=[];
         tab.colinfo = colinfo;
         tab.colinfo_names = colinfo_names;

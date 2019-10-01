@@ -77,7 +77,8 @@ switch lower(readmode)
 
         for j=1:nRows
             tline = fgets(fp);
-            tab(j,:) = tline;
+            L = length(tline);
+            tab(j,1:L) = tline;
         end
 
         fclose(fp);
