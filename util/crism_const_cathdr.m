@@ -1,11 +1,33 @@
-function [hdr_cat] = crism_const_cathdr(TRRdata,band_inverse)
-% [hdr_cat] = crism_const_cathdr(TRRIFdata)
+function [hdr_cat] = crism_const_cathdr(TRRdata,band_inverse,varargin)
+% [hdr_cat] = crism_const_cathdr(TRRIFdata,band_inverse,varargin)
 %  construct header struct to mimic _CAT.hdr
 %  Input
 %    TRRdata: CRISMdata obj, TRR data (RA/IF) is recommended
 %    band_inverse: whether or not to invert the band or not
 %  Output
 %    hdr_cat: struct, for the CAT file.
+%  Optional Parameters
+%    'DATE_TIME': string
+%       date time information
+%       (default) [] (and produced within this function)
+
+dt = [];
+if (rem(length(varargin),2)==1)
+    error('Optional parameters should always go by pairs');
+else
+    for i=1:2:(length(varargin)-1)
+        switch upper(varargin{i})
+            case 'DATE_TIME'
+                dt = varargin{i+1};
+            otherwise
+                error('Unrecognized option: %s',varargin{i});
+        end
+    end
+end
+
+if isempty(dt)
+    dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
+end
 
 if isempty(TRRdata.basenamesCDR), TRRdata.load_basenamesCDR(); end
 
@@ -21,7 +43,7 @@ fwhm_sweetspot(fwhm_sweetspot==65535) = nan;
 bbl = create_crism_bbl(wv_sweetspot,TRRdata.lbl.MRO_SENSOR_ID,'BAND_INVERSE',false);
 
 hdr_cat = [];
-dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
+% dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
 hdr_cat.description = sprintf('{CRISM DATA [%s] header editted timestamp}',dt);
 % hdr_cr = TRRIFdata.hdr;
 hdr_cat.samples = TRRdata.hdr.samples;
