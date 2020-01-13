@@ -39,7 +39,7 @@ classdef CRISMdataCAT < CRISMdata
         
         function [wa] = readWAi_fromCRISMdata_parent(obj,varargin)
             if isempty(obj.CRISMdata_parent)
-                fprintf('perform readCRISMdata_parent...\n');
+                %fprintf('perform readCRISMdata_parent...\n');
                 obj.readCRISMdata_parent('','');
             end
             wa = obj.CRISMdata_parent.readWAi(varargin{:});
