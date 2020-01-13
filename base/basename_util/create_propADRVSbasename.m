@@ -47,7 +47,7 @@ else
                 sclk = varargin{i+1};
             case 'OBS_ID_SHORT'
                 obs_id_short = varargin{i+1};
-                if length(obs_id)>5
+                if length(obs_id_short)>5
                     error('Specify with OBS_ID');
                 end
             case 'BINNING'
