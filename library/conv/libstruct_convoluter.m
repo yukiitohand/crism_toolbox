@@ -88,6 +88,10 @@ else
                         % convolution with gaussian convolution
                         [ rflspc_rsmp ] = interpGaussConv( wvspc(valid_wv_idx)*xmult,rflspc(valid_wv_idx),wv,fwhm,...
                                                                 'RETAINRATIO',retainRatio);
+                    case 4
+                        % convolution with gaussian convolution
+                        [ rflspc_rsmp ] = interpGaussConv_robust( wvspc(valid_wv_idx)*xmult,rflspc(valid_wv_idx),wv,fwhm,...
+                                                                'RETAINRATIO',retainRatio);
                     otherwise
                         error('method %d is not defined');
                 end
@@ -129,6 +133,9 @@ else
             option.retainRatio = retainRatio;
         case 3
             option.method = 'interpGaussConv';
+            option.retainRatio = retainRatio;
+        case 4
+            option.method = 'interpGaussConv_robust';
             option.retainRatio = retainRatio;
     otherwise
         error('method %d is not defined');

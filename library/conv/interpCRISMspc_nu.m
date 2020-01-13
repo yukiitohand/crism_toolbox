@@ -133,9 +133,12 @@ switch mode
             if i==151
                 i
             end
-            c1 = phi1(i)*normcdf(x_between,lambda1(i),sigma1(i)); c1 = c1(2:end) - c1(1:end-1);
-            c2 = phi2(i)*normcdf(x_between,lambda2(i),sigma2(i)); c2 = c2(2:end) - c2(1:end-1);
-            c3 = phi3(i)*normcdf(x_between,lambda3(i),sigma3(i)); c3 = c3(2:end) - c3(1:end-1);
+            c1 = phi1(i)*normCDFvec_mex((x_between-lambda1(i))./sigma1(i)); c1 = c1(2:end) - c1(1:end-1);
+            c2 = phi2(i)*normCDFvec_mex((x_between-lambda2(i))./sigma2(i)); c2 = c2(2:end) - c2(1:end-1);
+            c3 = phi3(i)*normCDFvec_mex((x_between-lambda3(i))./sigma3(i)); c3 = c3(2:end) - c3(1:end-1);
+            %c1 = phi1(i)*normcdf(x_between,lambda1(i),sigma1(i)); c1 = c1(2:end) - c1(1:end-1);
+            %c2 = phi2(i)*normcdf(x_between,lambda2(i),sigma2(i)); c2 = c2(2:end) - c2(1:end-1);
+            %c3 = phi3(i)*normcdf(x_between,lambda3(i),sigma3(i)); c3 = c3(2:end) - c3(1:end-1);
 %             c1 = phi1(i)*normpdf_r(wvspc,lambda1(i),sigma1(i),false);
 %             c2 = phi2(i)*normpdf_r(wvspc,lambda2(i),sigma2(i),false);
 %             c3 = phi3(i)*normpdf_r(wvspc,lambda3(i),sigma3(i),false);
