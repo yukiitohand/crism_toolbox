@@ -277,7 +277,7 @@ if ~errflg
                 else
                     error('dwld=%d is not defined\n',dwld);
                 end
-                files = [files {lnks(i).hyperlink}];
+                files = [files {upper(lnks(i).hyperlink)}];
             end
 
         end   
