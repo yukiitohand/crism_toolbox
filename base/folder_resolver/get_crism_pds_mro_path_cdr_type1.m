@@ -29,7 +29,7 @@ range_mat = [
     [datetime('Jan 1, 2008')  datetime('Aug 8, 2008')];
     [datetime('Aug 9, 2008')  datetime('Aug 8, 2010')];
     [datetime('Aug 9, 2010')  datetime('Aug 8, 2011')];
-    [datetime('Aug 11, 2011') datetime('Aug 3, 2012')];
+    [datetime('Aug 9, 2011') datetime('Aug 3, 2012')];
     [datetime('Sep 14, 2012') datetime('Aug 8, 2013')];
     [datetime('Aug 9, 2013')  datetime('Aug 8, 2014')];
     [datetime('Aug 9, 2014')  datetime('Nov 8, 2015')];

@@ -145,7 +145,12 @@ end
 
 if ~isempty(subdir_remote)
     if ~(is_subdir_pds_crism_pub(url_remote) == strcmpi(remote_fldsys,'pds_mro'))
-        error('subdir_remote (%s) and remote_fldsys (%s) are not consistent',url_remote,remote_fldsys);
+        fprintf(2,'subdir_remote (%s) and remote_fldsys (%s) are not consistent.\n',...
+            url_remote,remote_fldsys);
+        fprintf(1,'cannot download file matches %s\n', basenamePtrn);
+        fprintf(1,'check functions crism_toolbox/base/folder_resolverget_crism_pds_mro_path_xxx\n');
+        dirs = []; files = [];
+        return;
     end
 end
 
@@ -175,7 +180,7 @@ if isempty(html_file)
                 if ntrial<3
                     ntrial=ntrial+1;
                 else
-                    warning('%s://%s does not exist.',protocol,url_remote);
+                    fprintf(2,'%s://%s does not exist.',protocol,url_remote);
                     errflg=1;
                 end
             end
