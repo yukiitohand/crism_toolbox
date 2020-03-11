@@ -180,7 +180,7 @@ if isempty(html_file)
                 if ntrial<3
                     ntrial=ntrial+1;
                 else
-                    fprintf(2,'%s://%s does not exist.',protocol,url_remote);
+                    fprintf(2,'%s://%s does not exist.\n',protocol,url_remote);
                     errflg=1;
                 end
             end

@@ -11,19 +11,32 @@ flg_end = 0;
 while ~feof(fid) && ~flg_end
     [isprm,param,value,param_ori] = readLBLComponent(fid);
     if isprm 
-        if ~strcmp(param,'OBJECT')
-            lbl_info.(param) = value;
-            zzz.(param) = param_ori;
-        else % strcmp(param,'OBJECT')
-            [obj,obj_name] = readObject(fid,value);
-            if isfield(lbl_info,obj_name)
-                if length(lbl_info.(obj_name))==1
-                    lbl_info.(obj_name) = {lbl_info.(obj_name)};
+        switch upper(param)
+            case 'OBJECT'
+                % [obj,obj_name] = readObject(fid,value);
+                [obj,obj_name] = readNested(fid,value,'OBJECT');
+                if isfield(lbl_info,obj_name)
+                    if length(lbl_info.(obj_name))==1
+                        lbl_info.(obj_name) = {lbl_info.(obj_name)};
+                    end
+                    lbl_info.(obj_name) = [lbl_info.(obj_name), {obj}];
+                else
+                    lbl_info.(obj_name) = obj;
                 end
-                lbl_info.(obj_name) = [lbl_info.(obj_name), {obj}];
-            else
-                lbl_info.(obj_name) = obj;
-            end
+            case 'GROUP'
+                [grp,grp_name] = readNested(fid,value,'GROUP');
+                if isfield(lbl_info,grp_name)
+                    if length(lbl_info.(grp_name))==1
+                        lbl_info.(grp_name) = {lbl_info.(grp_name)};
+                    end
+                    lbl_info.(grp_name) = [lbl_info.(grp_name), {grp}];
+                else
+                    lbl_info.(grp_name) = grp;
+                end
+                
+            otherwise
+                lbl_info.(param) = value;
+                zzz.(param) = param_ori;
         end
     else
         if strcmpi(param,'END') % finish if it is end
@@ -36,6 +49,38 @@ fclose(fid);
 
 end
 
+function [obj,obj_name] = readNested(fid,obj_value,classname_nested)
+    obj_name = [classname_nested '_' obj_value];
+    obj = []; zzz = [];
+    flg = 1;
+    while flg
+        [isprm,param,value,param_ori] = readLBLComponent(fid);
+        if isprm
+            if strcmp(param,classname_nested)
+                [child,child_name] = readNested(fid,value,classname_nested);
+                if isfield(obj,child_name)
+                    if length(obj.(child_name))==1
+                        obj.(child_name) = {obj.(child_name)};
+                    end
+                    obj.(child_name) = [obj.(child_name), {child}];
+                else
+                    obj.(child_name) = child;
+                end
+            else
+                if strcmp(param,['END_' classname_nested]) && strcmp(value,obj_value)
+                    flg = 0;
+                else
+                    obj.(param) = value;
+                    zzz.(param) = param_ori;
+                end
+            end
+        end
+        if strcmp(param,['END_' classname_nested]) && strcmp(value,obj_value)
+            flg=0;
+        end
+    end
+    obj.zzz_original_field_names = zzz;
+end
 
 function [obj,obj_name] = readObject(fid,obj_value)
     obj_name = ['OBJECT_' obj_value];
