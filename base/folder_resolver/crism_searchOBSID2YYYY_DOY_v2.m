@@ -12,16 +12,16 @@ function [ yyyy_doy,obs_classType ] = crism_searchOBSID2YYYY_DOY_v2( obs_id,vara
 
 global CRISM_INDEX_OBS_CLASS_TYPE CRISM_INDEX_OBS_ID CRISM_INDEX_YYYY CRISM_INDEX_DOY
 
+if isempty(CRISM_INDEX_OBS_CLASS_TYPE)
+    error('Perform "crism_init" first to load global variables');
+end
+
 if length(obs_id)==11, obs_id = obs_id(4:11); end
 
 obs_id_num = reshape(hex2dec(obs_id),1,[]);
 [idx] = find(CRISM_INDEX_OBS_ID==obs_id_num);
 obs_classType = CRISM_INDEX_OBS_CLASS_TYPE(idx,:);
 yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx),CRISM_INDEX_DOY(idx));
-
-
-
-
 
 end
 
