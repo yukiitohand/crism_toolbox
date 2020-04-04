@@ -52,7 +52,7 @@ else
     end
 end
 
-yyyy_doy = searchOBSID2YYYY_DOY(propOBS.obs_id);
+yyyy_doy = crism_searchOBSID2YYYY_DOY_v2(propOBS.obs_id);
 [dirname] = get_dirname_fromPropOBS(propOBS);
 
 

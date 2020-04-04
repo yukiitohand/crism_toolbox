@@ -96,7 +96,7 @@ classdef CRISMdata < HSI
         
         function [] = readlblhdr(obj)
             if ~isempty(obj.lblpath)
-                obj.lbl = crismlblread_v2(obj.lblpath);
+                obj.lbl = pds3lblread(obj.lblpath);
                 obj.hdr = extract_imghdr_from_lbl(obj.lbl);
             elseif ~isempty(obj.hdrpath)
                 obj.lbl = [];

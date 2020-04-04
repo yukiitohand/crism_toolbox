@@ -196,7 +196,7 @@ end
 obs_id = upper(pad_obs_id(obs_id));
 
 if isempty(yyyy_doy) || isempty(obs_classType)
-    [ yyyy_doy,obs_classType2 ] = searchOBSID2YYYY_DOY(obs_id);
+    [ yyyy_doy,obs_classType2 ] = crism_searchOBSID2YYYY_DOY_v2(obs_id);
     if ~isempty(obs_classType) && ~strcmp(obs_classType,obs_classType2)
         fprintf('The input obs_classType %s is different in the record.\n',obs_classType);
     end
