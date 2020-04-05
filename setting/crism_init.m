@@ -3,8 +3,26 @@ function crism_init()
     str = fileread('crismToolbox.json');
     crism_env_vars = jsondecode(str);
     
-    check_mkdir(crism_env_vars.localCRISM_PDSrootDir);
-    check_mkdir(crism_env_vars.localCATrootDir);
+    [yesno,doyoucreate] = check_mkdir(crism_env_vars.localCRISM_PDSrootDir);
+    switch lower(doyoucreate)
+        case 'yes'
+            mkdir(crism_env_vars.localCRISM_PDSrootDir);
+            fprintf('%s is created...\n',crism_env_vars.localCRISM_PDSrootDir);
+        case 'no'
+            if strcmpi(yesno,'no')
+                fprintf('No local database will be created. ');
+                fprintf('Functionality of crism_toolbox may be limited.\n');
+            end
+        otherwise
+            error('"doyoucreate" should be either of "yes" or "no".');
+            
+    end
+    
+    if exist(crism_env_vars.localCATrootDir)
+    else
+        fprintf('localCATrootDir is not configured. ');
+        fprintf('Functionality of crism_toolbox may be limited.\n');
+    end
     
     crism_env_vars.url_local_root = crism_env_vars.([crism_env_vars.local_fldsys '_URL']);
     crism_env_vars.url_remote_root = crism_env_vars.([crism_env_vars.remote_fldsys '_URL']);
@@ -25,10 +43,10 @@ function crism_init()
 
 end
 
-function [] = check_mkdir(dirpath)
+function [yesno,doyoucreate] = check_mkdir(dirpath)
     exist_flg = exist(dirpath,'dir');
     if exist_flg
-        %yesno = 1;
+        yesno = 'yes'; doyoucreate = 'no';
     else
         flg = 1;
         while flg
@@ -41,9 +59,9 @@ function [] = check_mkdir(dirpath)
             end
         end
         if strcmpi(ow,'n')
-            fprintf('No local database will be created.\n');
+            yesno = 'yes';  doyoucreate = 'no';
         elseif strcmpi(ow,'y')
-            fprintf('%s is created...\n',dirpath);
+            yesno = 'no';  doyoucreate = 'yes';
         end
     end
 end
