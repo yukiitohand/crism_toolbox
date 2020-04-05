@@ -13,17 +13,16 @@ Some of my tooboxes are necessary.
 First you need to customize your setting/crismToolbox_default.json:
 ```json
 {
-    "localCRISM_PDSrootDir" : "",
-    "localCATrootDir"       : "/../cat/CAT_v7_4/",
-    "CAT_ver"               : "7.4",
-    "local_fldsys"          : "pds_unified",
-    "remote_fldsys"         : "pds_mro",
+    "localCRISM_PDSrootDir" : "~/data/crism/pds/",
+    "localCATrootDir"       : "",
+    "CAT_ver"               : "",
     "pds_unified_URL"       : "crism_pds_archive/",
     "pds_mro_URL"           : "pds-geosciences.wustl.edu/mro/",
-    "LUT_OBSID2YYYY"        : "LUT_OBSID2YYYY_DOY.mat"
+    "local_fldsys"          : "pds_unified",
+    "remote_fldsys"         : "pds_mro"
 }
 ```
-What you should specify is `localCRISM_PDSrootDir` where the local databse is created and `localCATrootDir` where CAT_ENVI/ is stored (like `[localCATrootDir]/CAT_ENVI/`). The others do not need to be changed unless you want a specific database structure. CAT Toolbox needs to be independently and manually downloaded and set up. CAT toolbox may not be necessary, but it is recommended to download it. With this setup, local database will be created at
+What you should specify is `localCRISM_PDSrootDir` where the local databse is created. Optionally, you can specify `localCATrootDir` where CAT_ENVI/ is stored (like `[localCATrootDir]/CAT_ENVI/`). The others do not need to be changed unless you want a specific database structure. CAT Toolbox needs to be independently and manually downloaded and set up. CAT toolbox may not be necessary, but it is recommended to download it. With this setup, local database will be created at
 ```
 [localCRISM_PDSrootDir]/crism_pds_archive/
 ```
