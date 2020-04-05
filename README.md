@@ -93,7 +93,7 @@ Maybe you want to start with a given observation ID, then start with
 Then following code allows you to get scene image.
 ```matlab
 > crism_obs.load_default();
-> TRRIFdata = crism_obs.data.if;
+> TRRIFdata = CRISMdata(crism_obs.info.basenameIF,'');
 > TRRIFdata.readimg();
 ```
 
