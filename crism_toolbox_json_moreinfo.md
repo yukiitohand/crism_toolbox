@@ -8,4 +8,3 @@ Some more information for the setup file.
 * `remote_fldsys`        : database system (`'pds_mro'` is supported)
 * `pds_unified_URL`      : root directory name or path for the folder system `'pds_unified'`
 * `pds_mro_URL`          : root directory name or path for the folder system `'pds_mro'`
-* `LUT_OBSID2YYYY`       : the name of the mat file for which yyyy_doy look up table is stored. The table comes with the toolbox, so you do not need to change.
