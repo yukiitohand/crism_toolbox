@@ -7,6 +7,7 @@ This toolbox is an MATLAB interface for handling MRO CRISM database([http://pds-
 Some of my tooboxes are necessary.
 * [https://github.com/yukiitohand/base](https://github.com/yukiitohand/base)
 * [https://github.com/yukiitohand/envi](https://github.com/yukiitohand/envi)
+* [https://github.com/yukiitohand/pds3_toolbox](https://github.com/yukiitohand/pds3_toolbox)
 
 ## Installation
 ### Local directory setup
