@@ -82,10 +82,6 @@ or if you reverse the band
 ```MATLAB
 > TRRIFdata.readimgi();
 ```
-If you haven't downloaded, you can download the image to the local database by 
-```MATLAB
-> TRRIFdata.download(2);
-```
 ## Tips
 Maybe you want to start with a given observation ID, then start with
 ```matlab
