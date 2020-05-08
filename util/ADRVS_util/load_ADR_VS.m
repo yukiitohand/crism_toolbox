@@ -30,7 +30,7 @@ local_rootDir = crism_env_vars.localCRISM_PDSrootDir;
 is_band_inverse = true;
 artifact_idx = 2;
 mode_artifact = 'subtraction';
-binning = 0; wv_filter = 0; vr = '9'; obs_id_short = '';
+binning = '0'; wv_filter = '0'; vr = '9'; obs_id_short = '';
 overwrite = false;
 dwld = 0;
 vr_latest = false;
@@ -92,8 +92,14 @@ if ~isempty(obs_id_short), propADRVSPtr.obs_id_short = obs_id_short; end
 %%
 
 cachedpath = joinPath(local_rootDir,'cache/');
-cachefname = sprintf('adr_VS%1s%1s%1s_art%s_aid%d.mat',...
-                                  binning,wv_filter,vr,mode_artifact,artifact_idx);
+if isempty(obs_id_short)
+    cachefname = sprintf('adr_VS%1s%1s%1s_art%s_aid%d.mat',...
+        binning,wv_filter,vr,mode_artifact,artifact_idx);
+else
+    cachefname = sprintf('adr_VS_%s_%1s%1s%1s_art%s_aid%d.mat',...
+        obs_id_short,binning,wv_filter,vr,mode_artifact,artifact_idx);
+end
+    
 cachefpath = joinPath(cachedpath,cachefname);
 if ~exist(cachedpath,'dir'), mkdir(cachedpath); end
 
