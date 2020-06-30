@@ -148,14 +148,18 @@ B = length(bands);
 hdr_cor.wavelength = hdr_cor.wavelength(bands);
 hdr_cor.bbl = hdr_cor.bbl(bands);
 hdr_cor.fwhm = hdr_cor.fwhm(bands);
-hdr_cor.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),bands,...
+hdr_cor.band_names = arrayfun(@(x) sprintf('Georef (Band %d)',x),find(bands),...
     'UniformOutput',false);
 hdr_cor.bands = B;
 hdr_cor.cat_history = [hdr_cor.cat_history '_PHCc'];
 hdr_cor.cat_input_files = [in_crismdata.basename ', ' DEdata.basename];
 
 if isempty(default_bands)
-    hdr_cor.default_bands = get_default_bands(hdr_cor.wavelength);
+    if strcmpi(hdr_cor.wavelength_units,'Micrometers')
+        hdr_cor.default_bands = get_default_bands(hdr_cor.wavelength*1000);
+    else
+        hdr_cor.default_bands = get_default_bands(hdr_cor.wavelength);
+    end
 end
 
 %% saving the image
