@@ -45,7 +45,7 @@ switch upper(sensor_id)
         error('undefined sensor_id %s',sensor_id);
 end
 wv_filter = [wv_tab.data.(wv_field)]';
-wv_filter = boolean(wv_filter);
+wv_filter = logical(wv_filter);
 
 wv_sweetspot_data = sw_tab.data(wv_filter);
 

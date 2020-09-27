@@ -10,7 +10,7 @@ function [ prop ] = create_propOBSbasename( varargin )
 %    'activity_macro_num'   : (default) '(?<activity_macro_num>[0-9]{3})'
 %    'product_type'         : (default) '(?<product_type>[a-zA-Z]{3})'
 %    'sensor_id'            : (default) '(?<sensor_id>[sljSLJ]{1})'
-%    'version'              : (default) '(?<version>[0-9AY]{1})'
+%    'version'              : (default) '(?<version>[0-9A-Z]{1})'
 %    'yyyy_doy'             : (default) '(?<yyyy_doy>[0-9]{4}_[0-9]{3})'
 %
 %   Optional Parameters
