@@ -8,7 +8,7 @@ function [valid_samples] = crism_examine_valid_Columns(RAdata)
 %                   pixel.
 
 % examine valid columns from the detector mask
-if isempty(RAdata.basenamesCDR), RAdata.load_basenamesCDR(); end
+if ~isfield(RAdata.basenamesCDR,'DM'), RAdata.load_basenamesCDR(); end
 if ~isfield(RAdata.cdr,'DM'), RAdata.readCDR('DM'); end
 DMdata = RAdata.cdr.DM;
 DMdata.readimgi();
