@@ -32,7 +32,7 @@ coslatd0_out = cosd(outlatd0);
 outlatstp = outlatNS(1) - outlatNS(2);
 outlonstp = outlonEW(2) - outlonEW(1);
 
-dst2_lmt = (outlatstp^2 + (coslatd0_out*outlonstp)^2)*dst_lmt_param;
+dstsqrt2_lmt = sqrt(outlatstp^2 + (coslatd0_out*outlonstp)^2)*dst_lmt_param;
 
 leny_out = length(outlatNS);
 lenx_out = length(outlonEW);
@@ -64,7 +64,7 @@ ydst2_scale = (outlatNS_trm-inlat_vec).^2;
 % mask invalid pixels
 ydst2_scale(inMap_invalid_1d,:) = 65535;
 
-ydst2_valid = ydst2_scale<dst2_lmt;
+ydst2_valid = sqrt(ydst2_scale)<dstsqrt2_lmt;
 ydst2_scale(~ydst2_valid) = 65535;
 
 % ydst2_scale_sp = sparse(leny_out,leny_in);
@@ -75,7 +75,7 @@ xdst2_scale = (coslatd0_out * (outlonEW_trm-inlon_vec)).^2;
 % mask invalid pixels
 xdst2_scale(inMap_invalid_1d,:) = 65535;
 
-xdst2_valid = xdst2_scale<dst2_lmt;
+xdst2_valid = sqrt(xdst2_scale)<dstsqrt2_lmt;
 xdst2_scale(~xdst2_valid) = 65535;
 
 ii_glt_trm = nan(leny_out_trm,lenx_out_trm);
