@@ -146,8 +146,10 @@ end
 
 B = length(bands);
 hdr_cor.wavelength = hdr_cor.wavelength(bands);
-hdr_cor.bbl = hdr_cor.bbl(bands);
-hdr_cor.fwhm = hdr_cor.fwhm(bands);
+if isfield(hdr_cor,'bbl'), hdr_cor.bbl = hdr_cor.bbl(bands); end
+if isfield(hdr_cor,'fwhm')
+    hdr_cor.fwhm = hdr_cor.fwhm(bands);
+end
 hdr_cor.band_names = arrayfun(@(x) sprintf('Georef (Band %d)',x),find(bands),...
     'UniformOutput',false);
 hdr_cor.bands = B;
