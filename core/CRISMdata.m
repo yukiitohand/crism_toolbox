@@ -486,6 +486,17 @@ classdef CRISMdata < HSI
                 
         end
         
+        function delete(obj)
+            if ~isempty(obj.cdr)
+                fldnms = fieldnames(obj.cdr);
+                for i=1:length(fldnms)
+                    for j=1:length(obj.cdr.(fldnms{i}))
+                        delete(obj.cdr.(fldnms{i})(j));
+                    end
+                end
+            end
+        end
+        
     end
     
 end
