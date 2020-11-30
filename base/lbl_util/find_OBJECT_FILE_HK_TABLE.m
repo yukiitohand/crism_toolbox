@@ -64,7 +64,7 @@ switch upper(product_type)
         fldnmHKTname = ''; fldnmHKTobj = '';
         return
 end
-fldnmHKTname =  [product_type_acro '_HK_TABLE'];
+fldnmHKTname =  ['POINTER_' product_type_acro '_HK_TABLE'];
 fldnmHKTobj =  ['OBJECT_', product_type_acro '_HK_TABLE'];
 
 if isfield(lbl_info,'OBJECT_FILE')

@@ -18,9 +18,9 @@ if isempty(obj_file_hk_table)
     fprintf('no hkt is found');
 end
 
-if isfield(obj_file_hk_table.(fldnmHKTobj),'STRUCTURE')
-    if ~isempty(regexpi(obj_file_hk_table.(fldnmHKTobj).STRUCTURE,'.*HK.FMT','ONCE'))
-        fmtfname = obj_file_hk_table.(fldnmHKTobj).STRUCTURE;
+if isfield(obj_file_hk_table.(fldnmHKTobj),'POINTER_STRUCTURE')
+    if ~isempty(regexpi(obj_file_hk_table.(fldnmHKTobj).POINTER_STRUCTURE,'.*HK.FMT','ONCE'))
+        fmtfname = obj_file_hk_table.(fldnmHKTobj).POINTER_STRUCTURE;
         [ fmt ] = crismHKFMTread( lbl.PRODUCT_TYPE,'Fname',fmtfname);
         obj_file_hk_table.(fldnmHKTobj).OBJECT_COLUMN = fmt.OBJECT_COLUMN;
     end

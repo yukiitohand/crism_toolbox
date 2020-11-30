@@ -37,7 +37,7 @@ end
 
 if ~isempty(obj_file_table)
     if exist(fdpath,'dir')==7 % isdir
-        fname = obj_file_table.TABLE;
+        fname = obj_file_table.POINTER_TABLE;
         fpath = joinPath(fdpath,fname);
     elseif (exist(fdpath,'file') == 2)
         fpath = fdpath;
