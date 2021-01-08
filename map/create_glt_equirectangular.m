@@ -1,4 +1,15 @@
 function [x_glt,y_glt] = create_glt_equirectangular(inlatMap,inlonMap,outlatNS,outlonEW,outlatd0,varargin)
+% [x_glt,y_glt] = create_glt_equirectangular(inlatMap,inlonMap,outlatNS,outlonEW,outlatd0,varargin)
+% INPUTS
+%   inlatMap: [Lin x Sin] latitude for each pixel of the input image
+%   inlonMap: [Lin x Sin] longitude for each pixel of the input image
+%   outlatNS: Lout length vector
+%   outlonEX: Sout length vector
+%   outlatd0: base latitude parameter for the equirectangular projection of
+%             the output image, unit is degree
+% OUTPUTS
+%   x_glt : [Lout x Sout] nearest x coordinate of the input image pixel.
+%   y_glt : [Lout x Sout] nearest y coordinate of the input image pixel.
 
 
 valid_lines = true(size(inlatMap,1),1);
@@ -17,8 +28,7 @@ else
             case 'DST_LMT_PARAM'
                 dst_lmt_param = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s',varargin{i});
         end
     end
 end
