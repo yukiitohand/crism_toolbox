@@ -73,9 +73,12 @@ geo_coord_systm = 'MARS_Sphere'; % {'MARS_Sphere','MARS_2000_IAU_IAG_CUSTOM_SPHE
 pixel_size = [];
 range_latd = [];
 range_lond = [];
-proj_alignment    = 'CutOff@Center';
+proj_alignment    = 'CutOff';
 standard_parallel = 0;
 center_longitude  = 0;
+center_latitude   = [];
+cutoff_longitude  = 0;
+cutoff_latitude   = 0;
 latitude_of_origin  = 0;
 longitude_of_origin = 0;
 
@@ -107,6 +110,12 @@ else
                 standard_parallel = varargin{i+1};
             case 'CENTERLONGITUDE'
                 center_longitude = varargin{i+1};
+            case 'CENTERLATITUDE'
+                center_latitude = varargin{i+1};
+            case 'CUTOFFLONGITUDE'
+                cutoff_longitude = varargin{i+1};
+            case 'CUTOFFLATITUDE'
+                cutoff_latitude = varargin{i+1};
             case 'LATITUDEOFORIGIN'
                 latitude_of_origin = varargin{i+1};
             case 'LONGITUDEOFORIGIN'
@@ -140,6 +149,10 @@ end
 
 if isempty(pixel_size)
     pixel_size = 18*DEdata.lbl.PIXEL_AVERAGING_WIDTH;
+end
+
+if isempty(center_latitude)
+    center_latitude = standard_parallel;
 end
 
 % examine valid lines
@@ -229,11 +242,12 @@ inlatMap = DEdata.ddr.Latitude.img;
 inlonMap = DEdata.ddr.Longitude.img;
 
 % create GRID IMAGE
-[latNS,lonEW]= crism_create_grid_equirectangular(...
+[latNS,lonEW,lat_dstep,lon_dstep]= crism_create_grid_equirectangular(...
     range_latd,range_lond,'PIXEL_SIZE',pixel_size,'RMARS',rMars,...
     'ProjectionAlignment',proj_alignment,...
     'StandardParallel',standard_parallel,...
-    'CenterLongitude',center_longitude);
+    'CenterLongitude',center_longitude,'CenterLatitude',center_latitude,...
+    'CutOffLongitude',cutoff_longitude,'CutOffLatitude',cutoff_latitude);
 %
 switch upper(PROC_MODE)
     case {'V2','VERSION2','DSTTHRESH'}
@@ -338,15 +352,15 @@ map_info.datum = datum_name;
 map_info.units = 'Meters';
 
 % 0.0 0.0 are false_easting and false_northing
-proj_info = sprintf('{17, %.10f, %.6f, %.6f, 0.0, 0.0, %s, %s, units=Meters}',...
+hdr_proj_info = sprintf('{17, %.15f, %.6f, %.6f, 0.0, 0.0, %s, %s, units=Meters}',...
     spheroid_major_axis,standard_parallel,center_longitude, datum_name, projcs_name);
 
 cood_systm_str = sprintf([...
-    '{PROJCS["%s",GEOGCS["%s",DATUM["%s",SPHEROID["%s",%.10f,0.0]],'           ,...
+    '{PROJCS["%s",GEOGCS["%s",DATUM["%s",SPHEROID["%s",%.15f,0.0]],'           ,...
         'PRIMEM["Reference_Meridian",0.0],UNIT["Degree",0.0174532925199433]],'   ,...
         'PROJECTION["Equidistant_Cylindrical"],PARAMETER["False_Easting",0.0],'  ,...
-        'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",%.10f],' ,...
-        'PARAMETER["Standard_Parallel_1",%.10f],',...
+        'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",%.15f],' ,...
+        'PARAMETER["Standard_Parallel_1",%.15f],',...
         'UNIT["Meter",1.0]]}'],...
         projcs_name,geogcs_name,datum_name,spheroid_name,spheroid_major_axis,...
         longitude_of_origin,standard_parallel);
@@ -366,13 +380,30 @@ hdr_glt.interleave = 'bil';
 hdr_glt.sensor_type = 'Unknown';
 hdr_glt.byte_order = 0;
 hdr_glt.map_info = map_info;
-hdr_glt.projection_info = proj_info;
+hdr_glt.projection_info = hdr_proj_info;
 hdr_glt.coordinate_system_string = cood_systm_str;
 % hdr_glt.projection_info = sprintf('{17, %f, %9.6f, %9.6f, 0.0, 0.0, D_Unknown, Mars Sphere-Based Equirectangular, units=Meters}',rMars,standard_parallel,center_longitude);
 % hdr_glt.coordinate_system_string = sprintf('{PROJCS["Equidistant_Cylindrical",GEOGCS["GCS_Unknown",DATUM["D_Unknown",SPHEROID["S_Unknown",%.1f,0.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Equidistant_Cylindrical"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",%f],PARAMETER["Standard_Parallel_1",%f],UNIT["Meter",1.0]]}',...
 %     rMars,center_longitude,standard_parallel);
 hdr_glt.wavelength_units = 'Unknown';
 hdr_glt.band_names = {'GLT Sample Lookup', 'GLT Line Lookup'};
+
+%% create proj_info
+proj_info = SphereEquiRectangularProj('name',projcs_name,...
+    'Radius',spheroid_major_axis,...
+    'STANDARD_PARALLEL',standard_parallel,...
+    'CenterLongitude',center_longitude,...
+    'CenterLatitude',center_latitude,...
+    'Latitude_of_origin',latitude_of_origin,...
+    'Longitude_of_origin',longitude_of_origin);
+proj_info.rdlat = 1./lat_dstep;
+proj_info.rdlon = 1./lon_dstep;
+proj_info.map_scale_x = pixel_size;
+proj_info.map_scale_y = pixel_size;
+proj_info.set_lat1(latNS(1));
+proj_info.set_lon1(lonEW(1));
+proj_info.longitude_range = [lonEW(1)-0.5*lon_dstep lonEW(end)+0.5*lon_dstep];
+proj_info.latitude_range  = [latNS(1)+0.5*lat_dstep latNS(end)-0.5*lat_dstep];
 
 %% save
 if save_file
@@ -389,10 +420,11 @@ if save_file
 end
 
 
-hdr_glt.northing = reshape(r_local * pi * ((latNS-latitude_of_origin)/180),1,[]);
-hdr_glt.easting  = reshape(r_local * pi * ((lonEW-longitude_of_origin)/180),1,[]);
-GLTdata = HSI('','');
+% hdr_glt.northing = reshape(r_local * pi * ((latNS-latitude_of_origin)/180),1,[]);
+% hdr_glt.easting  = reshape(r_local * pi * ((lonEW-longitude_of_origin)/180),1,[]);
+GLTdata = ENVIRasterMultBandEquirectProjRot0('','');
 GLTdata.hdr = hdr_glt;
-GLTdata.img = double(img_glt);
+GLTdata.img = img_glt;
+GLTdata.proj_info = proj_info;
 
 end
