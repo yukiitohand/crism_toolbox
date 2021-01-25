@@ -1,4 +1,4 @@
-classdef CRISMdata < HSI
+classdef CRISMdata < ENVIRasterMultBand
     %CRISMdata class
     %   For any type of CRISM data (EDR,CDR,TRDR,TER,...)
     
@@ -10,6 +10,14 @@ classdef CRISMdata < HSI
         hkt;
         ROWNUM_TABLE;
         wv;
+        wa = [];
+        BP = [];
+        GP = [];
+        BP1nan = [];
+        GP1nan = [];
+        is_wa_band_inverse = false;
+        is_bp1nan_inverse  = false;
+        is_gp1nan_inverse  = false;
         basenameHKT
         cdr;
         source_obs;
@@ -69,7 +77,7 @@ classdef CRISMdata < HSI
                 dirpath = dirpath_guess;
             end
             
-            obj@HSI(basename,dirpath,varargin{:});
+            obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
             [obj.lblpath] = guessCRISMLBLPATH(basename,dirpath,varargin{:});
             [obj.tabpath] = guessCRISMTABPATH(basename,dirpath,varargin{:});
             readlblhdr(obj);
@@ -97,7 +105,8 @@ classdef CRISMdata < HSI
         function [] = readlblhdr(obj)
             if ~isempty(obj.lblpath)
                 obj.lbl = pds3lblread(obj.lblpath);
-                obj.hdr = extract_imghdr_from_lbl(obj.lbl);
+                obj.hdr = crism_lbl2hdr(obj.lbl,...
+                    'missing_constant',obj.missing_constant_img);
             elseif ~isempty(obj.hdrpath)
                 obj.lbl = [];
                 obj.hdr = envihdrreadx(obj.hdrpath);
@@ -107,144 +116,6 @@ classdef CRISMdata < HSI
 %                 fprintf('"%s" does not exist.\n',joinPath(dirpath_acro, [basename_acro '.LBL/HDR']));
             end
         end
-        
-        function [img] = readimg(obj)
-            if isempty(obj.hdr)
-                error('no img is found');
-            end
-            img = envidataread_v2(obj.imgpath,obj.hdr);
-            img(img==obj.missing_constant_img) = nan;
-            if nargout<1
-                obj.img = img;
-                obj.is_img_band_inverse = false;
-            end
-        end
-        
-        function [img] = readimgi(obj)
-            % read image and invert the band order
-            img = obj.readimg();
-            img = img(:,:,end:-1:1);
-            if nargout==0
-                obj.img = img;
-                obj.is_img_band_inverse = true;
-            end
-        end
-        
-        function [imgb] = lazyEnviReadb(obj,b)
-            if isempty(obj.hdr)
-                error('no img is found');
-            end
-            imgb = lazyEnviReadb_v2(obj.imgpath,obj.hdr,b);
-            imgb(imgb==obj.missing_constant_img) = nan;
-            %if nargout==0
-            %    obj.img.(sprintf('b%03d',b)) = imgb;
-            %end
-        end
-        
-        function [imgb] = lazyEnviReadbi(obj,b)
-            b_flip = obj.hdr.bands-b+1;
-            imgb = obj.lazyEnviReadb(b_flip);
-            %if nargout==0
-            %    obj.img.(sprintf('b%03d',b)) = imgb;
-            %end
-        end
-        
-        function [imgc] = lazyEnviReadc(obj,c)
-            if isempty(obj.hdr)
-                error('no img is found');
-            end
-            imgc = lazyEnviReadc_v2(obj.imgpath,obj.hdr,c);
-            imgc(imgc==obj.missing_constant_img) = nan;
-            %if nargout==0
-            %    obj.img.(sprintf('c%03d',c)) = imgc;
-            %end
-        end
-        
-        function [imgc] = lazyEnviReadci(obj,c)
-            imgc = obj.lazyEnviReadc(c);
-            imgc = imgc(:,end:-1:1);
-            %if nargout==0
-            %    obj.img.(sprintf('c%03d',c)) = imgc;
-            %end
-        end
-        
-        function [imgl] = lazyEnviReadl(obj,l)
-            if isempty(obj.hdr)
-                error('no img is found');
-            end
-            imgl = lazyEnviReadl_v2(obj.imgpath,obj.hdr,l);
-            imgl(imgl==obj.missing_constant_img) = nan;
-            %if nargout==0
-            %    obj.img.(sprintf('l%03d',l)) = imgl;
-            %end
-        end
-        
-        function [imgl] = lazyEnviReadli(obj,l)
-            imgl = obj.lazyEnviReadl(l);
-            imgl = imgl(:,end:-1:1);
-            %if nargout==0
-            %    obj.img.(sprintf('l%03d',l)) = imgl;
-            %end
-        end
-        
-        function [spc_sl] = lazyEnviRead(obj,s,l)
-            if isempty(obj.hdr)
-                error('no img is found');
-            end
-            spc_sl = lazyEnviRead_v2(obj.imgpath,obj.hdr,s,l);
-            spc_sl(spc_sl==obj.missing_constant_img) = nan;
-            %if nargout==0
-            %    obj.img.(sprintf('s%03dl%03d',s,l)) = spc_sl;
-            %end
-        end
-        
-        function [spc_sl] = lazyEnviReadi(obj,s,l)
-            % invert the band order
-            spc_sl = obj.lazyEnviRead(s,l);
-            spc_sl = spc_sl(end:-1:1);
-            %if nargout==0
-            %    obj.img.(sprintf('s%03dl%03d',s,l)) = spc_sl;
-            %end
-        end
-        
-        function [imrgb] = lazyEnviReadRGB(obj,rgb)
-            imrgb = lazyEnviReadRGB(obj.imgpath,obj.hdr,rgb);
-            imrgb(imrgb==obj.missing_constant_img) = nan;
-        end
-        
-        function [imrgb] = lazyEnviReadRGBi(obj,rgb)
-            rgb_flip = obj.hdr.bands-rgb+1;
-            [imrgb] = obj.lazyEnviReadRGB(rgb_flip);          
-        end
-        
-%         function img_acroRect = lazyEnviReadRect(obj,acro,varargin)
-%             if ~isfield(obj.hdr,acro)
-%                 error('First perform "readlblhdr"');
-%             end
-%             img_fpath = get_fpathi(obj.basename.(acro), 'IMG', obj.dirpath.(acro));
-%             img_acroRect = lazyEnviReadRect_v2(img_fpath,obj.hdr.(acro),varargin{:});
-%             img_acroRect(img_acroRect==obj.info.missing_constant) = nan;
-%         end
-%         
-%         function img_acroRect = lazyEnviReadRecti(obj,acro,varargin)
-%             % brange_valuidx = 0;
-%             if (rem(length(varargin),2)==1)
-%                 error('Optional parameters should always go by pairs');
-%             else
-%                 for i=1:2:(length(varargin)-1)
-%                     switch upper(varargin{i})    
-%                         case 'BRANGE'
-%                             brange = varargin{i+1};
-%                             % brange_valuidx = i+1;
-%                             b_flip = obj.hdr.(acro).bands-brange+1;
-%                             b_flip = fliplr(b_flip);
-%                             varargin{i+1} = b_flip;
-%                     end
-%                 end
-%             end
-%             img_acroRect = obj.lazyEnviReadRect(acro,varargin{:});
-%             img_acroRect = img_acroRect(:,:,end:-1:1);
-%         end
         
         function [rownum_table] = read_ROWNUM_TABLE(obj)
             [ rownum_table ] = crismrownumtableread( obj.imgpath,obj.lbl );
@@ -281,7 +152,8 @@ classdef CRISMdata < HSI
             end
             obj.basenamesCDR = readCDRnames_v2(obj.lbl);
             if ~isempty(obj.basenamesCDR)
-                [obj.dir_cdr] = finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
+                [obj.dir_cdr] = finddirdownloadCDR_v3(...
+                    obj.basenamesCDR,varargin{:});
             end
 
         end
@@ -313,7 +185,8 @@ classdef CRISMdata < HSI
             end
             [source_basenames] = read_SOURCE_OBS_basenames(obj.lbl);
             obj.basenames_SOURCE_OBS = source_basenames;
-            obj.dir_SOURCE_OBS = finddirdownload_SOURCE_OBS(obj.basenames_SOURCE_OBS,varargin{:});
+            obj.dir_SOURCE_OBS = finddirdownload_SOURCE_OBS(...
+                obj.basenames_SOURCE_OBS,varargin{:});
 
         end
         
@@ -337,25 +210,6 @@ classdef CRISMdata < HSI
                 obj.source_obs.(actID) = source_obs;
             end 
         end
-        
-%         function [cdr] = getCDRs(obj)
-%             if iscell(obj.basenamesCDR.(acro))
-%                 cdr = cell(1,length(obj.basenamesCDR.(acro)));
-%                 for i=1:length(obj.basenamesCDR.(acro))
-%                     basename_acro = obj.basenamesCDR.(acro){i};
-%                     dirpath_acro = obj.dir_cdr.(acro){i};
-%                     data = CRISMdata(basename_acro,dirpath_acro);
-%                     cdr{i} = data;
-%                 end
-%                 obj.cdr.(acro) = cdr;
-%             else
-%                 basename_acro = obj.basenamesCDR.(acro);
-%                 dirpath_acro = obj.dir_cdr.(acro);
-%                 data = CRISMdata(basename_acro,dirpath_acro);
-%                 cdr = data;
-%                 obj.cdr.(acro) = cdr;
-%             end 
-%         end
         
         function [sclk,p] = get_sclk_start(obj)
             sclkstr = obj.lbl.SPACECRAFT_CLOCK_START_COUNT;
@@ -487,29 +341,16 @@ classdef CRISMdata < HSI
         end
         
         function delete(obj)
-            if ~isempty(obj.cdr)
-                fldnms = fieldnames(obj.cdr);
-                for i=1:length(fldnms)
-                    for j=1:length(obj.cdr.(fldnms{i}))
-                        delete(obj.cdr.(fldnms{i})(j));
-                    end
-                end
-            end
+            % if ~isempty(obj.cdr)
+            %     fldnms = fieldnames(obj.cdr);
+            %     for i=1:length(fldnms)
+            %         for j=1:length(obj.cdr.(fldnms{i}))
+            %             delete(obj.cdr.(fldnms{i})(j));
+            %         end
+            %     end
+            % end
         end
         
     end
     
 end
-
-% function fpath = get_fpathi(basename,ext,dirpath)
-% % get the filepath in a case insensitive way. If multiple candidates are
-% % found, raise an error.
-%     fname_new = findfilei([basename '.' ext], dirpath);
-%     if isempty(fname_new)
-%         fpath = '';
-%     elseif iscell(fname_new) && length(fname_new)>1
-%         error('several carndiates are found for\n %s in %s.',[basename '.' ext], dirpath);
-%     else
-%         fpath = joinPath(dirpath,fname_new);
-%     end
-% end
