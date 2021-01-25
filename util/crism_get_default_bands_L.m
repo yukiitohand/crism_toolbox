@@ -1,4 +1,4 @@
-function [rgb_bands] = get_default_bands(wv_sweetspot)
+function [rgb_bands] = crism_get_default_bands_L(wv_sweetspot)
 
 [~,ri] = min(abs(wv_sweetspot-2529));
 [~,gi] = min(abs(wv_sweetspot-1506));
