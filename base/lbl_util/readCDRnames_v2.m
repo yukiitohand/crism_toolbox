@@ -1,18 +1,21 @@
 function [cdr_basenames] = readCDRnames_v2(lbl)    
 % read names of CDR file using lbl file.
 cdr_basenames = [];
-for i=1:length(lbl.SOURCE_PRODUCT_ID)
-    name = lbl.SOURCE_PRODUCT_ID{i};
-    if isCDR4(name)
-        prop = getProp_basenameCDR4(name);
-    elseif isCDR6(name)
-        prop = getProp_basenameCDR6(name);
-    else
-        prop = [];
-    end
-    if ~isempty(prop)
-        productID = prop.acro_calibration_type;
-        cdr_basenames = addField(cdr_basenames,productID,name);
+
+if isfield(lbl,'SOURCE_PRODUCT_ID') && iscell(lbl.SOURCE_PRODUCT_ID)
+    for i=1:length(lbl.SOURCE_PRODUCT_ID)
+        name = lbl.SOURCE_PRODUCT_ID{i};
+        if isCDR4(name)
+            prop = getProp_basenameCDR4(name);
+        elseif isCDR6(name)
+            prop = getProp_basenameCDR6(name);
+        else
+            prop = [];
+        end
+        if ~isempty(prop)
+            productID = prop.acro_calibration_type;
+            cdr_basenames = addField(cdr_basenames,productID,name);
+        end
     end
 end
 
