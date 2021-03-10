@@ -53,38 +53,41 @@ else
     hdr.data_ignore_value = missing_constant;
     
     %% Set default bands
-    switch upper(lbl.MRO_SENSOR_ID)
-        case 'S'
-            switch lbl.MRO_WAVELENGTH_FILTER
-                case 0
-                    hdr.default_bands = [];
-                case 1
-                    hdr.default_bands = [];
-                case 2
-                    hdr.default_bands = [];
-                case 3
-                    hdr.default_bands = [];
-                otherwise
-                    error('Undefined wavelength filter id %d.', ...
-                        lbl.MRO_WAVELENGTH_FILTER);
-            end
-        case 'L'
-            switch lbl.MRO_WAVELENGTH_FILTER
-                case 0
-                    hdr.default_bands = [];
-                case 1
-                    hdr.default_bands = [];
-                case 2
-                    hdr.default_bands = [];
-                case 3
-                    hdr.default_bands = [];
-                otherwise
-                    error('Undefined wavelength filter id %d.', ...
-                        lbl.MRO_WAVELENGTH_FILTER);
-            end
-            
-        otherwise
-            error('Undefined sensor_id %s.',lbl.MRO_SENSOR_ID);
+    % hard coded 
+    if all(isfield(lbl,{'MRO_SENSOR_ID','MRO_WAVELENGTH_FILTER'}))
+        switch upper(lbl.MRO_SENSOR_ID)
+            case 'S'
+                switch lbl.MRO_WAVELENGTH_FILTER
+                    case 0
+                        hdr.default_bands = [54 37 27];
+                    case 1
+                        hdr.default_bands = [7 4 3];
+                    case 2
+                        hdr.default_bands = [7 4 3];
+                    case 3
+                        hdr.default_bands = [10 6 4];
+                    otherwise
+                        error('Undefined wavelength filter id %d.', ...
+                            lbl.MRO_WAVELENGTH_FILTER);
+                end
+            case 'L'
+                switch lbl.MRO_WAVELENGTH_FILTER
+                    case 0
+                        hdr.default_bands = [206 361 426];
+                    case 1
+                        hdr.default_bands = [14 40 53];
+                    case 2
+                        hdr.default_bands = [18 54 68];
+                    case 3
+                        hdr.default_bands = [15 47 60];
+                    otherwise
+                        error('Undefined wavelength filter id %d.', ...
+                            lbl.MRO_WAVELENGTH_FILTER);
+                end
+
+            otherwise
+                error('Undefined sensor_id %s.',lbl.MRO_SENSOR_ID);
+        end
     end
 
 end

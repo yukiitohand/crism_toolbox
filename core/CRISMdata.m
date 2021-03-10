@@ -80,12 +80,18 @@ classdef CRISMdata < ENVIRasterMultBand
             obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
             [obj.lblpath] = guessCRISMLBLPATH(basename,dirpath,varargin{:});
             [obj.tabpath] = guessCRISMTABPATH(basename,dirpath,varargin{:});
-            readlblhdr(obj);
+            obj.readlblhdr();
             
             obj.prop = prop;
             obj.data_type = data_type;
             obj.yyyy_doy = yyyy_doy;
             obj.dirname = dirname;
+            
+            % switch upper(data_type)
+            %     case 'OBSERVATION'
+                    % obj.readSW();
+                    % obj.readBW();
+            % end
             
             
         end
@@ -93,11 +99,13 @@ classdef CRISMdata < ENVIRasterMultBand
         function [img_flip] = img_flip_band(obj)
             if ~isempty(obj.img)
                 img_flip = flip(obj.img,3);
-            end
-            if nargout < 1
-                % flip boolean
-                obj.img = img_flip;
-                obj.is_img_band_inverse = logical(1-obj.is_img_band_inverse);
+                if nargout < 1
+                    % flip boolean
+                    obj.img = img_flip;
+                    obj.is_img_band_inverse = ~obj.is_img_band_inverse;
+                end
+            else
+                img_flip = [];
             end
         end
             
@@ -106,14 +114,13 @@ classdef CRISMdata < ENVIRasterMultBand
             if ~isempty(obj.lblpath)
                 obj.lbl = pds3lblread(obj.lblpath);
                 obj.hdr = crism_lbl2hdr(obj.lbl,...
-                    'missing_constant',obj.missing_constant_img);
+                    'missing_constant',obj.missing_constant_img);                 
             elseif ~isempty(obj.hdrpath)
                 obj.lbl = [];
-                obj.hdr = envihdrreadx(obj.hdrpath);
+                obj.hdr = envihdrreadx2(obj.hdrpath);
             else
                 obj.lbl = [];
                 obj.hdr = [];
-%                 fprintf('"%s" does not exist.\n',joinPath(dirpath_acro, [basename_acro '.LBL/HDR']));
             end
         end
         
@@ -136,6 +143,103 @@ classdef CRISMdata < ENVIRasterMultBand
                 fprintf('no tab is found');
             end
             obj.tab = tab;
+        end
+        
+        function [rgb_bands] = get_rgb_default_bands(obj,varargin)
+            if isempty(obj.basenamesCDR), obj.load_basenamesCDR(); end
+            if isfield(obj.basenamesCDR,'WA')
+                if isempty(obj.cdr) || ~isfield(obj.cdr,'WA')
+                    obj.readCDR('WA');
+                end
+                [rgb_bands] = crism_get_default_bands(obj.cdr.WA, ... 
+                    varargin{:});
+            else
+                rgb_bands = [];
+            end
+        end
+        
+        function [sw] = readSW(obj)
+            if isempty(obj.basenamesCDR), obj.load_basenamesCDR(); end
+            if isfield(obj.basenamesCDR,'WA')
+                if isempty(obj.cdr) || ~isfield(obj.cdr,'WA')
+                    obj.readCDR('WA');
+                end
+                [sw,unit] = crism_get_sw(obj.cdr.WA);
+            else
+                sw = [];
+            end
+
+            if nargout<1
+                if ~isempty(sw)
+                    obj.hdr.wavelength = sw;
+                    obj.hdr.wavelength_unit = lower(unit);
+                end
+            end
+            
+        end
+        
+        function [bw] = readBW(obj)
+            if isempty(obj.basenamesCDR), obj.load_basenamesCDR(); end
+            if isfield(obj.basenamesCDR,'WA')
+                if isempty(obj.cdr) || ~isfield(obj.cdr,'WA')
+                    obj.readCDR('WA');
+                end
+                [bw] = crism_get_bw(obj.cdr.WA);
+            else
+                bw = [];
+            end
+
+            if nargout<1
+                if ~isempty(bw)
+                    obj.hdr.fwhm = bw;
+                end
+            end
+            
+        end
+        
+        function [wa] = readWA(obj,varargin)
+            if isempty(obj.basenamesCDR) || isempty(obj.dir_cdr) 
+                cdr_basename = readWASBbasename(obj.lbl);
+                obj.basenamesCDR = cdr_basename;
+                [obj.dir_cdr] = finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
+            end
+            obj.readCDR('WA');
+            wa = obj.cdr.WA.readimg();
+            wa = squeeze(wa)';
+            if nargout<1
+                obj.wa = wa;
+                obj.is_wa_band_inverse = false;
+            end
+        end
+        
+        function [wa] = readWAi(obj)
+            wa = obj.readWA();
+            wa = flip(wa,1);
+            if nargout<1
+                obj.wa = wa;
+                obj.is_wa_band_inverse = true;
+            end
+        end
+        
+        function [spc,wv,bdxes] = get_spectrum(obj,s,l,varargin)
+            [spc,wv,bdxes] = get_spectrum_CRISMdata(obj,s,l,...
+                varargin{:});
+        end
+        function [spc,wv,bdxes] = get_spectrumi(obj,s,l,varargin)
+            [spc,wv,bdxes] = obj.get_spectrum(s,l,varargin{:});
+            bdxes = obj.hdr.bands-flip(bdxes)+1;
+            if numel(size(spc))>=3
+                spc = flip(spc,3);
+            else
+                spc = flip(spc,1);
+            end
+            if ~isempty(wv)
+                if isvector(wv)
+                    wv = flip(wv); 
+                elseif ismatrix(wv)
+                    wv = flip(wv,1);
+                end
+            end
         end
         
         function [hkt] = readHKT(obj)
@@ -266,29 +370,9 @@ classdef CRISMdata < ENVIRasterMultBand
             obj.atf = atf;
         end
         
-        function [wa] = readWA(obj,varargin)
-            if isempty(obj.basenamesCDR) || isempty(obj.dir_cdr) 
-                cdr_basename = readWASBbasename(obj.lbl);
-                obj.basenamesCDR = cdr_basename;
-                [obj.dir_cdr] = finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
-            end
-            obj.readCDR('WA');
-            wa = obj.cdr.WA.readimg();
-            wa = squeeze(wa)';
-            if nargout<1
-                obj.wa = wa;
-                obj.is_wa_band_inverse = false;
-            end
-        end
         
-        function [wa] = readWAi(obj)
-            wa = obj.readWA();
-            wa = flip(wa,1);
-            if nargout<1
-                obj.wa = wa;
-                obj.is_wa_band_inverse = true;
-            end
-        end
+        
+        
         function [] = show_SOURCE_PRODUCT_ID(obj)
             for i=1:length(obj.lbl.SOURCE_PRODUCT_ID)
                 fprintf('%s\n',obj.lbl.SOURCE_PRODUCT_ID{i});
