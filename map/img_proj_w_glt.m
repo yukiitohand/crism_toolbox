@@ -12,8 +12,8 @@ if isempty(GLTdata.img), GLTdata.readimg(); end
 
 [L,S,B] = size(img);
 
-X_GLT = abs(GLTdata.img(:,:,1));
-Y_GLT = abs(GLTdata.img(:,:,2));
+X_GLT = abs(double(GLTdata.img(:,:,1)));
+Y_GLT = abs(double(GLTdata.img(:,:,2)));
 
 cumIdx = Y_GLT(:)+(X_GLT(:)-1)*L;
 
