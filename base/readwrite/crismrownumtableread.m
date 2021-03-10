@@ -10,7 +10,8 @@ switch obj_rownum_tbl.OBJECT_COLUMN.DATA_TYPE
         machine = 'ieee-be';
         format= 'uint16';
     otherwise
-        error('DATA_TYPE: %s is not implemented',obj_rownum_tbl.OBJECT_COLUMN.DATA_TYPE);
+        error('DATA_TYPE: %s is not implemented',...
+            obj_rownum_tbl.OBJECT_COLUMN.DATA_TYPE);
 end
 
 % offset = obj_file_img.ROWNUM_TABLE.offset;

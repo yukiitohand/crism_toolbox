@@ -3,7 +3,7 @@ classdef CRISMdataCAT < CRISMdata
     %   Detailed explanation goes here
     
     properties
-        CRISMdata_parent = [];
+        CRISMdata_parent;
     end
     
     methods
