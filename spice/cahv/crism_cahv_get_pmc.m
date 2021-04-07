@@ -1,8 +1,24 @@
 function [pmc] = crism_cahv_get_pmc(xy,crism_camera_info,cahv_mdl,varargin)
 % [pmc] = crism_cahv_get_pmc(xy,crism_camera_info,cahv_mdl,varargin)
-% Get (P-C) vectors for given xy coordinate in the 
-% Optional Parameters
+% Get (P-C) vectors for given xy coordinate in the angular pixel coordinate
+% in the x (cross-track) direction and planar coordinate in the y 
+% (vertical) direction. The coordinate is defined by the a0 and a1
+% parameters stored in the crism_camera_info. 
+% INPUTS
+%  xy: [1 x 2] vector or [ * x 2] vector, x and y coordinate for which
+%      (P-C) is calculated.
+%  crism_camera_info: struct, output of "crism_ik_kernel_load"
+%  cahv_mdl         : CAHV_MODEL class obj, cahv_mdl for the measurement
+% OUTPUTS
+%  pmc: [1 x 3] or [ * x 3]
+%      (P-C) vector, normalized vectors.
 %   ""
+
+if any(cahv_mdl.A~=[0 0 1]) || any(cahv_mdl.Hdash~=[1 0 0])
+    error(['CAHV_MDL needs to be defined in the CRISM IR coordinate' ...
+        'A=[0 0 1] Hd=[1 0 0] Vd=[0 1 0]' ...
+        'Since this function uses rotational matrix for rotation.']);
+end
 
 if length(xy)==2 && isrow(xy)
     xy_isrow = true;
