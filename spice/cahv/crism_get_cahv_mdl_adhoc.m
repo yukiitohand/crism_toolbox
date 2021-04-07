@@ -57,7 +57,7 @@ rot_mat_ref = [...
     0 sin_ref  cos_ref];
 ifov_vec_ref = rot_mat_ref * A';
 % rotating the boresight vector along the 
-vs = ifov_vec_ref(3) ./ ifov_vec_ref(2) .* (-0.5-vc);
+vs = ifov_vec_ref(3) ./ ifov_vec_ref(2) .* (-0.5);
 
 %%
 H = hs * Hdash + hc * A;
