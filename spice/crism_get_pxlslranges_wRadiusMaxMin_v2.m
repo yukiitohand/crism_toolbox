@@ -39,27 +39,46 @@ function [crismPxl_sranges_ap,crismPxl_lranges_ap] ...
 %
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 
-lon_min_crism = nan(1,Ncrism); lon_max_crism = nan(1,Ncrism);
-lat_min_crism = nan(1,Ncrism); lat_max_crism = nan(1,Ncrism);
+PROC_MODE = 'MEX';
 
-for n=1:640
-    [r_mint,lon_minn,lat_minn] = cspice_surfpt_reclat_mex(pos_mro_wrt_mars, ...
-        pmc_pxlvrtcsCell{n},radius_min,radius_min,radius_min);
-    [r_maxt,lon_maxn,lat_maxn] = cspice_surfpt_reclat_mex(pos_mro_wrt_mars, ...
-        pmc_pxlvrtcsCell{n},radius_max,radius_max,radius_max);
-    lat_stack = cat(2,lat_minn,lat_maxn);
-    lat_min_crism(n) = min(lat_stack,[],2);
-    lat_max_crism(n) = max(lat_stack,[],2);
-    lon_stack = cat(2,lon_minn,lon_maxn);
-    lon_min_crism(n) = min(lon_stack,[],2);
-    lon_max_crism(n)= max(lon_stack,[],2);
+switch upper(PROC_MODE)
+    case 'NORMAL'
+        Ncrism = 640;
+        lon_min_crism = nan(1,Ncrism); lon_max_crism = nan(1,Ncrism);
+        lat_min_crism = nan(1,Ncrism); lat_max_crism = nan(1,Ncrism);
+        for n=1:640
+            [r_mint,lon_minn,lat_minn] = cspice_surfpt_reclat_mex(pos_mro_wrt_mars, ...
+                pmc_pxlvrtcsCell{n},radius_min,radius_min,radius_min);
+            [r_maxt,lon_maxn,lat_maxn] = cspice_surfpt_reclat_mex(pos_mro_wrt_mars, ...
+                pmc_pxlvrtcsCell{n},radius_max,radius_max,radius_max);
+            lat_stack = cat(2,lat_minn,lat_maxn);
+            lat_min_crism(n) = min(lat_stack,[],2);
+            lat_max_crism(n) = max(lat_stack,[],2);
+            lon_stack = cat(2,lon_minn,lon_maxn);
+            lon_min_crism(n) = min(lon_stack,[],2);
+            lon_max_crism(n)= max(lon_stack,[],2);
+        end
+        lon_min_crism = rad2deg(lon_min_crism);
+        lon_max_crism = rad2deg(lon_max_crism);
+        lat_min_crism = rad2deg(lat_min_crism);
+        lon_max_crism = rad2deg(lon_max_crism);
+    case 'MEX'
+        [lon_min_crism,lon_max_crism,lat_min_crism,lat_max_crism] = ...
+            crism_gale_get_lonlatwndw_wRadiusMaxMin_mex( ...
+            pos_mro_wrt_mars,pmc_pxlvrtcsCell,radius_min,radius_max);
+    otherwise
+        error('Undefined PROC_MODE %s',PROC_MODE);
 end
+
 %         
 % this indicies are associated with msldemc_radius.
-crismPxl_sranges_ap = [ floor(MSLDEMdata.lon2x(rad2deg(lon_min_crism))); ...
-    ceil(MSLDEMdata.lon2x(rad2deg(lon_max_crism))) ] - msldemc_hdr.sample_offset;
-crismPxl_lranges_ap = [ floor(MSLDEMdata.lat2y(rad2deg(lat_max_crism))); ...
-    ceil(MSLDEMdata.lat2y(rad2deg(lat_min_crism))) ] - msldemc_hdr.line_offset;
+crismPxl_sranges_ap = [ floor(MSLDEMdata.lon2x(lon_min_crism)); ...
+    ceil(MSLDEMdata.lon2x(lon_max_crism)) ] - msldemc_hdr.sample_offset;
+crismPxl_lranges_ap = [ floor(MSLDEMdata.lat2y(lat_max_crism)); ...
+    ceil(MSLDEMdata.lat2y(lat_min_crism)) ] - msldemc_hdr.line_offset;
+
+% one more pixel is taken in every direction for potential computation of 
+% hidden points using the triangulation of DTM.
 crismPxl_sranges_ap(1,:) = max(crismPxl_sranges_ap(1,:)-1,1);
 crismPxl_sranges_ap(2,:) = min(crismPxl_sranges_ap(2,:)+1,msldemc_hdr.samples);
 crismPxl_lranges_ap(1,:) = max(crismPxl_lranges_ap(1,:)-1,1);

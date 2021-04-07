@@ -9,11 +9,12 @@
  * 3 msldem_longitude      Double array [msldem_samples]
  * 4 msldemc_hdr           Struct
  * 5 cahv_mdl              CAHV_MODEL
- * 6 crism_PmCbrd          Double array [3 x (Ncrism+1)]
- * 7 valid_samples         int32 array [2 x (Ncrism)]
- * 8 valid_lines           int32 array [2 x (Ncrism)]
- * 9 crism_PmCctr          Double array [3 x Ncrism]
- * 10 sigma                Double Scalar
+ * 6 crismPxl_srngs_ap     int32 array [2 x (Ncrism)]
+ * 7 crismPxl_lrngs_ap     int32 array [2 x (Ncrism)]
+ * 8 crism_PmCctr_imxy     Double array [2 x Ncrism] 
+ *    xy coord of the pixel centers in the camera image plane.
+ * 9 sigma                 Double Scalar
+ * 10 mrgn                 double scalar 
  * 
  * OUTPUTS:
  * 0 crism_FOVcell        cell array [Ncrism]
@@ -33,7 +34,6 @@
 #include <stdio.h>
 
 #include <stdlib.h>
-#include "envi.h"
 #include "mex_create_array.h"
 #include "cahvor.h"
 
@@ -44,11 +44,11 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
         int32_t msldemc_samples, int32_t msldemc_lines,
         int32_t sample_offset, int32_t line_offset,
         double *msldem_latitude, double *msldem_longitude, 
-        CAHV_MODEL cahv_mdl, double **crism_PmCbrd, int16_t Npmc_brd,
+        CAHV_MODEL cahv_mdl,
         mxArray *crism_FOVcell, int16_t Ncrism,
         int32_t **crismPxl_srngs, int32_t **crismPxl_lrngs,
-        int32_t **valid_samples, int32_t **valid_lines,
-        double **crismPmCctr, double sgm_psf)
+        int32_t **crismPxl_srngs_ap, int32_t **crismPxl_lrngs_ap,
+        double **crismPmCctr_imxy, double sgm_psf, double mrgn)
 {
     int32_t c,l;
     int16_t xi,xii;
@@ -62,32 +62,38 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
     double x_im, y_im;
     double *cam_C, *cam_A, *cam_H, *cam_V, *cam_Hd, *cam_Vd;
     double hc,vc,hs,vs;
-    double *PmCbrd_imxap;
-    int8_t *pxlftprnt; /* pixel footprint */
+    double *PmCbrd_imxap_min, *PmCbrd_imxap_max;
+    double *pxlftprnt; /* pixel footprint */
     double x_min,x_max,y_min,y_max;
     int32_t s0,send,l0,lend;
     int32_t sz_c,sz_l;
+    
+    double Z,sgm_psf2;
+    double xctr_xi,d,v,thrsh;
+    double **msldemc_imx,**msldemc_imy;
+    double *msldemc_imx_base,*msldemc_imy_base;
     // int16_t *msldemc_imFOVmask_base, **msldemc_imFOVmask;
     
     cam_C = cahv_mdl.C; cam_A = cahv_mdl.A; cam_H = cahv_mdl.H; cam_V = cahv_mdl.V;
     hs = cahv_mdl.hs; vs = cahv_mdl.vs; hc = cahv_mdl.hc; vc = cahv_mdl.vc;
     cam_Hd = cahv_mdl.Hdash; cam_Vd = cahv_mdl.Vdash;
     
+    sgm_psf2 = (-2) * sgm_psf * sgm_psf;
+    Z = sgm_psf * sgm_psf * 2 * M_PI;
+    thrsh = 0.01;
+    
     /*********************************************************************/
     /* calculate the projection of crism pixel borders onto camera image 
      * plane */
-    PmCbrd_imxap = (double*) malloc(sizeof(double) * (size_t) Npmc_brd);
-    for(xi=0;xi<Npmc_brd;xi++){
-        pmcx = crism_PmCbrd[xi][0];
-        pmcy = crism_PmCbrd[xi][1];
-        pmcz = crism_PmCbrd[xi][2];
-        apmc = cam_A[0]*pmcx + cam_A[1]*pmcy + cam_A[2]*pmcz;
-        hpmc = cam_H[0]*pmcx + cam_H[1]*pmcy + cam_H[2]*pmcz;
-        PmCbrd_imxap[xi] = hpmc/apmc;
+    PmCbrd_imxap_min = (double*) malloc(sizeof(double) * (size_t) Ncrism);
+    PmCbrd_imxap_max = (double*) malloc(sizeof(double) * (size_t) Ncrism);
+    y_max = 0.5+mrgn; y_min = -y_max;
+    for(xi=0;xi<Ncrism;xi++){
+        PmCbrd_imxap_min[xi] = crismPmCctr_imxy[xi][0] - y_max;
+        PmCbrd_imxap_max[xi] = crismPmCctr_imxy[xi][0] + y_max;
     }
-    y_min = -0.5; y_max = 0.5;
-    x_min = PmCbrd_imxap[0]; x_max = PmCbrd_imxap[Npmc_brd-1];
-    
+    x_min = PmCbrd_imxap_min[0]; x_max = PmCbrd_imxap_max[Ncrism-1];
+    // printf("x_min=%f,x_max=%f\n",x_min,x_max);
     
     
     /*********************************************************************/
@@ -105,6 +111,11 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
         sin_lat[l] = sin(msldem_latitude[l+line_offset]);
     }
     
+//     createDoubleMatrix(&msldemc_imx, &msldemc_imx_base, 
+//             (size_t) msldemc_samples, (size_t) msldemc_lines);
+//     createDoubleMatrix(&msldemc_imy, &msldemc_imy_base, 
+//             (size_t) msldemc_samples, (size_t) msldemc_lines);
+    
 //     createInt16Matrix(&msldemc_imFOVmask, &msldemc_imFOVmask_base, 
 //             (size_t) msldemc_samples, (size_t) msldemc_lines);
     for(c=0;c<msldemc_samples;c++){
@@ -112,14 +123,16 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
            msldemc_imFOVmask[c][l] = 0;
        }
     }
+    // printf("msldemc_samples=%d,msldemc_lines=%d\n",msldemc_samples,msldemc_lines);
     
     // printf("%d,%d,%d\n",skip_l,msldemc_samples*s,skip_r);
     // printf("a\n");
+    // printf("x_min=%f,x_max=%f\n",x_min,x_max);
     for(xi=0;xi<Ncrism;xi++){
-        s0   = valid_samples[xi][0]   - sample_offset;
-        send = valid_samples[xi][1]+1 - sample_offset;
-        l0 = valid_lines[xi][0]       - line_offset;
-        lend = valid_lines[xi][1]+1   - line_offset;
+        s0   = crismPxl_srngs_ap[xi][0]   - sample_offset;
+        send = crismPxl_srngs_ap[xi][1]+1 - sample_offset;
+        l0   = crismPxl_lrngs_ap[xi][0]       - line_offset;
+        lend = crismPxl_lrngs_ap[xi][1]+1   - line_offset;
         // printf("xi=%d, s0=%d send=%d, l0=%d, lend=%d\n",xi,s0,send,l0,lend);
         for(c=s0;c<send;c++){
             cos_lonc  = cos_lon[c];
@@ -147,22 +160,32 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
                             if(y_im>y_min && y_im<y_max){
                                 hpmc = cam_H[0] * pmcx + cam_H[1] * pmcy + cam_H[2] * pmcz;
                                 x_im = hpmc / apmc;
+                                //msldemc_imx[c][l] = x_im;
+                                //msldemc_imy[c][l] = y_im;
                                 if(x_im>x_min && x_im<x_max){
                                     xii=0;
-                                    while( x_im>PmCbrd_imxap[xii] ){
+                                    while( xii<Ncrism && x_im>PmCbrd_imxap_min[xii]){
+                                        if(x_im<PmCbrd_imxap_max[xii]){
+                                            msldemc_imFOVmask[c][l] = 1;
+                                            d = x_im-crismPmCctr_imxy[xii][0];
+                                            v = exp((d*d+y_im*y_im)/sgm_psf2) / Z;
+                                            if(v>thrsh){
+                                                //msldemc_imFOVmask[c][l] = 1;
+                                                if(c<crismPxl_srngs[xii][0]) {
+                                                    crismPxl_srngs[xii][0] = c;
+                                                }
+                                                if(c>crismPxl_srngs[xii][1]) {
+                                                    crismPxl_srngs[xii][1] = c;
+                                                }
+                                                if(l<crismPxl_lrngs[xii][0]) {
+                                                    crismPxl_lrngs[xii][0] = l;
+                                                }
+                                                if(l>crismPxl_lrngs[xii][1]) {
+                                                    crismPxl_lrngs[xii][1] = l;
+                                                }
+                                            }
+                                        }
                                         xii++;
-                                    }
-                                    msldemc_imFOVmask[c][l] = xii;
-                                    xii--;
-                                    if(c<crismPxl_srngs[xii][0]) {
-                                        crismPxl_srngs[xii][0] = c;
-                                    } else if(c>crismPxl_srngs[xii][1]) {
-                                        crismPxl_srngs[xii][1] = c;
-                                    }
-                                    if(l<crismPxl_lrngs[xii][0]) {
-                                        crismPxl_lrngs[xii][0] = l;
-                                    } else if(l>crismPxl_lrngs[xii][1]) {
-                                        crismPxl_lrngs[xii][1] = l;
                                     }
                                 } else {
                                     msldemc_imFOVmask[c][l] = -1;
@@ -183,62 +206,51 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
     /*********************************************************************/
     /* Second iteation */
     for(xi=0;xi<Ncrism;xi++){
+        // printf("xi=%d\n",xi);
         s0 = crismPxl_srngs[xi][0]; send = crismPxl_srngs[xi][1]+1;
         l0 = crismPxl_lrngs[xi][0]; lend = crismPxl_lrngs[xi][1]+1;
         sz_c = send - s0;
         sz_l = lend - l0;
+        // printf("sz_c=%d,sz_l=%d\n",sz_c,sz_l);
         // printf("xi=%d sz_c=%d,sz_l=%d\n",xi,sz_c,sz_l);
         mxSetCell(crism_FOVcell,(mwIndex) xi,
-                mxCreateNumericMatrix((mwSize) sz_l, (mwSize) sz_c, mxINT8_CLASS,mxREAL));
-        pxlftprnt = mxGetInt8s(mxGetCell(crism_FOVcell,(mwIndex) xi));
-        xii=xi+1;
+                mxCreateNumericMatrix((mwSize) sz_l, (mwSize) sz_c, mxDOUBLE_CLASS,mxREAL));
+        pxlftprnt = mxGetDoubles(mxGetCell(crism_FOVcell,(mwIndex) xi));
+        xctr_xi = crismPmCctr_imxy[xi][0];
         for(c=s0;c<send;c++){
+            cos_lonc  = cos_lon[c];
+            sin_lonc  = sin_lon[c];
             for(l=l0;l<lend;l++){
-                if(msldemc_imFOVmask[c][l]==xii){
-                    pxlftprnt[(c-s0)*sz_l+l-l0] = 1;
-                } else {
-                    pxlftprnt[(c-s0)*sz_l+l-l0] = 0;
+                if(msldemc_imFOVmask[c][l]){
+                    cos_latl = cos_lat[l];
+                    sin_latl = sin_lat[l];
+                    radius   = (double) msldem_img_radius[c+sample_offset][l+line_offset] + mslradius_offset;
+                    x_iaumars = radius * cos_latl * cos_lonc;
+                    y_iaumars = radius * cos_latl * sin_lonc;
+                    z_iaumars = radius * sin_latl;
+                    pmcx = x_iaumars - cam_C[0];
+                    pmcy = y_iaumars - cam_C[1];
+                    pmcz = z_iaumars - cam_C[2];
+                    apmc = cam_A[0] * pmcx + cam_A[1] * pmcy + cam_A[2] * pmcz;
+                    vpmc = cam_V[0] * pmcx + cam_V[1] * pmcy + cam_V[2] * pmcz;
+                    y_im = vpmc / apmc;
+                    hpmc = cam_H[0] * pmcx + cam_H[1] * pmcy + cam_H[2] * pmcz;
+                    x_im = hpmc / apmc;
+//                     x_im = msldemc_imx[c][l];
+//                     y_im = msldemc_imy[c][l];
+                    
+                    if(x_im>PmCbrd_imxap_min[xi] && x_im<PmCbrd_imxap_max[xi]){
+                        d = x_im-xctr_xi;
+                        v = exp((d*d+y_im*y_im)/sgm_psf2) / Z;
+                        if(v>thrsh){
+                            pxlftprnt[(c-s0)*sz_l+l-l0] = v;
+                        }
+                    } else {
+                        pxlftprnt[(c-s0)*sz_l+l-l0] = 0L;
+                    }
                 }
             }
         }
-//         for(l=0;l<sz_l;l++){
-//             cos_latl = cos(msldem_latitude[l+line_offset]);
-//             sin_latl = sin(msldem_latitude[l+line_offset]);
-//             for(c=0;c<sz_c;c++){
-//                 cos_lonc  = cos_lon[c];
-//                 sin_lonc  = sin_lon[c];
-//                 
-//                 radius = (double) msldem_img_radius[c+sample_offset][l+line_offset] + mslradius_offset;
-//                 if(isnan(radius)){
-//                 } else {
-//                     x_iaumars = radius * cos_latl * cos_lonc;
-//                     y_iaumars = radius * cos_latl * sin_lonc;
-//                     z_iaumars = radius * sin_latl;
-// 
-//                     pmcx = x_iaumars - cam_C[0];
-//                     pmcy = y_iaumars - cam_C[1];
-//                     pmcz = z_iaumars - cam_C[2];
-//                     apmc = cam_A[0] * pmcx + cam_A[1] * pmcy + cam_A[2] * pmcz;
-//                     vpmc = cam_V[0] * pmcx + cam_V[1] * pmcy + cam_V[2] * pmcz;
-//                     y_im = vpmc / apmc;
-//                     hpmc = cam_H[0] * pmcx + cam_H[1] * pmcy + cam_H[2] * pmcz;
-//                     x_im = hpmc / apmc;
-//                     if(y_im>y_min && y_im<y_max && x_im>x_min && x_im<x_max){
-//                         xii=0;
-//                         while( x_im>PmCbrd_imxap[xii] ){
-//                             xii++;
-//                         }
-//                         xii--;
-//                         if(xii==xi){
-//                             pxlftprnt[c*sz_l+l] = 1;
-//                         } else {
-//                             pxlftprnt[c*sz_l+l] = 0;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-        
     }
             
     
@@ -248,6 +260,12 @@ void get_imFOVmask_MSLDEM_direct(float **msldem_img_radius, double mslradius_off
     free(sin_lon);
     free(cos_lat);
     free(sin_lat);
+    free(PmCbrd_imxap_min);
+    free(PmCbrd_imxap_max);
+//     free(msldemc_imx);
+//     free(msldemc_imy);
+//     free(msldemc_imx_base);
+//     free(msldemc_imy_base);
     
     
 }
@@ -262,18 +280,20 @@ void mexFunction( int nlhs, mxArray *plhs[],
     double *msldem_latitude;
     double *msldem_longitude;
     CAHV_MODEL cahv_mdl;
-    double **crism_PmCbrd;
     int16_t **msldemc_imFOVmask;
     mxArray *crism_FOVcell;
     int32_t **crismPxl_srngs,**crismPxl_lrngs;
-    int32_t **valid_samples, **valid_lines;
-    double **crism_PmCctr;
+    int32_t **crismPxl_srngs_ap, **crismPxl_lrngs_ap;
+    double **crism_PmCctr_imxy;
     double sgm_psf;
+    double mrgn;
     
     mwSize si,li;
     mwSize msldem_samples, msldem_lines;
-    mwSize Npmc_brd, Ncrism;
+    mwSize Ncrism;
     mwSize sz_FOVcell[2];
+    mwSize xi;
+    int32_t s0,send,l0,lend;
 
     /* -----------------------------------------------------------------
      * CHECK PROPER NUMBER OF INPUTS AND OUTPUTS
@@ -314,19 +334,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
     /* INPUT 5 camera model */
     cahv_mdl = mxGet_CAHV_MODEL(prhs[5]);
     
-    /* INPUT 6 (P-C) vectors at the pixel borders */
-    crism_PmCbrd = set_mxDoubleMatrix(prhs[6]);
-    Npmc_brd     = mxGetN(prhs[6]); /* the number of borders */
-    /* the number of pixels are one minus number of borders */
-    Ncrism = Npmc_brd - 1; 
-    
-    valid_samples = set_mxInt32Matrix(prhs[7]);
-    valid_lines   = set_mxInt32Matrix(prhs[8]);
+    crismPxl_srngs_ap = set_mxInt32Matrix(prhs[6]);
+    crismPxl_lrngs_ap = set_mxInt32Matrix(prhs[7]);
     
     /* */
-    crism_PmCctr = set_mxDoubleMatrix(prhs[9]);
+    crism_PmCctr_imxy = set_mxDoubleMatrix(prhs[8]);
+    Ncrism = mxGetN(prhs[8]);
     
-    sgm_psf = mxGetScalar(prhs[10]);
+    sgm_psf = mxGetScalar(prhs[9]);
+    
+    mrgn = mxGetScalar(prhs[10]);
     
     /* OUTPUT 0 msldem imFOV */
     plhs[0] = mxCreateNumericMatrix(msldemc_lines,msldemc_samples,mxINT16_CLASS,mxREAL);
@@ -342,6 +359,20 @@ void mexFunction( int nlhs, mxArray *plhs[],
     crismPxl_srngs = set_mxInt32Matrix(plhs[2]);
     plhs[3] = mxCreateNumericMatrix(2,Ncrism,mxINT32_CLASS,mxREAL);
     crismPxl_lrngs = set_mxInt32Matrix(plhs[3]);
+    
+    
+    for(si=0;si<Ncrism;si++){
+        s0   = crismPxl_srngs_ap[si][0]   - sample_offset;
+        send = crismPxl_srngs_ap[si][1]+1 - sample_offset;
+        l0   = crismPxl_lrngs_ap[si][0]   - line_offset;
+        lend = crismPxl_lrngs_ap[si][1]+1 - line_offset;
+        if(s0<0 || l0<0 || send>msldemc_samples || lend>msldemc_lines){
+            mexErrMsgIdAndTxt(
+                    "crism_gale_get_msldemFOV_direct_PSFap_v3_1_mex:InputInvalid",
+                    "cell ranges are invalid.");
+        }
+    }
+    
     
     // Initialize matrices
     
@@ -362,20 +393,19 @@ void mexFunction( int nlhs, mxArray *plhs[],
             (int32_t) msldemc_samples, (int32_t) msldemc_lines,
             (int32_t) sample_offset, (int32_t) line_offset,
             msldem_latitude, msldem_longitude, 
-            cahv_mdl,crism_PmCbrd, (int16_t) Npmc_brd,
+            cahv_mdl,
             crism_FOVcell, (int16_t) Ncrism,
-            crismPxl_srngs,crismPxl_lrngs,valid_samples,valid_lines,
-            crismPmCctr,sgm_psf);
+            crismPxl_srngs,crismPxl_lrngs,crismPxl_srngs_ap,crismPxl_lrngs_ap,
+            crism_PmCctr_imxy,sgm_psf,mrgn);
     
     /* free memories */
     mxFree(msldem_img_radius);
-    mxFree(crism_PmCbrd);
     mxFree(msldemc_imFOVmask);
     mxFree(crismPxl_srngs);
     mxFree(crismPxl_lrngs);
-    mxFree(valid_samples);
-    mxFree(valid_lines);
-    mxFree(crism_PmCctr);
+    mxFree(crismPxl_srngs_ap);
+    mxFree(crismPxl_lrngs_ap);
+    mxFree(crism_PmCctr_imxy);
     
     
 }
