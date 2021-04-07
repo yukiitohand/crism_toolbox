@@ -44,7 +44,7 @@ switch upper(proj_mode_ctr)
     case 'ANGULARX'
         switch upper(proj_mode_vrtcs)
             case 'PLANAR'
-                [pmc_edgpxlctrs] = crism_cahv_get_pmc( ...
+                [pmc_edgpxlctrs] = crism_cahv_get_pmc_angularx( ...
                     [  0 639;   ...
                        0   0],  ...
                     crism_camera_info,cahv_mdl,'PROJ_MODE',proj_mode_ctr);
@@ -78,9 +78,5 @@ switch upper(proj_mode_ctr)
         error('The combination PROJ_MODE_CTR:%s PROJ_MODE_VRTCS:%s is not implemented', ...
             proj_mode_ctr,proj_mode_vrtcs);
 end
-
-end
-
-
 
 end
