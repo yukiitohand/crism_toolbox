@@ -1,5 +1,5 @@
-function [pmc] = crism_cahv_get_pmc(xy,crism_camera_info,cahv_mdl,varargin)
-% [pmc] = crism_cahv_get_pmc(xy,crism_camera_info,cahv_mdl,varargin)
+function [pmc] = crism_cahv_get_pmc_angularx(xy,crism_camera_info,cahv_mdl,varargin)
+% [pmc] = crism_cahv_get_pmc_angularx(xy,crism_camera_info,cahv_mdl,varargin)
 % Get (P-C) vectors for given xy coordinate in the angular pixel coordinate
 % in the x (cross-track) direction and planar coordinate in the y 
 % (vertical) direction. The coordinate is defined by the a0 and a1
