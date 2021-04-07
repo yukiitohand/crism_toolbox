@@ -45,7 +45,7 @@ switch upper(proj_mode_ctr)
         switch upper(proj_mode_vrtcs)
             case 'PLANAR'
                 x_ctr = 0:639;
-                [pmc_pxlctrs] = crism_cahv_get_pmc( [x_ctr;zeros(size(x_ctr))], ...
+                [pmc_pxlctrs] = crism_cahv_get_pmc_angularx( [x_ctr;zeros(size(x_ctr))], ...
                     crism_camera_info,cahv_mdl,'PROJ_MODE',proj_mode_ctr);
 
                 xy_ctr_cahv = cahv_mdl.get_xy_from_p_minus_c(pmc_pxlctrs);
