@@ -113,13 +113,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
             sz_l = lend - l0;
             
             pxlftprnt_xiyi = mxGetInt8s(mxGetCell(crism_FOVcell_in,(mwIndex) (xi*L+yi) ));
-
-            for(c=0;c<sz_c;c++){
-                for(l=0;l<sz_l;l++){
-                    if(pxlftprnt_xiyi[c*sz_l+l] > msldemc_imFOVcount[c+s0][l+l0]){
-                       msldemc_imFOVcount[c+s0][l+l0]  = pxlftprnt_xiyi[c*sz_l+l];
-                       msldemc_imFOVsample[c+s0][l+l0] = (int16_t) xi;
-                       msldemc_imFOVline[c+s0][l+l0]   = (int16_t) yi;
+            if(pxlftprnt_xiyi != NULL){
+                for(c=0;c<sz_c;c++){
+                    for(l=0;l<sz_l;l++){
+                        if(pxlftprnt_xiyi[c*sz_l+l] > msldemc_imFOVcount[c+s0][l+l0]){
+                           msldemc_imFOVcount[c+s0][l+l0]  = pxlftprnt_xiyi[c*sz_l+l];
+                           msldemc_imFOVsample[c+s0][l+l0] = (int16_t) xi;
+                           msldemc_imFOVline[c+s0][l+l0]   = (int16_t) yi;
+                        }
                     }
                 }
             }
