@@ -98,16 +98,18 @@ void mexFunction( int nlhs, mxArray *plhs[],
         for(mi=0;mi<M;mi++){
             // printf("mi=%d\n",mi);
             pxlftprnt_m = mxGetInt8s(mxGetCell(crism_FOVcell_in,(mwIndex) (xi*M+mi) ));
-            ss0   = crismPxl_srngs_in[xi][2*mi]   - s0;
-            ssend = crismPxl_srngs_in[xi][2*mi+1] - s0 + 1;
-            ll0   = crismPxl_lrngs_in[xi][2*mi]   - l0; 
-            llend = crismPxl_lrngs_in[xi][2*mi+1] - l0 + 1;
-            sz_cc = ssend - ss0;
-            sz_ll = llend - ll0;
-            for(c=0;c<sz_cc;c++){
-                for(l=0;l<sz_ll;l++){
-                    if(pxlftprnt_m[c*sz_ll+l]){
-                       pxlftprnt[(c+ss0)*sz_l+(l+ll0)]++;
+            if(pxlftprnt_m != NULL){
+                ss0   = crismPxl_srngs_in[xi][2*mi]   - s0;
+                ssend = crismPxl_srngs_in[xi][2*mi+1] - s0 + 1;
+                ll0   = crismPxl_lrngs_in[xi][2*mi]   - l0; 
+                llend = crismPxl_lrngs_in[xi][2*mi+1] - l0 + 1;
+                sz_cc = ssend - ss0;
+                sz_ll = llend - ll0;
+                for(c=0;c<sz_cc;c++){
+                    for(l=0;l<sz_ll;l++){
+                        if(pxlftprnt_m[c*sz_ll+l]){
+                           pxlftprnt[(c+ss0)*sz_l+(l+ll0)]++;
+                        }
                     }
                 }
             }
