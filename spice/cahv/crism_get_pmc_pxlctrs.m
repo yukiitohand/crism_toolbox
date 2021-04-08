@@ -1,10 +1,9 @@
-function [pmc_pxlctrs] = crism_get_pmc_pxlctrs(crism_camera_info,cahv_mdl,binx,varargin)
+function [pmc_pxlctrs] = crism_get_pmc_pxlctrs(crism_camera_info,cahv_mdl,varargin)
 % [pmc_pxlctrs] = crism_get_pmc_pxlctrs(crism_camera_info,cahv_mdl,binx)
 % Get (P-C) pointing vector for the CRISM pixel centers
 % INPUTS
 %  crism_camera_info: struct, output of "crism_ik_kernel_load"
 %  cahv_mdl         : CAHV_MODEL class obj, cahv_mdl for the measurement
-%  binx             : binning width {1,2,5,10}
 % OUTPUTS
 %  pmc_pxlctrs: [3 x (Ncrism)]
 %     (P-C) associated with the pixel centers. Ncrism is the number of 
@@ -34,17 +33,14 @@ else
 end
 
 x = 0:639;
-
+binx = 1;
 h = fspecial('average',[1,binx]); % convolution vector
 xbinx = conv(x,h,'valid'); % take convolution and 
 xbinx = xbinx(1:binx:end);
 
 switch upper(proj_mode)
-    case 'ANGULARX'
+    case {'ANGULARX','ANGULARXY'}
         [pmc_pxlctrs] = crism_cahv_get_pmc_angularx([xbinx;zeros(size(xbinx))], ...
-            crism_camera_info,cahv_mdl);
-    case 'ANGULARXY'
-        [pmc_pxlctrs] = crism_cahv_get_pmc_angularxy([xbinx;zeros(size(xbinx))], ...
             crism_camera_info,cahv_mdl);
     case 'PLANAR'
         [pmc_pxlctrs] = cahv_mdl.get_p_minus_c_from_xy([xbinx;zeros(size(xbinx))]);

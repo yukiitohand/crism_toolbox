@@ -1,5 +1,7 @@
-function [pmc_fovbndvrtcs] = crism_get_pmc_fovbndvrtcs(crism_camera_info,cahv_mdl,varargin)
-% [pmc_fovbndvrtcs] = crism_get_pmc_fovbndvrtcs(crism_camera_info,cahv_mdl)
+function [pmc_fovbndvrtcs] = crism_get_pmc_fovbndvrtcs( ... 
+    crism_camera_info,cahv_mdl,varargin)
+% [pmc_fovbndvrtcs] = crism_get_pmc_fovbndvrtcs( ... 
+%     crism_camera_info,cahv_mdl,varargin)
 % Get (P-C) pointing vector of the vertices of the CRISM rectangular FOV.
 % INPUTS
 %  crism_camera_info: struct, output of "crism_ik_kernel_load"
