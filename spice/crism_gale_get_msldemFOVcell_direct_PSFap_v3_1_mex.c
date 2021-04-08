@@ -9,12 +9,12 @@
  * 3 msldem_longitude      Double array [msldem_samples]
  * 4 msldemc_hdr           Struct
  * 5 cahv_mdl              CAHV_MODEL
- * 6 crismPxl_srngs_ap     int32 array [2 x (Ncrism)]
- * 7 crismPxl_lrngs_ap     int32 array [2 x (Ncrism)]
- * 8 crism_PmCctr_imxy     Double array [2 x Ncrism] 
+ * 6 crismPxl_srngs_ap     int32 array  [2 x (Ncrism)]
+ * 7 crismPxl_lrngs_ap     int32 array  [2 x (Ncrism)]
+ * 8 crism_PmCctr_imxy     Double array [2 x Ncrism]
  *    xy coord of the pixel centers in the camera image plane.
  * 9 sigma                 Double Scalar
- * 10 mrgn                 double scalar 
+ * 10 mrgn                 double scalar
  * 
  * OUTPUTS:
  * 0 crism_FOVcell        cell array [Ncrism]
@@ -292,7 +292,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mwSize msldem_samples, msldem_lines;
     mwSize Ncrism;
     mwSize sz_FOVcell[2];
-    mwSize xi;
     int32_t s0,send,l0,lend;
 
     /* -----------------------------------------------------------------
@@ -368,8 +367,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
         lend = crismPxl_lrngs_ap[si][1]+1 - line_offset;
         if(s0<0 || l0<0 || send>msldemc_samples || lend>msldemc_lines){
             mexErrMsgIdAndTxt(
-                    "crism_gale_get_msldemFOV_direct_PSFap_v3_1_mex:InputInvalid",
-                    "cell ranges are invalid.");
+                "crism_gale_get_msldemFOV_direct_PSFap_v3_1_mex:InputInvalid",
+                "cell ranges are invalid.");
         }
     }
     
