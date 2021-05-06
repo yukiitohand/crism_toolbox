@@ -68,7 +68,7 @@ switch upper(proj_mode_ctr)
                 x_brd = -0.5:binx:639.5;
                 x_brd(1) = x_brd(1) - mrgn;
                 x_brd(end) = x_brd(end) + mrgn;
-                [pmc_pxlbrdrctrs] = crism_cahv_get_pmc( ...
+                [pmc_pxlbrdrctrs] = crism_cahv_get_pmc_angularx( ...
                     [x_brd;zeros(size(x_brd))],crism_camera_info,cahv_mdl);
                 
             otherwise
