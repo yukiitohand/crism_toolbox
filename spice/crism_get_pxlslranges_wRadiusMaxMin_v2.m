@@ -23,7 +23,7 @@ function [crismPxl_sranges_ap,crismPxl_lranges_ap] ...
 %   radius_max      : double maximum radius within the subimage defind by 
 %     msldemc_hdr (needs to be larger than the actual minimum)
 %   MSLDEMdata   : MSLGaleMosaicRadius_v3 class obj MSL Radius data.
-%   msldemc_hdr: truct with the following four fields
+%   msldemc_hdr: struct with the following four fields
 %     'sample_offset', 'line_offset', 'samples', 'lines'
 %    The base subimage.
 %   
