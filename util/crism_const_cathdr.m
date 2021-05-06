@@ -55,7 +55,14 @@ hdr_cat.data_type = TRRdata.hdr.data_type;
 hdr_cat.interleave = TRRdata.hdr.interleave;
 hdr_cat.sensor_type = 'Unknown';
 hdr_cat.byte_order = TRRdata.hdr.byte_order;
-hdr_cat.default_bands = get_default_bands(wv_sweetspot);
+switch upper(TRRdata.prop.sensor_id)
+    case 'L'
+        hdr_cat.default_bands = crism_get_default_bands_L(wv_sweetspot);
+    case 'S'
+        hdr_cat.default_bands = crism_get_default_bands_S(wv_sweetspot);
+    otherwise
+        error('Undefined sensor_id %s',TRRdata.prop.sensor_id);
+end
 hdr_cat.wavelength_units = 'Micrometers';
 hdr_cat.data_ignore_value = 65535;
 hdr_cat.wavelength = wv_sweetspot/1000;
