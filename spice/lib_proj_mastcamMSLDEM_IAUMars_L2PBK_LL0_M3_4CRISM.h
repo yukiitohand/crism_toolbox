@@ -35,7 +35,7 @@ struct MSLDEMmask_LinkedList{
     int32_t l;
     double radius;
     struct MSLDEMmask_LinkedList *next;
-    struct MSLDEMmask_LinkedList *prev;
+    // struct MSLDEMmask_LinkedList *prev;
 };
 
 void createMSLDEMmask_LLMatrix(struct MSLDEMmask_LinkedList ****ar2d, 
@@ -57,13 +57,14 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
         int32_T msldemc_imxy_sample_offset, int32_T msldemc_imxy_line_offset,
         int32_T msldemc_samples, int32_T msldemc_lines,
         double *msldemc_latitude, double *msldemc_longitude, int8_T **msldemc_imFOVmask,
+        int32_t lList_lofst,  int32_t lList_lines, 
+        int32_t *lList_cofst, int32_t *lList_cols,
         int32_T msldemt_samples, int32_T msldemt_lines,
         double *msldemt_latitude, double *msldemt_longitude, int8_T **msldemt_inImage,
         double K_L, double K_S,
         struct MSLDEMmask_LinkedList ***ll_papmc_bin,
         struct MSLDEMmask_LinkedList *ll_napmc,
-        double S_im, double L_im, CAHV_MODEL cahv_mdl,
-        int32_t *lList_exist, int32_t **lList_crange)
+        double S_im, double L_im, CAHV_MODEL cahv_mdl)
 {
     int32_T c,l,cc,ll;
     int32_t l0,lend,s0,send;
@@ -117,7 +118,7 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
     double cos_clatl, sin_clatl, cos_clatlp1, sin_clatlp1, cos_tlatl, sin_tlatl;
     double x_iaumars, y_iaumars, z_iaumars;
     
-    struct MSLDEMmask_LinkedList *ll_papmc_next;
+    struct MSLDEMmask_LinkedList **ll_papmc_next;
     struct MSLDEMmask_LinkedList *ll_napmc_next;
     struct MSLDEMmask_LinkedList *ll_tmp;
     
@@ -179,7 +180,7 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
 //         cam_A, cam_H, cam_V,
 //         S_im, L_im, bin_count_im, bin_im_c, bin_im_l, bin_imx, bin_imy,
 //         msldemc_northing, msldemc_easting, msldemc_img, msldemc_inImage);
-    l0 = lList_exist[0]; lend = lList_exist[1];
+    l0 = lList_lofst; lend = l0+lList_lines-1;
     fid = fopen(msldem_imgpath,"rb");
     
     /* skip lines */
@@ -208,9 +209,9 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
         cos_clatlp1 = cos(msldemc_latitude[l+1]);
         sin_clatlp1 = sin(msldemc_latitude[l+1]);
         // printf("l=%d/%d\n",l,L_demcm1);
-        s0 = lList_crange[l][0]-1; send = lList_crange[l][1]+1;
+        s0 = lList_cofst[l]-1; send = lList_cofst[l]+lList_cols[l];
         if(s0<0){s0 = 0;}
-        if(send>msldemc_samples){send=msldemc_samples;}
+        if(send>S_demcm1){send=S_demcm1;}
         for(c=s0;c<send;c++){
             // process if 
             //printf("c=%d,mask_lc = %d,mask_lp1c = %d\n",c,msldemc_imFOVmask[c][l],msldemc_imFOVmask[c][l+1]);
@@ -375,12 +376,12 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
                         }
                         for(xi=x_min_int;xi<x_max_int;xi++){
                             for(yi=y_min_int;yi<y_max_int;yi++){
-                                ll_papmc_next = ll_papmc_bin[xi][yi];
+                                ll_papmc_next = &(ll_papmc_bin[xi][yi]);
                                 // ll=2147483647;
-                                while(ll_papmc_next!=NULL){
-                                    cc = ll_papmc_next->c;
-                                    ll = ll_papmc_next->l;
-                                    radius_tmp = ll_papmc_next->radius;
+                                while(*ll_papmc_next!=NULL){
+                                    cc = (*ll_papmc_next)->c;
+                                    ll = (*ll_papmc_next)->l;
+                                    radius_tmp = (*ll_papmc_next)->radius;
                                     /* evaluate line param */
                                     x_iaumars  = radius_tmp * cos_tlat[ll] * cos_tlon[cc];
                                     y_iaumars  = radius_tmp * cos_tlat[ll] * sin_tlon[cc];
@@ -395,31 +396,31 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
                                             pprm_u = Minv[2][0]*pmcx+Minv[2][1]*pmcy+Minv[2][2]*pmcz;
                                             if( (pprm_u>0) && (pprm_s+pprm_t+pprm_u>1) ){
                                                 if((cc==cv1 && ll==lv1) || (cc==cv2 && ll==lv2) || (cc==cv3 && ll==lv3)){
-                                                    ll_papmc_next = ll_papmc_next->next;
+                                                    ll_papmc_next = &(*ll_papmc_next)->next;
                                                 } else {
                                                     msldemt_inImage[cc][ll] = 0;
-                                                    if(ll_papmc_next->next!=NULL){
-                                                        ll_papmc_next->next->prev = ll_papmc_next->prev;
-                                                    }
-                                                    if(ll_papmc_next->prev!=NULL){
-                                                        ll_papmc_next->prev->next = ll_papmc_next->next;
-                                                    } else {
-                                                        ll_papmc_bin[xi][yi] = ll_papmc_next->next;
-                                                    }
-                                                    ll_tmp = ll_papmc_next;
-                                                    ll_papmc_next = ll_papmc_next->next;
+                                                    // if(ll_papmc_next->next!=NULL){
+                                                    //     ll_papmc_next->next->prev = ll_papmc_next->prev;
+                                                    // }
+                                                    // if(ll_papmc_next->prev!=NULL){
+                                                    //     ll_papmc_next->prev->next = ll_papmc_next->next;
+                                                    // } else {
+                                                    //     ll_papmc_bin[xi][yi] = ll_papmc_next->next;
+                                                    // }
+                                                    ll_tmp = *ll_papmc_next;
+                                                    *ll_papmc_next = (*ll_papmc_next)->next;
                                                     free(ll_tmp);
                                                 }
                                             } else {
-                                                ll_papmc_next = ll_papmc_next->next;
+                                                ll_papmc_next = &(*ll_papmc_next)->next;
                                             }
                                         } else {
-                                            ll_papmc_next = ll_papmc_next->next;
+                                            ll_papmc_next = &(*ll_papmc_next)->next;
                                         }
                                     } else {
-                                        ll_papmc_next = ll_papmc_next->next;
-                                    }
-                                }
+                                        ll_papmc_next = &(*ll_papmc_next)->next;
+                                    }  
+                                } /* End of While */
                             }
                         }
                     } else if(isinFOV){
