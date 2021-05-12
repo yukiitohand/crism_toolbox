@@ -120,7 +120,7 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
     
     struct MSLDEMmask_LinkedList **ll_papmc_next;
     struct MSLDEMmask_LinkedList *ll_napmc_next;
-    struct MSLDEMmask_LinkedList *ll_tmp;
+    struct MSLDEMmask_LinkedList *ll_curr;
     
     cos_clon = (double*) malloc(sizeof(double) * (size_t) msldemc_samples);
     sin_clon = (double*) malloc(sizeof(double) * (size_t) msldemc_samples);
@@ -376,12 +376,13 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
                         }
                         for(xi=x_min_int;xi<x_max_int;xi++){
                             for(yi=y_min_int;yi<y_max_int;yi++){
-                                ll_papmc_next = &(ll_papmc_bin[xi][yi]);
+                                ll_papmc_next = &ll_papmc_bin[xi][yi];
+                                ll_curr = *ll_papmc_next;
                                 // ll=2147483647;
-                                while(*ll_papmc_next!=NULL){
-                                    cc = (*ll_papmc_next)->c;
-                                    ll = (*ll_papmc_next)->l;
-                                    radius_tmp = (*ll_papmc_next)->radius;
+                                while(ll_curr){
+                                    cc = ll_curr->c;
+                                    ll = ll_curr->l;
+                                    radius_tmp = ll_curr->radius;
                                     /* evaluate line param */
                                     x_iaumars  = radius_tmp * cos_tlat[ll] * cos_tlon[cc];
                                     y_iaumars  = radius_tmp * cos_tlat[ll] * sin_tlon[cc];
@@ -396,7 +397,7 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
                                             pprm_u = Minv[2][0]*pmcx+Minv[2][1]*pmcy+Minv[2][2]*pmcz;
                                             if( (pprm_u>0) && (pprm_s+pprm_t+pprm_u>1) ){
                                                 if((cc==cv1 && ll==lv1) || (cc==cv2 && ll==lv2) || (cc==cv3 && ll==lv3)){
-                                                    ll_papmc_next = &(*ll_papmc_next)->next;
+                                                    ll_papmc_next = &ll_curr->next;
                                                 } else {
                                                     msldemt_inImage[cc][ll] = 0;
                                                     // if(ll_papmc_next->next!=NULL){
@@ -407,19 +408,20 @@ void mask_obstructed_pts_in_msldemt_using_msldemc_iaumars_L2PBK_LL0DYU_M3_4CRISM
                                                     // } else {
                                                     //     ll_papmc_bin[xi][yi] = ll_papmc_next->next;
                                                     // }
-                                                    ll_tmp = *ll_papmc_next;
-                                                    *ll_papmc_next = (*ll_papmc_next)->next;
-                                                    free(ll_tmp);
+                                                    
+                                                    *ll_papmc_next = ll_curr->next;
+                                                    free(ll_curr);
                                                 }
                                             } else {
-                                                ll_papmc_next = &(*ll_papmc_next)->next;
+                                                ll_papmc_next = &ll_curr->next;;
                                             }
                                         } else {
-                                            ll_papmc_next = &(*ll_papmc_next)->next;
+                                            ll_papmc_next = &ll_curr->next;;
                                         }
                                     } else {
-                                        ll_papmc_next = &(*ll_papmc_next)->next;
-                                    }  
+                                        ll_papmc_next = &ll_curr->next;;
+                                    }
+                                    ll_curr = *ll_papmc_next;
                                 } /* End of While */
                             }
                         }
