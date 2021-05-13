@@ -16,7 +16,7 @@ function [subdir_remote] = crism_get_subdir_OBS_remote(yyyy_doy,base_dir,data_ty
 global crism_env_vars
 
 remote_fldsys = crism_env_vars.remote_fldsys;
-get_subdir_OBS_remote_func = str2func(['get_subdir_OBS_' remote_fldsys]);
+get_subdir_OBS_remote_func = str2func(['crism_get_subdir_OBS_' remote_fldsys]);
 subdir_remote = get_subdir_OBS_remote_func(yyyy_doy,base_dir,data_type);
 
 

@@ -30,13 +30,13 @@ url_local_root = crism_env_vars.url_local_root;
 switch upper(product_type)
     case 'TARGETED_RDR'
         product_type_acro = 'TRDR';
-        subdir_local = get_subdir_OBS_local('','LABEL/','trr_misc');
-        subdir_remote = get_subdir_OBS_remote('','LABEL/','trr_misc');
+        subdir_local  = crism_get_subdir_OBS_local('','LABEL/','trr_misc');
+        subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','trr_misc');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
     case 'EDR'
         product_type_acro = 'EDR';
-        subdir_local = get_subdir_OBS_local('','LABEL/','edr_misc');
-        subdir_remote = get_subdir_OBS_remote('','LABEL/','edr_misc');
+        subdir_local  = crism_get_subdir_OBS_local('','LABEL/','edr_misc');
+        subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','edr_misc');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
     otherwise
         error('product_type %s is not valid.',product_type);

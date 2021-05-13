@@ -9,7 +9,8 @@ function [basename] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir
 %    subdir_remote: remote_sudir to be searched (input to 'pds_downloader')
 %    dwld: {-1, 0, 1, 2}
 %          if dwld>0, then this is passed to 'pds_downloader'
-%          -1: show the list of file that match the input pattern.
+%          -1: show the list of file that match the input pattern present
+%          in the local directory.
 %  Optional input parameters
 %      'MATCH_EXACT'    : binary, if basename match should be exact match
 %                         or not.
@@ -26,6 +27,7 @@ global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
 
+ext = '';
 force = 0;
 outfile = '';
 mtch_exact = false;
@@ -36,6 +38,8 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
+            case {'EXT','EXTENTION'}
+                ext = varargin{i+1};
             case 'MATCH_EXACT'
                 mtch_exact = varargin{i+1};
             case 'FORCE'
@@ -45,7 +49,7 @@ else
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
             otherwise
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s',varargin{i});
         end
     end
 end
@@ -55,10 +59,10 @@ dir_local = joinPath(localrootDir,url_local_root,subdir_local);
 fnamelist = dir(dir_local);
 [basename] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
 if dwld>0
-    if (isempty(basename) && (dwld>0)) || force
+    if isempty(basename) || dwld>0 || force
         [dirs,files] = pds_downloader(subdir_local,...
             'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
-            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite);
+            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite); %,'EXTENTION',ext);
     %     fnamelist = dir(dir_ddr);
         [basename] = extractMatchedBasename_v2(basenamePtr,files);
     end

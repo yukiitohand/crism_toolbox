@@ -130,14 +130,24 @@ function [ obs_info ] = crism_get_obs_info(obs_id,varargin)
 
 yyyy_doy = '';
 obs_classType = '';
-dwld_ter = 0;
-dwld_mtrdr = 0;
-dwld_trrif = 0;
-dwld_trrra = 0;
+
+dwld_ter     = 0;
+dwld_mtrdr   = 0;
+dwld_trrif   = 0;
+dwld_trrra   = 0;
 dwld_edrscdf = 0;
-dwld_ddr = 0;
-dwld_epf = 0;
-dwld_un = 0;
+dwld_ddr     = 0;
+dwld_epf     = 0;
+dwld_un      = 0;
+
+ext_ter     = '';
+ext_mtrdr   = '';
+ext_trrif   = '';
+ext_trrra   = '';
+ext_edrscdf = '';
+ext_ddr     = '';
+ext_epf     = '';
+ext_un      = '';
 
 force_dwld = 0;
 verbose=1;
@@ -157,6 +167,7 @@ else
                 obs_classType = varargin{i+1};
             case 'SENSOR_ID'
                 sensor_id = varargin{i+1};
+            % Download options --------------------------------------------
             case 'DOWNLOAD_TRRIF'
                 dwld_trrif = varargin{i+1};
             case 'DOWNLOAD_TRRRA'
@@ -173,6 +184,25 @@ else
                 dwld_ddr = varargin{i+1};
             case 'DOWNLOAD_UN'
                 dwld_un = varargin{i+1};
+                
+            % Extentions --------------------------------------------------
+            case 'EXT_TRRIF'
+                ext_trrif = varargin{i+1};
+            case 'EXT_TRRRA'
+                ext_trrra = varargin{i+1};
+            case 'EXT_EDRSCDF'
+                ext_edrscdf = varargin{i+1};
+            case 'EXT_TER'
+                ext_ter = varargin{i+1};
+            case 'EXT_MTRDR'
+                ext_mtrdr = varargin{i+1};
+            case 'EXT_EPF'
+                ext_epf = varargin{i+1};
+            case 'EXT_DDR'
+                ext_ddr = varargin{i+1};
+            case 'EXT_UN'
+                ext_un = varargin{i+1};
+                
             case 'VERBOSE'
                 verbose = varargin{i+1};
             case 'FORCE_DWLD'
@@ -186,8 +216,7 @@ else
                 obs_counter_df_tmp = varargin{i+1};
                 OBS_COUNTER_DF_custom = 1;
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
@@ -213,8 +242,6 @@ dirname = [obs_classType obs_id];
 if isempty(sensor_id)
     error('"SENOSER_ID" is necessary');
 end
-base_dir = upper([obs_classType obs_id]);
-
 
 switch obs_classType
     case {'FRT','HRL','HRS'}
@@ -269,18 +296,18 @@ end
 % TER
 %-------------------------------------------------------------------------%
 if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
-     get_basenameOBS_dirpath_TER = @(x_ai) get_dirpath_observation_fromProp(...
+     search_product_TER = @(x_ai) crism_search_observation_fromProp(...
          create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
         'SENSOR_ID','J','product_type','TER'),...
         'Dwld',dwld_ter,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-    [dir_ter,~,~,~,~,basenameTERIF] = get_basenameOBS_dirpath_TER('IF');
-    [~,~,~,~,~,basenameTERIN] = get_basenameOBS_dirpath_TER('IN');
-    [~,~,~,~,~,basenameTERSR] = get_basenameOBS_dirpath_TER('SR');
-    [~,~,~,~,~,basenameTERSU] = get_basenameOBS_dirpath_TER('SU');
-    [~,~,~,~,~,basenameTERWV] = get_basenameOBS_dirpath_TER('WV');
+    [dir_ter,~,~,~,~,basenameTERIF] = search_product_TER('IF');
+    [~,~,~,~,~,basenameTERIN] = search_product_TER('IN');
+    [~,~,~,~,~,basenameTERSR] = search_product_TER('SR');
+    [~,~,~,~,~,basenameTERSU] = search_product_TER('SU');
+    [~,~,~,~,~,basenameTERWV] = search_product_TER('WV');
     
 else
     dir_ter = ''; basenameTERIF = ''; basenameTERIN = ''; basenameTERSR = '';
@@ -290,129 +317,148 @@ end
 %-------------------------------------------------------------------------%
 % MTRDR
 %-------------------------------------------------------------------------%
-if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
-    get_basenameOBS_dirpath_MTR = @(x_ai,y_si) get_dirpath_observation_fromProp(...
-         create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
-        'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
-        'SENSOR_ID',y_si,'product_type','MTR'),...
-        'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+switch upper(obs_classType)
+    case {'FRT','ATO','FRS','HRL','HRS'}
+        search_product_MTR = @(x_ai,y_si) crism_search_observation_fromProp(...
+             create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
+            'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
+            'SENSOR_ID',y_si,'product_type','MTR'),...
+            'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+
+        % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
+        [dir_mtrdr,~,~,~,~,basenameMTRIF] = search_product_MTR('IF','J');
+        [~,~,~,~,~,basenameMTRIN] = search_product_MTR('IN','J');
+        [~,~,~,~,~,basenameMTRSR] = search_product_MTR('SR','J');
+        [~,~,~,~,~,basenameMTRSU] = search_product_MTR('SU','J');
+        [~,~,~,~,~,basenameMTRWV] = search_product_MTR('WV','J');
+        [~,~,~,~,~,basenameMTRDE] = search_product_MTR('DE','L');
     
-    % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-    [dir_mtrdr,~,~,~,~,basenameMTRIF] = get_basenameOBS_dirpath_MTR('IF','J');
-    [~,~,~,~,~,basenameMTRIN] = get_basenameOBS_dirpath_MTR('IN','J');
-    [~,~,~,~,~,basenameMTRSR] = get_basenameOBS_dirpath_MTR('SR','J');
-    [~,~,~,~,~,basenameMTRSU] = get_basenameOBS_dirpath_MTR('SU','J');
-    [~,~,~,~,~,basenameMTRWV] = get_basenameOBS_dirpath_MTR('WV','J');
-    [~,~,~,~,~,basenameMTRDE] = get_basenameOBS_dirpath_MTR('DE','L');
-    
-else
-    dir_mtrdr = ''; basenameMTRIF = ''; basenameMTRIN = ''; basenameMTRSR = '';
-    basenameMTRSU = ''; basenameMTRWV = ''; basenameMTRDE = '';
+    otherwise
+        dir_mtrdr = '';
+        basenameMTRIF = ''; basenameMTRIN = ''; basenameMTRSR = '';
+        basenameMTRSU = ''; basenameMTRWV = ''; basenameMTRDE = '';
 end
 %-------------------------------------------------------------------------%
 % TRR
 %-------------------------------------------------------------------------%
-if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}))
-    get_basenameOBS_dirpath_TRR = @(x_ai,y_oc,z_pd,w_dwld,v) get_dirpath_observation_fromProp(...
-         create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
-        'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
-        'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
-        'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
-    
-    % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-    [dir_trdr,~,~,~,~,basenameIF] = get_basenameOBS_dirpath_TRR('IF',obs_counter,'TRR',dwld_trrif,3);
-    [~,~,~,~,~,basenameRA]        = get_basenameOBS_dirpath_TRR('RA',obs_counter,'TRR',dwld_trrra,3);
-    [~,~,~,~,~,basenameRAHKP]     = get_basenameOBS_dirpath_TRR('RA',obs_counter,'HKP',dwld_trrra,3);
-    
-    if any(strcmpi(obs_classType,{'FRT','HRL','HRS'}))
-        % EPF
-        [~,~,~,~,~,basenameEPFIF] = get_basenameOBS_dirpath_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3);
-        [~,~,~,~,~,basenameEPFRA] = get_basenameOBS_dirpath_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3);
-        [~,~,~,~,~,basenameEPFRAHKP] = get_basenameOBS_dirpath_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3);
-    else
+switch upper(obs_classType)
+    case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
+        search_product_TRR = @(x_ai,y_oc,z_pd,w_dwld,v) crism_search_observation_fromProp(...
+             create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
+            'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
+            'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
+            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+
+        % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
+        [dir_trdr,~,~,~,~,basenameIF] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3);
+        [~,~,~,~,~,basenameRA]        = search_product_TRR('RA',obs_counter,'TRR',dwld_trrra,3);
+        [~,~,~,~,~,basenameRAHKP]     = search_product_TRR('RA',obs_counter,'HKP',dwld_trrra,3);
+        
+        switch upper(obs_classType)
+            case {'FRT','HRL','HRS'}
+                % EPF
+                [~,~,~,~,~,basenameEPFIF]    = search_product_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3);
+                [~,~,~,~,~,basenameEPFRA]    = search_product_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3);
+                [~,~,~,~,~,basenameEPFRAHKP] = search_product_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3);
+            otherwise
+                basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
+        end
+    otherwise
+        dir_trdr = '';
+        basenameIF = ''; basenameRA = ''; basenameRAHKP = '';
         basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
-    end
-else
-    dir_trdr = ''; basenameIF = ''; basenameRA = ''; basenameRAHKP = '';
-    basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
 end
 %-------------------------------------------------------------------------%
 % EDR
 %-------------------------------------------------------------------------%
-get_basenameOBS_dirpath_EDR = @(x_ai,y_oc,z_pd,w_dwld,v) get_dirpath_observation_fromProp(...
+search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v) crism_search_observation_fromProp(...
          create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
         'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
         'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
 
-if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'})) 
-    % SC
-    [dir_edr,~,~,~,~,basenameSC] = get_basenameOBS_dirpath_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0);
-    [~,~,~,~,~,basenameSCHKP] = get_basenameOBS_dirpath_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0);
+switch upper(obs_classType)
+    case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
+        % SC
+        [dir_edr,~,~,~,~,basenameSC] = search_product_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0);
+        [~,~,~,~,~,basenameSCHKP]    = search_product_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0);
 
-    if any(strcmpi(obs_classType,{'FRT','HRL','HRS'}))
-        [~,~,~,~,~,basenameEPFSC] = get_basenameOBS_dirpath_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0);
-        [~,~,~,~,~,basenameEPFSCHKP] = get_basenameOBS_dirpath_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0);
-        % DF
-        [~,~,~,~,~,basenameEPFDF] = get_basenameOBS_dirpath_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0);
-        [~,~,~,~,~,basenameEPFDFHKP] = get_basenameOBS_dirpath_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0);
-    else
-        basenameEPFSC = []; basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
-    end
-else
-    basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
-    basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        switch upper(obs_classType)
+            case {'FRT','HRL','HRS'}
+                [~,~,~,~,~,basenameEPFSC]    = search_product_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0);
+                [~,~,~,~,~,basenameEPFSCHKP] = search_product_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0);
+                % DF
+                [~,~,~,~,~,basenameEPFDF]    = search_product_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0);
+                [~,~,~,~,~,basenameEPFDFHKP] = search_product_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0);
+            otherwise
+                basenameEPFSC = []; basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        end
+        
+    otherwise
+        basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
+        basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
 end
-if any(strcmpi(obs_classType,{'CAL'}))
-    % BI
-    [dir_edr,~,~,~,~,basenameBI] = get_basenameOBS_dirpath_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0);
-    [~,~,~,~,~,basenameBIHKP] = get_basenameOBS_dirpath_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0);
-else
-   basenameBI = []; basenameBIHKP = [];
+
+% Additional EDRs
+% for CAL only
+switch upper(obs_classType)
+    case 'CAL'
+        % BI
+        [dir_edr,~,~,~,~,basenameBI] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0);
+        [~,~,~,~,~,basenameBIHKP]    = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0);
+    otherwise
+        basenameBI = []; basenameBIHKP = [];
 end
-if any(strcmpi(obs_classType,{'ICL'}))
-    % SP
-    [dir_edr,~,~,~,~,basenameSP] = get_basenameOBS_dirpath_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0);
-    [~,~,~,~,~,basenameSPHKP] = get_basenameOBS_dirpath_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0);
-else
-   basenameSP = []; basenameSPHKP = [];
+
+% for ICL only
+switch upper(obs_classType)
+    case 'ICL'
+        % SP
+        [dir_edr,~,~,~,~,basenameSP] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0);
+        [~,~,~,~,~,basenameSPHKP]    = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0);
+    otherwise
+        basenameSP = []; basenameSPHKP = [];
 end
 
 % for FRS only
-if strcmpi(obs_classType,'FRS')
-    [~,~,~,~,~,basenameUN] = get_basenameOBS_dirpath_EDR('UN',obs_counter_un,'EDR',dwld_un,0);
-else
-    basenameUN = [];
+switch upper(obs_classType)
+    case 'FRS'
+        [~,~,~,~,~,basenameUN] = search_product_EDR('UN',obs_counter_un,'EDR',dwld_un,0);
+    otherwise
+        basenameUN = [];
 end
 
 % DF
-[dir_edr,~,~,~,~,basenameDF] = get_basenameOBS_dirpath_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0);
-[~,~,~,~,~,basenameDFHKP] = get_basenameOBS_dirpath_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0);
+[dir_edr,~,~,~,~,basenameDF] = search_product_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0);
+[~,~,~,~,~,basenameDFHKP]    = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0);
 
 
 %-------------------------------------------------------------------------%
 % DDR
 %-------------------------------------------------------------------------%
-if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}))
-    get_basenameOBS_dirpath_DDR = @(y_oc,w_dwld) get_dirpath_observation_fromProp(...
-         create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
-        'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
-        'SENSOR_ID',sensor_id,'product_type','DDR'),...
-        'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
-    [dir_ddr,~,~,~,~,basenameDDR] = get_basenameOBS_dirpath_DDR(obs_counter,dwld_ddr);
-
-    if any(strcmpi(obs_classType,{'FRT','HRL','HRS'}))
-        % EPF
-        [~,~,~,~,~,basenameEPFDDR] = get_basenameOBS_dirpath_DDR(obs_counter_epf,dwld_epf);
-    else
-        basenameEPFDDR = [];
-    end
-else
-    dir_ddr = ''; basenameDDR = ''; basenameEPFDDR = [];
+switch upper(obs_classType)
+    case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
+        search_product_DDR = @(y_oc,w_dwld) crism_search_observation_fromProp(...
+             create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
+            'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
+            'SENSOR_ID',sensor_id,'product_type','DDR'),...
+            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+        [dir_ddr,~,~,~,~,basenameDDR] = search_product_DDR(obs_counter,dwld_ddr);
+    
+        switch upper(obs_classType)
+            case {'FRT','HRL','HRS'}
+                % EPF
+                [~,~,~,~,~,basenameEPFDDR] = search_product_DDR(obs_counter_epf,dwld_epf);
+            otherwise
+                basenameEPFDDR = [];
+        end
+    otherwise
+        dir_ddr = ''; basenameDDR = ''; basenameEPFDDR = [];
 end
 
 obs_info = [];
-% summary
+%%
+% SUMMARY
 obs_info.obs_id = obs_id;
 obs_info.obs_classType = obs_classType;
 obs_info.dirname = dirname;

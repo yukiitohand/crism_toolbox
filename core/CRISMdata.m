@@ -362,7 +362,7 @@ classdef CRISMdata < ENVIRasterMultBand
                 else
                     prop_atf.product_type = 'EDR';
                     basenamePtr = get_basenameOBS_fromProp(prop_atf);
-                    [dirpath,remote_subdir] = get_dirpath_observation_fromProp(prop_atf,varargin{:});
+                    [dirpath,remote_subdir] = crism_search_observation_fromProp(prop_atf,varargin{:});
                     basename = readDownloadBasename_v3(basenamePtr,dirpath,remote_subdir,varargin{:});
                     atf.(fldnm) = basename;
                 end

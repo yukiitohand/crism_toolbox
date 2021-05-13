@@ -10,7 +10,7 @@ function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname] = get_d
 %   subdir_remote    : subdirectory for the remote server
 %   yyyy_doy         : yyyy_doy
 %   dirname          : directory name
-%  Optional Parameters (passed onto get_dirpath_observation_fromProp)
+%  Optional Parameters (passed onto crism_search_observation_fromProp)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
@@ -20,6 +20,6 @@ function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname] = get_d
 %                         pds_downloader. (default) false
 
 propOBS = getProp_basenameOBSERVATION(basenameOBS);
-[dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,~] = get_dirpath_observation_fromProp(propOBS,varargin{:});
+[dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,~] = crism_search_observation_fromProp(propOBS,varargin{:});
 
 end

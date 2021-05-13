@@ -29,14 +29,13 @@ else
             case 'OUT_FILE'
                 outfile = varargin{i+1};
             otherwise
-                % Something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
 
-[subdir_local] = get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
-[subdir_remote] = get_subdir_OBS_remote('','extras/ott/','edr_misc');
+[subdir_local]  = crism_get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
+[subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
 
 function_path = mfilename('fullpath');
 

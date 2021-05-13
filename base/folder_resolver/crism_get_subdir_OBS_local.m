@@ -14,7 +14,7 @@ function [subdir_local] = crism_get_subdir_OBS_local(yyyy_doy,base_dir,data_type
 global crism_env_vars
 
 local_fldsys = crism_env_vars.local_fldsys;
-get_subdir_OBS_local_func = str2func(['get_subdir_OBS_' local_fldsys]);
+get_subdir_OBS_local_func = str2func(['crism_get_subdir_OBS_' local_fldsys]);
 subdir_local = get_subdir_OBS_local_func(yyyy_doy,base_dir,data_type);
 
 
