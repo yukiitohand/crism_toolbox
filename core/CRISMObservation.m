@@ -9,7 +9,7 @@ classdef CRISMObservation < handle
     
     methods
         function obj = CRISMObservation(obs_id,varargin)
-            [ obs_info ] = get_crism_obs_info(obs_id,varargin{:});
+            [ obs_info ] = crism_get_obs_info(obs_id,varargin{:});
             obj.info = obs_info;
         end
         function load_default(obj)
