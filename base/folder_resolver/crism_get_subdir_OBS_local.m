@@ -1,5 +1,5 @@
-function [subdir_local] = get_subdir_OBS_local(yyyy_doy,base_dir,data_type)
-% [subdir_loca] = get_subdir_OBS_local(yyyy_doy,base_dir,data_type)
+function [subdir_local] = crism_get_subdir_OBS_local(yyyy_doy,base_dir,data_type)
+% [subdir_loca] = crism_get_subdir_OBS_local(yyyy_doy,base_dir,data_type)
 %  get subdir_local that can be used for an input of pds_downloader.m. This
 %  is a wrapper function for actually produce subdir, of which is named
 %   'get_subdir_OBS_[local_fldsys](yyyy_doy,base_dir,data_type)
