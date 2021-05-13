@@ -1,5 +1,5 @@
-function [basename,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir_remote,dwld,varargin)
-% [basename] = crism_readDownloadBasename(basenamePtr,local_dir,remote_subdir,dwld,varargin)
+function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir_remote,dwld,varargin)
+% [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,local_dir,remote_subdir,dwld,varargin)
 %    search basenames that match 'basenamePtr' in 'subdir_local' and return
 %    the actual name. If nothing can be found, then download any files that
 %    matches 'baenamePtr' from 'remote_subdir' depending on 'dwld' option.
@@ -23,8 +23,10 @@ function [basename,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir
 %                         pds_downloader. (default) false
 %      'Overwrite'      : binary, whether or not to overwrite the image
 %  Output parameters
-%    basename: real basename matched.
-%    files_dwlded: local filepaths to the downloaded files.
+%    basename: basename matched.
+%    fname_wext_local : file name with extensions that exist localy.
+%    files_dwlded : relative path from subdir_local to the downloaded files.
+
 
 global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
@@ -60,19 +62,18 @@ end
 dir_local = joinPath(localrootDir,url_local_root,subdir_local); 
 
 fnamelist = dir(dir_local);
-[basename] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
+[basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
 files_dwlded = [];
 if dwld>0
     if isempty(basename) || dwld>0 || force
         [dirs,files_dwlded] = crism_pds_downloader(subdir_local,...
             'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
             'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,'EXTENSION',ext);
-    %     fnamelist = dir(dir_ddr);
-        [basename] = extractMatchedBasename_v2(basenamePtr,files_dwlded);
         
-        for i=1:length(files_dwlded)
-            files_dwlded{i} = joinPath(dir_local,files_dwlded{i});
-        end
+        % do the same thing again
+        fnamelist = dir(dir_local);
+        [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
+        
     end
 elseif dwld == -1
     if ~isempty(outfile)
@@ -92,4 +93,14 @@ elseif dwld == -1
         fclose(fp);
     end
 end
+
+        
+% for i=1:length(files_dwlded)
+%     files_dwlded{i} = joinPath(dir_local,files_dwlded{i});
+% end
+% 
+% for i=1:length(basename_wext)
+%     basename_wext{i} = joinPath(dir_local,basename_wext{i});
+% end
+
 end

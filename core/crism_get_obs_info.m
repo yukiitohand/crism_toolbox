@@ -310,21 +310,22 @@ if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
         'OUT_FILE',outfile,'EXT',ext_ter);
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-    [dir_ter,~,~,~,~,basenameTERIF,files_dwlded_TERIF] = search_product_TER('IF');
-    [~,~,~,~,~,basenameTERIN,files_dwlded_TERIN] = search_product_TER('IN');
-    [~,~,~,~,~,basenameTERSR,files_dwlded_TERSR] = search_product_TER('SR');
-    [~,~,~,~,~,basenameTERSU,files_dwlded_TERSU] = search_product_TER('SU');
-    [~,~,~,~,~,basenameTERWV,files_dwlded_TERWV] = search_product_TER('WV');
-    
+    [dir_info,basenameTERIF,fnameTERIFwext_local] = search_product_TER('IF');
+    [~,basenameTERIN,fnameTERINwext_local] = search_product_TER('IN');
+    [~,basenameTERSR,fnameTERSRwext_local] = search_product_TER('SR');
+    [~,basenameTERSU,fnameTERSUwext_local] = search_product_TER('SU');
+    [~,basenameTERWV,fnameTERWVwext_local] = search_product_TER('WV');
+    dir_ter = dir_info.dirfullpath_local;
 else
     dir_ter = ''; basenameTERIF = ''; basenameTERIN = ''; basenameTERSR = '';
     basenameTERSU = ''; basenameTERWV = '';
-    files_dwlded_TERIF = []; files_dwlded_TERIN = [];
-    files_dwlded_TERSR = []; files_dwlded_TERSU = [];
-    files_dwlded_TERWV = [];
+    fnameTERIFwext_local = []; fnameTERINwext_local = []; 
+    fnameTERSRwext_local = []; fnameTERSUwext_local = [];
+    fnameTERWVwext_local = [];
+    
 end
-files_dwlded_TER = [files_dwlded_TERIF files_dwlded_TERIN  ...
-    files_dwlded_TERSR files_dwlded_TERSU files_dwlded_TERWV];
+fnamesTERwext_local = [fnameTERIFwext_local  fnameTERINwext_local ...
+    fnameTERSRwext_local fnameTERSUwext_local fnameTERWVwext_local ]';
 %
 %-------------------------------------------------------------------------%
 % MTRDR
@@ -339,24 +340,25 @@ switch upper(obs_classType)
             'OUT_FILE',outfile,'EXT', ext_mtrdr);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-        [dir_mtrdr,~,~,~,~,basenameMTRIF,files_dwlded_MTRIF] = search_product_MTR('IF','J');
-        [~,~,~,~,~,basenameMTRIN,files_dwlded_MTRIN] = search_product_MTR('IN','J');
-        [~,~,~,~,~,basenameMTRSR,files_dwlded_MTRSR] = search_product_MTR('SR','J');
-        [~,~,~,~,~,basenameMTRSU,files_dwlded_MTRSU] = search_product_MTR('SU','J');
-        [~,~,~,~,~,basenameMTRWV,files_dwlded_MTRWV] = search_product_MTR('WV','J');
-        [~,~,~,~,~,basenameMTRDE,files_dwlded_MTRDE] = search_product_MTR('DE','L');
-    
+        [dir_info,basenameMTRIF,fnameMTRIFwext_local] = search_product_MTR('IF','J');
+        [~,basenameMTRIN,fnameMTRINwext_local] = search_product_MTR('IN','J');
+        [~,basenameMTRSR,fnameMTRSRwext_local] = search_product_MTR('SR','J');
+        [~,basenameMTRSU,fnameMTRSUwext_local] = search_product_MTR('SU','J');
+        [~,basenameMTRWV,fnameMTRWVwext_local] = search_product_MTR('WV','J');
+        [~,basenameMTRDE,fnameMTRDEwext_local] = search_product_MTR('DE','L');
+        dir_mtrdr = dir_info.dirfullpath_local;
     otherwise
         dir_mtrdr = '';
         basenameMTRIF = ''; basenameMTRIN = ''; basenameMTRSR = '';
         basenameMTRSU = ''; basenameMTRWV = ''; basenameMTRDE = '';
-        files_dwlded_MTRIF = []; files_dwlded_MTRIN = [];
-        files_dwlded_MTRSR = []; files_dwlded_MTRSU = [];
-        files_dwlded_MTRWV = []; files_dwlded_MTRDE = []; 
+        fnameMTRIFwext_local = []; fnameMTRINwext_local = []; 
+        fnameMTRSRwext_local = []; fnameMTRSUwext_local = [];
+        fnameMTRWVwext_local = []; fnameMTRDEwext_local = [];
 end
 
-files_dwlded_MTR = [files_dwlded_MTRIF files_dwlded_MTRIN  ...
-    files_dwlded_MTRSR files_dwlded_MTRSU files_dwlded_MTRWV files_dwlded_MTRDE];
+fnamesMTRwext_local = [fnameMTRIFwext_local fnameMTRINwext_local ...
+    fnameMTRSRwext_local fnameMTRSUwext_local fnameMTRWVwext_local ...
+    fnameMTRDEwext_local ]';
 
 %-------------------------------------------------------------------------%
 % TRR
@@ -371,29 +373,31 @@ switch upper(obs_classType)
             'EXTENSION',xx_ext);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-        [dir_trdr,~,~,~,~,basenameIF,files_dwlded_TRRIF] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3,ext_trrif);
-        [~,~,~,~,~,basenameRA,files_dwlded_TRRRA]        = search_product_TRR('RA',obs_counter,'TRR',dwld_trrra,3,ext_trrra);
-        [~,~,~,~,~,basenameRAHKP,files_dwlded_TRRRAHKP]  = search_product_TRR('RA',obs_counter,'HKP',dwld_trrrahkp,3,ext_trrrahkp);
-        
+        [dir_info,basenameIF,fnameTRRIFwext_local] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3,ext_trrif);
+        [~,basenameRA,fnameTRRRAwext_local]        = search_product_TRR('RA',obs_counter,'TRR',dwld_trrra,3,ext_trrra);
+        [~,basenameRAHKP,fnameTRRRAHKPwext_local]  = search_product_TRR('RA',obs_counter,'HKP',dwld_trrrahkp,3,ext_trrrahkp);
+        dir_trdr = dir_info.dirfullpath_local;
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
                 % EPF
-                [~,~,~,~,~,basenameEPFIF,files_dwlded_EPFIF]    = search_product_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
-                [~,~,~,~,~,basenameEPFRA,files_dwlded_EPFRA]    = search_product_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
-                [~,~,~,~,~,basenameEPFRAHKP,files_dwlded_EPFRAHKP] = search_product_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3,ext_epf);
+                [~,basenameEPFIF,fnameEPFIFwext_local]    = search_product_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
+                [~,basenameEPFRA,fnameEPFRAwext_local]    = search_product_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
+                [~,basenameEPFRAHKP,fnameEPFRAHKPwext_local] = search_product_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3,ext_epf);
             otherwise
                 basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
-                files_dwlded_EPFIF = []; files_dwlded_EPFRA = []; files_dwlded_EPFRAHKP = [];
+                fnameEPFIFwext_local = []; fnameEPFRAwext_local = []; fnameEPFRAHKPwext_local = [];
         end
     otherwise
         dir_trdr = '';
         basenameIF = ''; basenameRA = ''; basenameRAHKP = '';
         basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
-        files_dwlded_EPFIF = []; files_dwlded_EPFRA = []; files_dwlded_EPFRAHKP = [];
+        fnameTRRIFwext_local = []; fnameTRRRAwext_local = []; fnameTRRRAHKPwext_local = [];
+        fnameEPFIFwext_local = []; fnameEPFRAwext_local = []; fnameEPFRAHKPwext_local = [];
 end
 
-files_dwlded_TRR = [files_dwlded_TRRIF files_dwlded_TRRRA files_dwlded_TRRRAHKP ...
-    files_dwlded_EPFIF files_dwlded_EPFRA files_dwlded_EPFRAHKP];
+fnamesTRRwext_local = [fnameTRRIFwext_local fnameTRRRAwext_local ...
+    fnameTRRRAHKPwext_local fnameEPFIFwext_local fnameEPFRAwext_local ...
+    fnameEPFRAwext_local fnameEPFRAHKPwext_local];
 
 %-------------------------------------------------------------------------%
 % EDR
@@ -408,28 +412,28 @@ search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v,xx_ext) crism_search_observation_
 switch upper(obs_classType)
     case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
         % SC
-        [dir_edr,~,~,~,~,basenameSC,files_dwlded_EDRSC] = search_product_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,~,~,~,~,basenameSCHKP,files_dwlded_EDRSCHKP] = search_product_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
-
+        [dir_info,basenameSC,fnameEDRSCwext_local] = search_product_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameSCHKP,fnameEDRSCHKPwext_local] = search_product_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        dir_edr = dir_info.dirfullpath_local;
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
-                [~,~,~,~,~,basenameEPFSC,files_dwlded_EPFSC]       = search_product_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0,ext_epf);
-                [~,~,~,~,~,basenameEPFSCHKP,files_dwlded_EPFSCHKP] = search_product_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0,ext_epf);
+                [~,basenameEPFSC,fnameEPFSCwext_local]       = search_product_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0,ext_epf);
+                [~,basenameEPFSCHKP,fnameEPFSCHKPwext_local] = search_product_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0,ext_epf);
                 % DF
-                [~,~,~,~,~,basenameEPFDF,files_dwlded_EPFDF]       = search_product_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0,ext_epf);
-                [~,~,~,~,~,basenameEPFDFHKP,files_dwlded_EPFDFHKP] = search_product_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0,ext_epf);
+                [~,basenameEPFDF,fnameEPFDFwext_local]        = search_product_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0,ext_epf);
+                [~,basenameEPFDFHKP,fnameEPFDFHKPwext_local] = search_product_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0,ext_epf);
             otherwise
                 basenameEPFSC = []; basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
-                files_dwlded_EPFSC = []; files_dwlded_EPFSCHKP = [];
-                files_dwlded_EPFDF = []; files_dwlded_EPFDFHKP = [];
+                fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+                fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
         end
         
     otherwise
         basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
         basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
-        files_dwlded_EDRSC = []; files_dwlded_EDRSCHKP = [];
-        files_dwlded_EPFSC = []; files_dwlded_EPFSCHKP = [];
-        files_dwlded_EPFDF = []; files_dwlded_EPFDFHKP = [];
+        fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
+        fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+        fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
 end
 
 % Additional EDRs
@@ -437,40 +441,41 @@ end
 switch upper(obs_classType)
     case 'CAL'
         % BI
-        [dir_edr,~,~,~,~,basenameBI,files_dwlded_BI] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,~,~,~,~,basenameBIHKP,files_dwlded_BIHKP] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameBI,fnameBIwext_local] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameBIHKP,fnameBIHKPwext_local] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
     otherwise
         basenameBI = []; basenameBIHKP = [];
-        files_dwlded_BI = []; files_dwlded_BIHKP = [];
+        fnameBIwext_local = []; fnameBIHKPwext_local = [];
 end
 
 % for ICL only
 switch upper(obs_classType)
     case 'ICL'
         % SP
-        [dir_edr,~,~,~,~,basenameSP,files_dwlded_SP] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,~,~,~,~,basenameSPHKP,files_dwlded_SPHKP] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameSP,fnameSPwext_local] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameSPHKP,fnameSPHKPwext_local] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
     otherwise
         basenameSP = []; basenameSPHKP = [];
-        files_dwlded_SP = []; files_dwlded_SPHKP = [];
+        fnameSPwext_local = []; fnameSPHKPwext_local = [];
 end
 
 % for FRS only
 switch upper(obs_classType)
     case 'FRS'
-        [~,~,~,~,~,basenameUN,files_dwlded_UN] = search_product_EDR('UN',obs_counter_un,'EDR',dwld_un,0,ext_un);
+        [~,basenameUN,fnameUNwext_local] = search_product_EDR('UN',obs_counter_un,'EDR',dwld_un,0,ext_un);
     otherwise
-        basenameUN = []; files_dwlded_UN = [];
+        basenameUN = []; fnameUNwext_local = [];
 end
 
 % DF
-[dir_edr,~,~,~,~,basenameDF,files_dwlded_DF] = search_product_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0,ext_edrscdf);
-[~,~,~,~,~,basenameDFHKP,files_dwlded_DFHKP] = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0,ext_edrscdf);
+[~,basenameDF,fnameDFwext_local] = search_product_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0,ext_edrscdf);
+[~,basenameDFHKP,fnameDFHKPwext_local] = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0,ext_edrscdf);
 
-files_dwlded_EDR = [files_dwlded_EDRSC files_dwlded_EDRSCHKP ...
-    files_dwlded_EPFSC files_dwlded_EPFSCHKP files_dwlded_EPFDF files_dwlded_EPFDFHKP ...
-    files_dwlded_BI files_dwlded_BIHKP files_dwlded_SP files_dwlded_SPHKP files_dwlded_UN ...
-    files_dwlded_DF files_dwlded_DFHKP];
+fnamesEDRwext_local = [fnameEDRSCwext_local fnameEDRSCHKPwext_local ...
+    fnameEPFSCwext_local fnameEPFSCHKPwext_local fnameEPFDFwext_local 
+    fnameEPFDFHKPwext_local fnameBIwext_local fnameBIHKPwext_local ...
+    fnameSPwext_local fnameSPHKPwext_local fnameUNwext_local ...
+    fnameDFwext_local fnameDFHKPwext_local];
 
 %-------------------------------------------------------------------------%
 % DDR
@@ -481,23 +486,24 @@ switch upper(obs_classType)
              create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type','DDR'),...
-            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile,'Ext',ext_ddr);
-        [dir_ddr,~,~,~,~,basenameDDR,files_dwlded_DDR] = search_product_DDR(obs_counter,dwld_ddr);
-        
+            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
+            'OUT_FILE',outfile,'Ext',ext_ddr);
+        [dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,dwld_ddr);
+        dir_ddr = dir_info.dirfullpath_local;
     
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
                 % EPF
-                [~,~,~,~,~,basenameEPFDDR,files_dwlded_EPFDDR] = search_product_DDR(obs_counter_epf,dwld_epf);
+                [~,basenameEPFDDR,fnameEPFDDRwext_local] = search_product_DDR(obs_counter_epf,dwld_epf);
             otherwise
-                basenameEPFDDR = []; files_dwlded_EPFDDR = [];
+                basenameEPFDDR = []; fnameEPFDDRwext_local = [];
         end
     otherwise
         dir_ddr = ''; basenameDDR = ''; basenameEPFDDR = [];
-        files_dwlded_DDR = []; files_dwlded_EPFDDR = [];
+        fnameDDRwext_local = []; fnameEPFDDRwext_local = [];
 end
 
-files_dwlded_DDR = [files_dwlded_DDR files_dwlded_EPFDDR];
+fnamesDDRwext_local = [fnameDDRwext_local fnameEPFDDRwext_local];
 
 %%
 % SUMMARY
@@ -552,9 +558,11 @@ obs_info.basenameMTRSU = basenameMTRSU;
 obs_info.basenameMTRWV = basenameMTRWV;
 obs_info.basenameMTRDE = basenameMTRDE;
 
-obs_info.downloaded_files = [ ...
-    files_dwlded_TRR files_dwlded_TER files_dwlded_MTR files_dwlded_EDR ...
-    files_dwlded_DDR ]';
+obs_info.fnameTERwext_local = fnamesTERwext_local;
+obs_info.fnameMTRwext_local = fnamesMTRwext_local;
+obs_info.fnameTRRwext_local = fnamesTRRwext_local;
+obs_info.fnameEDRwext_local = fnamesEDRwext_local;
+obs_info.fnameDDRwext_local = fnamesDDRwext_local;
 
 
 end

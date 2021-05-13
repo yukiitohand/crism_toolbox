@@ -26,12 +26,14 @@ for i=1:length(fieldnms_source_obs)
     if iscell(basenames_SOURCE_OBS.(actID))
         for k=1:length(basenames_SOURCE_OBS.(actID))
             basename = basenames_SOURCE_OBS.(actID){k};
-            [dir_source] = get_dirpath_observation(basename,varargin{:});
+            [dir_info] = get_dirpath_observation(basename,varargin{:});
+            dir_source = dir_info.dirfullpath_local;
             dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source); 
         end
     elseif ischar(basenames_SOURCE_OBS.(actID))
         basename = basenames_SOURCE_OBS.(actID);
-        [dir_source] = get_dirpath_observation(basename,varargin{:});
+        [dir_info] = get_dirpath_observation(basename,varargin{:});
+        dir_source = dir_info.dirfullpath_local;
         dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);  
     else
         error('Value of the basenames_SOURCE_OBS.(%s) is not valid',actID);

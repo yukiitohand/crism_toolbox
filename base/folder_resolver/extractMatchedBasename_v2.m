@@ -1,4 +1,4 @@
-function [basename] = extractMatchedBasename_v2(basenamePtr,fnamelist,varargin)
+function [basename,fname_wext] = extractMatchedBasename_v2(basenamePtr,fnamelist,varargin)
 % [basename] = extractMatchedBasename_v2(basenamePtr,fnamelist,varargin)
 %   match the pattern to filenames in fnamelist
 %
@@ -6,7 +6,8 @@ function [basename] = extractMatchedBasename_v2(basenamePtr,fnamelist,varargin)
 %    basenamePtr: pattern input for regexpi
 %    fnamelist  : cell array of filenames (with or without extensions)
 %  OUTPUTS
-%    basename: string or cell array of matched basenames
+%    basename: string or cell array unique list of matched basenames (no extension)
+%    fname_wext: cell array, all the file names with different extension
 %  Optional Parameters
 %      'MATCH_EXACT'    : binary, if basename match should be exact match
 %                         or not.
@@ -28,17 +29,17 @@ end
 
 
 if isempty(fnamelist)
-    basename = '';
+    basename = ''; fname_wext = [];
 else
     if is_exact
         basenamePtr = ['^' basenamePtr '[[.][a-zA-Z]]*$'];
     end
     matching = cellfun(@(x) ~isempty(regexpi(x,basenamePtr,'ONCE')),fnamelist);
     if sum(matching)>0
-        match_fnames = fnamelist(matching);
-        basenameList = cell(1,length(match_fnames));
-        for i=1:length(match_fnames)
-            [~,basename,ext] = fileparts(match_fnames{i});
+        fname_wext = fnamelist(matching);
+        basenameList = cell(1,length(fname_wext));
+        for i=1:length(fname_wext)
+            [~,basename,ext] = fileparts(fname_wext{i});
             basenameList{i} = basename;            
         end
         basename = unique(basenameList);
@@ -46,7 +47,7 @@ else
             basename = basename{1};
         end
     else
-        basename = '';
+        basename = ''; fname_wext = [];
     end
 end
 end

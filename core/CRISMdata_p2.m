@@ -16,7 +16,8 @@ classdef CRISMdata_p2 < CRISMdata
             propGLT.product_type = 'GLT';
             propGLT.version = 2;
             basenameGLT = get_basenameOBS_fromProp(propGLT);
-            % dirpath_glt = get_dirpath_observation(basenameGLT);
+            % dir_info = get_dirpath_observation(basenameGLT);
+            % dirpath_glt = dir_info.dirfullpath_local;
             obj.GLTdata = CRISMdata(basenameGLT,[]);
             if ~isempty(obj.GLTdata.imgpath)
                 obj.GLTdata.readimg();

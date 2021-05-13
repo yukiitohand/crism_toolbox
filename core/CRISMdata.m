@@ -58,7 +58,10 @@ classdef CRISMdata < ENVIRasterMultBand
             % find out yyyy_doy and dirname
             switch upper(data_type)
                 case 'OBSERVATION'
-                    [dirpath_guess,~,~,yyyy_doy,dirname] = get_dirpath_observation(basename);
+                    [dir_info] = get_dirpath_observation(basename);
+                    dirpath_guess = dir_info.dirfullpath_local;
+                    yyyy_doy = dir_info.yyyy_doy;
+                    dirname  = dir_info.dirname;
                     prop.yyyy_doy = yyyy_doy;
                 case {'CDR4','CDR6'}
                     [dirpath_guess,~,~,yyyy_doy,dirname] = get_dirpath_cdr(basename);
@@ -362,7 +365,9 @@ classdef CRISMdata < ENVIRasterMultBand
                 else
                     prop_atf.product_type = 'EDR';
                     basenamePtr = get_basenameOBS_fromProp(prop_atf);
-                    [dirpath,remote_subdir] = crism_search_observation_fromProp(prop_atf,varargin{:});
+                    [dir_info]  = crism_search_observation_fromProp(prop_atf,varargin{:});
+                    dirpath     = dir_info.dirfullpath_local;
+                    remote_subdir = dir_info.subdir_remote;
                     basename = readDownloadBasename_v3(basenamePtr,dirpath,remote_subdir,varargin{:});
                     atf.(fldnm) = basename;
                 end
