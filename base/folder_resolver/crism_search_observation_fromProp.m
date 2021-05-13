@@ -1,5 +1,5 @@
-function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = get_dirpath_observation_fromProp(propOBS,varargin)
-% [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = get_dirpath_observation_fromProp(propOBS,varargin)
+function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = crism_search_observation_fromProp(propOBS,varargin)
+% [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = crism_search_observation_fromProp(propOBS,varargin)
 %  get directory path of the given property of observation basename. 
 %  The file could be downloaded using an option
 %  Inputs
