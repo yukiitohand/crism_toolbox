@@ -1,4 +1,4 @@
-function [ obs_info ] = get_crism_obs_info(obs_id,varargin)
+function [ obs_info ] = crism_get_obs_info(obs_id,varargin)
 % [ obs_info ] = get_crism_obs_info(obs_id,varargin)
 %   get an information struct of the give observation id
 %  Inputs:
@@ -321,8 +321,8 @@ if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}))
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
     [dir_trdr,~,~,~,~,basenameIF] = get_basenameOBS_dirpath_TRR('IF',obs_counter,'TRR',dwld_trrif,3);
-    [~,~,~,~,~,basenameRA] = get_basenameOBS_dirpath_TRR('RA',obs_counter,'TRR',dwld_trrra,3);
-    [~,~,~,~,~,basenameRAHKP] = get_basenameOBS_dirpath_TRR('RA',obs_counter,'HKP',dwld_trrra,3);
+    [~,~,~,~,~,basenameRA]        = get_basenameOBS_dirpath_TRR('RA',obs_counter,'TRR',dwld_trrra,3);
+    [~,~,~,~,~,basenameRAHKP]     = get_basenameOBS_dirpath_TRR('RA',obs_counter,'HKP',dwld_trrra,3);
     
     if any(strcmpi(obs_classType,{'FRT','HRL','HRS'}))
         % EPF
