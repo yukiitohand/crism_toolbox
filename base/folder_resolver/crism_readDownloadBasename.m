@@ -1,4 +1,4 @@
-function [basename] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir_remote,dwld,varargin)
+function [basename,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir_remote,dwld,varargin)
 % [basename] = crism_readDownloadBasename(basenamePtr,local_dir,remote_subdir,dwld,varargin)
 %    search basenames that match 'basenamePtr' in 'subdir_local' and return
 %    the actual name. If nothing can be found, then download any files that
@@ -12,6 +12,8 @@ function [basename] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir
 %          -1: show the list of file that match the input pattern present
 %          in the local directory.
 %  Optional input parameters
+%      'EXT','EXTENSION': char or cell. Can be with or without '.'.
+%                         Files with the extension(s) will be downloaded.
 %      'MATCH_EXACT'    : binary, if basename match should be exact match
 %                         or not.
 %                         (default) false
@@ -22,6 +24,7 @@ function [basename] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir
 %      'Overwrite'      : binary, whether or not to overwrite the image
 %  Output parameters
 %    basename: real basename matched.
+%    files_dwlded: local filepaths to the downloaded files.
 
 global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
@@ -38,7 +41,7 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
-            case {'EXT','EXTENTION'}
+            case {'EXT','EXTENSION'}
                 ext = varargin{i+1};
             case 'MATCH_EXACT'
                 mtch_exact = varargin{i+1};
@@ -58,13 +61,18 @@ dir_local = joinPath(localrootDir,url_local_root,subdir_local);
 
 fnamelist = dir(dir_local);
 [basename] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
+files_dwlded = [];
 if dwld>0
     if isempty(basename) || dwld>0 || force
-        [dirs,files] = pds_downloader(subdir_local,...
+        [dirs,files_dwlded] = crism_pds_downloader(subdir_local,...
             'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
-            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite); %,'EXTENTION',ext);
+            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,'EXTENSION',ext);
     %     fnamelist = dir(dir_ddr);
-        [basename] = extractMatchedBasename_v2(basenamePtr,files);
+        [basename] = extractMatchedBasename_v2(basenamePtr,files_dwlded);
+        
+        for i=1:length(files_dwlded)
+            files_dwlded{i} = joinPath(dir_local,files_dwlded{i});
+        end
     end
 elseif dwld == -1
     if ~isempty(outfile)

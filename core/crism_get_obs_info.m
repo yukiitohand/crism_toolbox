@@ -131,23 +131,25 @@ function [ obs_info ] = crism_get_obs_info(obs_id,varargin)
 yyyy_doy = '';
 obs_classType = '';
 
-dwld_ter     = 0;
-dwld_mtrdr   = 0;
-dwld_trrif   = 0;
-dwld_trrra   = 0;
-dwld_edrscdf = 0;
-dwld_ddr     = 0;
-dwld_epf     = 0;
-dwld_un      = 0;
+dwld_ter      = 0;
+dwld_mtrdr    = 0;
+dwld_trrif    = 0;
+dwld_trrra    = 0;
+dwld_trrrahkp = 0;
+dwld_edrscdf  = 0;
+dwld_ddr      = 0;
+dwld_epf      = 0;
+dwld_un       = 0;
 
-ext_ter     = '';
-ext_mtrdr   = '';
-ext_trrif   = '';
-ext_trrra   = '';
-ext_edrscdf = '';
-ext_ddr     = '';
-ext_epf     = '';
-ext_un      = '';
+ext_ter      = '';
+ext_mtrdr    = '';
+ext_trrif    = '';
+ext_trrra    = '';
+ext_trrrahkp = '';
+ext_edrscdf  = '';
+ext_ddr      = '';
+ext_epf      = '';
+ext_un       = '';
 
 force_dwld = 0;
 verbose=1;
@@ -172,6 +174,8 @@ else
                 dwld_trrif = varargin{i+1};
             case 'DOWNLOAD_TRRRA'
                 dwld_trrra = varargin{i+1};
+            case 'DOWNLOAD_TRRRAHKP'
+                dwld_trrra = varargin{i+1};
             case 'DOWNLOAD_EDRSCDF'
                 dwld_edrscdf = varargin{i+1};
             case 'DOWNLOAD_TER'
@@ -190,6 +194,8 @@ else
                 ext_trrif = varargin{i+1};
             case 'EXT_TRRRA'
                 ext_trrra = varargin{i+1};
+            case 'EXT_TRRRAHKP'
+                ext_trrrahkp = varargin{i+1};
             case 'EXT_EDRSCDF'
                 ext_edrscdf = varargin{i+1};
             case 'EXT_TER'
@@ -300,19 +306,25 @@ if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
          create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
         'SENSOR_ID','J','product_type','TER'),...
-        'Dwld',dwld_ter,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+        'Dwld',dwld_ter,'Match_Exact',true,'Force',force_dwld, ...
+        'OUT_FILE',outfile,'EXT',ext_ter);
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-    [dir_ter,~,~,~,~,basenameTERIF] = search_product_TER('IF');
-    [~,~,~,~,~,basenameTERIN] = search_product_TER('IN');
-    [~,~,~,~,~,basenameTERSR] = search_product_TER('SR');
-    [~,~,~,~,~,basenameTERSU] = search_product_TER('SU');
-    [~,~,~,~,~,basenameTERWV] = search_product_TER('WV');
+    [dir_ter,~,~,~,~,basenameTERIF,files_dwlded_TERIF] = search_product_TER('IF');
+    [~,~,~,~,~,basenameTERIN,files_dwlded_TERIN] = search_product_TER('IN');
+    [~,~,~,~,~,basenameTERSR,files_dwlded_TERSR] = search_product_TER('SR');
+    [~,~,~,~,~,basenameTERSU,files_dwlded_TERSU] = search_product_TER('SU');
+    [~,~,~,~,~,basenameTERWV,files_dwlded_TERWV] = search_product_TER('WV');
     
 else
     dir_ter = ''; basenameTERIF = ''; basenameTERIN = ''; basenameTERSR = '';
     basenameTERSU = ''; basenameTERWV = '';
+    files_dwlded_TERIF = []; files_dwlded_TERIN = [];
+    files_dwlded_TERSR = []; files_dwlded_TERSU = [];
+    files_dwlded_TERWV = [];
 end
+files_dwlded_TER = [files_dwlded_TERIF files_dwlded_TERIN  ...
+    files_dwlded_TERSR files_dwlded_TERSU files_dwlded_TERWV];
 %
 %-------------------------------------------------------------------------%
 % MTRDR
@@ -323,80 +335,101 @@ switch upper(obs_classType)
              create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
             'SENSOR_ID',y_si,'product_type','MTR'),...
-            'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+            'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld, ...
+            'OUT_FILE',outfile,'EXT', ext_mtrdr);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-        [dir_mtrdr,~,~,~,~,basenameMTRIF] = search_product_MTR('IF','J');
-        [~,~,~,~,~,basenameMTRIN] = search_product_MTR('IN','J');
-        [~,~,~,~,~,basenameMTRSR] = search_product_MTR('SR','J');
-        [~,~,~,~,~,basenameMTRSU] = search_product_MTR('SU','J');
-        [~,~,~,~,~,basenameMTRWV] = search_product_MTR('WV','J');
-        [~,~,~,~,~,basenameMTRDE] = search_product_MTR('DE','L');
+        [dir_mtrdr,~,~,~,~,basenameMTRIF,files_dwlded_MTRIF] = search_product_MTR('IF','J');
+        [~,~,~,~,~,basenameMTRIN,files_dwlded_MTRIN] = search_product_MTR('IN','J');
+        [~,~,~,~,~,basenameMTRSR,files_dwlded_MTRSR] = search_product_MTR('SR','J');
+        [~,~,~,~,~,basenameMTRSU,files_dwlded_MTRSU] = search_product_MTR('SU','J');
+        [~,~,~,~,~,basenameMTRWV,files_dwlded_MTRWV] = search_product_MTR('WV','J');
+        [~,~,~,~,~,basenameMTRDE,files_dwlded_MTRDE] = search_product_MTR('DE','L');
     
     otherwise
         dir_mtrdr = '';
         basenameMTRIF = ''; basenameMTRIN = ''; basenameMTRSR = '';
         basenameMTRSU = ''; basenameMTRWV = ''; basenameMTRDE = '';
+        files_dwlded_MTRIF = []; files_dwlded_MTRIN = [];
+        files_dwlded_MTRSR = []; files_dwlded_MTRSU = [];
+        files_dwlded_MTRWV = []; files_dwlded_MTRDE = []; 
 end
+
+files_dwlded_MTR = [files_dwlded_MTRIF files_dwlded_MTRIN  ...
+    files_dwlded_MTRSR files_dwlded_MTRSU files_dwlded_MTRWV files_dwlded_MTRDE];
+
 %-------------------------------------------------------------------------%
 % TRR
 %-------------------------------------------------------------------------%
 switch upper(obs_classType)
     case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
-        search_product_TRR = @(x_ai,y_oc,z_pd,w_dwld,v) crism_search_observation_fromProp(...
+        search_product_TRR = @(x_ai,y_oc,z_pd,w_dwld,v,xx_ext) crism_search_observation_fromProp(...
              create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
-            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile, ...
+            'EXTENSION',xx_ext);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
-        [dir_trdr,~,~,~,~,basenameIF] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3);
-        [~,~,~,~,~,basenameRA]        = search_product_TRR('RA',obs_counter,'TRR',dwld_trrra,3);
-        [~,~,~,~,~,basenameRAHKP]     = search_product_TRR('RA',obs_counter,'HKP',dwld_trrra,3);
+        [dir_trdr,~,~,~,~,basenameIF,files_dwlded_TRRIF] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3,ext_trrif);
+        [~,~,~,~,~,basenameRA,files_dwlded_TRRRA]        = search_product_TRR('RA',obs_counter,'TRR',dwld_trrra,3,ext_trrra);
+        [~,~,~,~,~,basenameRAHKP,files_dwlded_TRRRAHKP]  = search_product_TRR('RA',obs_counter,'HKP',dwld_trrrahkp,3,ext_trrrahkp);
         
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
                 % EPF
-                [~,~,~,~,~,basenameEPFIF]    = search_product_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3);
-                [~,~,~,~,~,basenameEPFRA]    = search_product_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3);
-                [~,~,~,~,~,basenameEPFRAHKP] = search_product_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3);
+                [~,~,~,~,~,basenameEPFIF,files_dwlded_EPFIF]    = search_product_TRR('IF',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
+                [~,~,~,~,~,basenameEPFRA,files_dwlded_EPFRA]    = search_product_TRR('RA',obs_counter_epf,'TRR',dwld_epf,3,ext_epf);
+                [~,~,~,~,~,basenameEPFRAHKP,files_dwlded_EPFRAHKP] = search_product_TRR('RA',obs_counter_epf,'HKP',dwld_epf,3,ext_epf);
             otherwise
                 basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
+                files_dwlded_EPFIF = []; files_dwlded_EPFRA = []; files_dwlded_EPFRAHKP = [];
         end
     otherwise
         dir_trdr = '';
         basenameIF = ''; basenameRA = ''; basenameRAHKP = '';
         basenameEPFIF = []; basenameEPFRA = []; basenameEPFRAHKP = [];
+        files_dwlded_EPFIF = []; files_dwlded_EPFRA = []; files_dwlded_EPFRAHKP = [];
 end
+
+files_dwlded_TRR = [files_dwlded_TRRIF files_dwlded_TRRRA files_dwlded_TRRRAHKP ...
+    files_dwlded_EPFIF files_dwlded_EPFRA files_dwlded_EPFRAHKP];
+
 %-------------------------------------------------------------------------%
 % EDR
 %-------------------------------------------------------------------------%
-search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v) crism_search_observation_fromProp(...
+search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v,xx_ext) crism_search_observation_fromProp(...
          create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
         'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
-        'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
+        'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
+        'OUT_FILE',outfile,'EXT',xx_ext);
 
 switch upper(obs_classType)
     case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
         % SC
-        [dir_edr,~,~,~,~,basenameSC] = search_product_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0);
-        [~,~,~,~,~,basenameSCHKP]    = search_product_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0);
+        [dir_edr,~,~,~,~,basenameSC,files_dwlded_EDRSC] = search_product_EDR('SC',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,~,~,~,~,basenameSCHKP,files_dwlded_EDRSCHKP] = search_product_EDR('SC',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
 
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
-                [~,~,~,~,~,basenameEPFSC]    = search_product_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0);
-                [~,~,~,~,~,basenameEPFSCHKP] = search_product_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0);
+                [~,~,~,~,~,basenameEPFSC,files_dwlded_EPFSC]       = search_product_EDR('SC',obs_counter_epf,'EDR',dwld_epf,0,ext_epf);
+                [~,~,~,~,~,basenameEPFSCHKP,files_dwlded_EPFSCHKP] = search_product_EDR('SC',obs_counter_epf,'HKP',dwld_epf,0,ext_epf);
                 % DF
-                [~,~,~,~,~,basenameEPFDF]    = search_product_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0);
-                [~,~,~,~,~,basenameEPFDFHKP] = search_product_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0);
+                [~,~,~,~,~,basenameEPFDF,files_dwlded_EPFDF]       = search_product_EDR('DF',obs_counter_epfdf,'EDR',dwld_epf,0,ext_epf);
+                [~,~,~,~,~,basenameEPFDFHKP,files_dwlded_EPFDFHKP] = search_product_EDR('DF',obs_counter_epfdf,'HKP',dwld_epf,0,ext_epf);
             otherwise
                 basenameEPFSC = []; basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+                files_dwlded_EPFSC = []; files_dwlded_EPFSCHKP = [];
+                files_dwlded_EPFDF = []; files_dwlded_EPFDFHKP = [];
         end
         
     otherwise
         basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
         basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        files_dwlded_EDRSC = []; files_dwlded_EDRSCHKP = [];
+        files_dwlded_EPFSC = []; files_dwlded_EPFSCHKP = [];
+        files_dwlded_EPFDF = []; files_dwlded_EPFDFHKP = [];
 end
 
 % Additional EDRs
@@ -404,34 +437,40 @@ end
 switch upper(obs_classType)
     case 'CAL'
         % BI
-        [dir_edr,~,~,~,~,basenameBI] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0);
-        [~,~,~,~,~,basenameBIHKP]    = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0);
+        [dir_edr,~,~,~,~,basenameBI,files_dwlded_BI] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,~,~,~,~,basenameBIHKP,files_dwlded_BIHKP] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
     otherwise
         basenameBI = []; basenameBIHKP = [];
+        files_dwlded_BI = []; files_dwlded_BIHKP = [];
 end
 
 % for ICL only
 switch upper(obs_classType)
     case 'ICL'
         % SP
-        [dir_edr,~,~,~,~,basenameSP] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0);
-        [~,~,~,~,~,basenameSPHKP]    = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0);
+        [dir_edr,~,~,~,~,basenameSP,files_dwlded_SP] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,~,~,~,~,basenameSPHKP,files_dwlded_SPHKP] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
     otherwise
         basenameSP = []; basenameSPHKP = [];
+        files_dwlded_SP = []; files_dwlded_SPHKP = [];
 end
 
 % for FRS only
 switch upper(obs_classType)
     case 'FRS'
-        [~,~,~,~,~,basenameUN] = search_product_EDR('UN',obs_counter_un,'EDR',dwld_un,0);
+        [~,~,~,~,~,basenameUN,files_dwlded_UN] = search_product_EDR('UN',obs_counter_un,'EDR',dwld_un,0,ext_un);
     otherwise
-        basenameUN = [];
+        basenameUN = []; files_dwlded_UN = [];
 end
 
 % DF
-[dir_edr,~,~,~,~,basenameDF] = search_product_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0);
-[~,~,~,~,~,basenameDFHKP]    = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0);
+[dir_edr,~,~,~,~,basenameDF,files_dwlded_DF] = search_product_EDR('DF',obs_counter_df,'EDR',dwld_edrscdf,0,ext_edrscdf);
+[~,~,~,~,~,basenameDFHKP,files_dwlded_DFHKP] = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0,ext_edrscdf);
 
+files_dwlded_EDR = [files_dwlded_EDRSC files_dwlded_EDRSCHKP ...
+    files_dwlded_EPFSC files_dwlded_EPFSCHKP files_dwlded_EPFDF files_dwlded_EPFDFHKP ...
+    files_dwlded_BI files_dwlded_BIHKP files_dwlded_SP files_dwlded_SPHKP files_dwlded_UN ...
+    files_dwlded_DF files_dwlded_DFHKP];
 
 %-------------------------------------------------------------------------%
 % DDR
@@ -442,23 +481,28 @@ switch upper(obs_classType)
              create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type','DDR'),...
-            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile);
-        [dir_ddr,~,~,~,~,basenameDDR] = search_product_DDR(obs_counter,dwld_ddr);
+            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile,'Ext',ext_ddr);
+        [dir_ddr,~,~,~,~,basenameDDR,files_dwlded_DDR] = search_product_DDR(obs_counter,dwld_ddr);
+        
     
         switch upper(obs_classType)
             case {'FRT','HRL','HRS'}
                 % EPF
-                [~,~,~,~,~,basenameEPFDDR] = search_product_DDR(obs_counter_epf,dwld_epf);
+                [~,~,~,~,~,basenameEPFDDR,files_dwlded_EPFDDR] = search_product_DDR(obs_counter_epf,dwld_epf);
             otherwise
-                basenameEPFDDR = [];
+                basenameEPFDDR = []; files_dwlded_EPFDDR = [];
         end
     otherwise
         dir_ddr = ''; basenameDDR = ''; basenameEPFDDR = [];
+        files_dwlded_DDR = []; files_dwlded_EPFDDR = [];
 end
 
-obs_info = [];
+files_dwlded_DDR = [files_dwlded_DDR files_dwlded_EPFDDR];
+
 %%
 % SUMMARY
+obs_info = [];
+% basic info
 obs_info.obs_id = obs_id;
 obs_info.obs_classType = obs_classType;
 obs_info.dirname = dirname;
@@ -507,6 +551,10 @@ obs_info.basenameMTRSR = basenameMTRSR;
 obs_info.basenameMTRSU = basenameMTRSU;
 obs_info.basenameMTRWV = basenameMTRWV;
 obs_info.basenameMTRDE = basenameMTRDE;
+
+obs_info.downloaded_files = [ ...
+    files_dwlded_TRR files_dwlded_TER files_dwlded_MTR files_dwlded_EDR ...
+    files_dwlded_DDR ]';
 
 
 end

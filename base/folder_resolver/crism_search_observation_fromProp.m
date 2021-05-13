@@ -1,4 +1,4 @@
-function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = crism_search_observation_fromProp(propOBS,varargin)
+function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS,fpath_dwlded] = crism_search_observation_fromProp(propOBS,varargin)
 % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS] = crism_search_observation_fromProp(propOBS,varargin)
 %  get directory path of the given property of observation basename. 
 %  The file could be downloaded using an option
@@ -11,7 +11,10 @@ function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basename
 %   yyyy_doy         : yyyy_doy
 %   dirname          : directory name
 %   basenameOBS: basename of the matched file
+%   fpath_dwlded     : cell array of the local file paths of the downloaded
+%   files.
 %  Optional Parameters
+%      'EXT','EXTENSION': extenstion for which the download is performed.
 %      'MATCH_EXACT'    : binary, if basename match should be exact match
 %                         or not. (case insensitive). This is not for
 %                         searching products, identifying a single product.
@@ -40,7 +43,7 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
-            case {'EXT','EXTENTION'}
+            case {'EXT','EXTENSION'}
                 ext = varargin{i+1};
             case 'MATCH_EXACT'
                 mtch_exact = varargin{i+1};
@@ -81,10 +84,10 @@ subdir_remote = crism_get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
 
 [basenamePtrn] = get_basenameOBS_fromProp(propOBS);
 
-[basenameOBS]  = crism_readDownloadBasename(basenamePtrn,...
+[basenameOBS,fpath_dwlded]  = crism_readDownloadBasename(basenamePtrn,...
                     subdir_local,subdir_remote,dwld,'Match_Exact',mtch_exact,...
                     'Force',force,'Out_File',outfile,'overwrite',overwrite, ...
-                    'EXTENTION',ext);
+                    'EXTENSION',ext);
 
 
 dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
