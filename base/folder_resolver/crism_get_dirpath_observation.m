@@ -1,5 +1,5 @@
-function [dir_info] = get_dirpath_observation(basenameOBS,varargin)
-% [dir_info] = get_dirpath_observation(basenameOBS,varargin)
+function [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
+% [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
 %  get directory path of the given basename of observation basename. 
 %  The file could be downloaded using an option
 %  Inputs

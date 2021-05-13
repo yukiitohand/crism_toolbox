@@ -9,7 +9,7 @@ function [dir_SOURCE_OBS] = finddirdownload_SOURCE_OBS(basenames_SOURCE_OBS,vara
 %   OUTPUT
 %    dir_SOURCE_OBS: same structure as basenames_SOURCE_OBS. 
 %                    local full directroy paths are stored.
-%   OPTIONAL PARAMETERS (passed onto get_dirpath_observation)
+%   OPTIONAL PARAMETERS (passed onto crism_get_dirpath_observation)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
@@ -26,13 +26,13 @@ for i=1:length(fieldnms_source_obs)
     if iscell(basenames_SOURCE_OBS.(actID))
         for k=1:length(basenames_SOURCE_OBS.(actID))
             basename = basenames_SOURCE_OBS.(actID){k};
-            [dir_info] = get_dirpath_observation(basename,varargin{:});
+            [dir_info] = crism_get_dirpath_observation(basename,varargin{:});
             dir_source = dir_info.dirfullpath_local;
             dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source); 
         end
     elseif ischar(basenames_SOURCE_OBS.(actID))
         basename = basenames_SOURCE_OBS.(actID);
-        [dir_info] = get_dirpath_observation(basename,varargin{:});
+        [dir_info] = crism_get_dirpath_observation(basename,varargin{:});
         dir_source = dir_info.dirfullpath_local;
         dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);  
     else

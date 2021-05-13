@@ -195,7 +195,8 @@ propGLT.product_type = 'GLT';
 propGLT.version = glt_ver;
 basenameGLT = get_basenameOBS_fromProp(propGLT);
 basenameGLT = [basenameGLT suffix];
-dir_glt = get_dirpath_observation(basenameGLT);
+dir_glt_info = crism_get_dirpath_observation(basenameGLT);
+dir_glt = dir_glt_info.dirfullpath_local;
 fpath_GLT_img = joinPath(dir_glt,[basenameGLT '.IMG']);
 fpath_GLT_hdr = joinPath(dir_glt,[basenameGLT '.HDR']);
 
