@@ -1,5 +1,5 @@
-function [] = makeIndexOBSID2YYYY_DOY_OTT(varargin)
-% [] = makeIndexOBSID2YYYY_DOY_OTT(varargin)
+function [] = crism_makeIndexOBSID2YYYY_DOY_OTT(varargin)
+% [] = crism_makeIndexOBSID2YYYY_DOY_OTT(varargin)
 % make index file that shows the map from OBSID to YYYY_DOY. Save the index
 % file to current directory. 
 %
