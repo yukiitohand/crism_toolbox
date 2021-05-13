@@ -1,5 +1,5 @@
-function [lnks] = get_links_remoteHTML_pds_mro(html)
-% [lnks] = get_links_remoteHTML_pds_mro(html)
+function [lnks] = crism_get_links_remoteHTML_pds_mro(html)
+% [lnks] = crism_get_links_remoteHTML_pds_mro(html)
 %   match files in the html files obtained at the remote server with
 %   pds_mro file system
 % Input

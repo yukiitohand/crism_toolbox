@@ -1,5 +1,5 @@
-function [lnks] = get_links_remoteHTML(html)
-% [lnks] = get_links_remoteHTML(html)
+function [lnks] = crism_get_links_remoteHTML(html)
+% [lnks] = crism_get_links_remoteHTML(html)
 %   match files in the html files obtained at the remote server
 % Input
 %   html: html text
@@ -16,7 +16,7 @@ function [lnks] = get_links_remoteHTML(html)
 global crism_env_vars
 remote_fldsys = crism_env_vars.remote_fldsys;
 
-func = str2func(['get_links_remoteHTML_',remote_fldsys]);
+func = str2func(['crism_get_links_remoteHTML_',remote_fldsys]);
 lnks = func(html);
 
 end
