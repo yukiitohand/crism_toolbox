@@ -1,5 +1,5 @@
-function [subdir_remote] = get_subdir_OBS_remote(yyyy_doy,base_dir,data_type)
-% [subdir_remote] = get_subdir_OBS_remote(yyyy_doy,base_dir,data_type)
+function [subdir_remote] = crism_get_subdir_OBS_remote(yyyy_doy,base_dir,data_type)
+% [subdir_remote] = crism_get_subdir_OBS_remote(yyyy_doy,base_dir,data_type)
 %  get subdir_remote that can be used for an input of pds_downloader.m. 
 %  This is a wrapper function for actually produce subdir, of which is 
 %  named
