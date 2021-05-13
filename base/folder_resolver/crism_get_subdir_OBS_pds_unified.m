@@ -1,5 +1,5 @@
-function [subdir] = get_subdir_OBS_pds_unified(yyyy_doy,base_dir,data_type)
-% [subdir] = get_subdir_OBS_pds_unified(yyyy_doy,base_dir,fldsys,data_type)
+function [subdir] = crism_get_subdir_OBS_pds_unified(yyyy_doy,base_dir,data_type)
+% [subdir] = crism_get_subdir_OBS_pds_unified(yyyy_doy,base_dir,fldsys,data_type)
 %  get subdir for pds_unified folder system
 %  INPUTS
 %    yyyy_doy: string, year and day of the year

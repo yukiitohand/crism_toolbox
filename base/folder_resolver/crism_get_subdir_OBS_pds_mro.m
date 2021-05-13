@@ -1,5 +1,5 @@
-function [subdir] = get_subdir_OBS_pds_mro(yyyy_doy,base_dir,data_type)
-% [subdir] = get_subdir_OBS_pds_mro(yyyy_doy,base_dir,data_type)
+function [subdir] = crism_get_subdir_OBS_pds_mro(yyyy_doy,base_dir,data_type)
+% [subdir] = crism_get_subdir_OBS_pds_mro(yyyy_doy,base_dir,data_type)
 %  get subdir for pds_mro system that can be used for an input of 
 %  pds_downloader.m
 %  INPUTS
