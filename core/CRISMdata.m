@@ -356,16 +356,16 @@ classdef CRISMdata < ENVIRasterMultBand
         
         function [atf] = readATF(obj,varargin)
             atf = [];
-            prop = obj.get_basenameProp();
-            [yyyy_doy] = obj.get_YYYY_DOY();
-            [atf_parent] = crismCDRATFread(yyyy_doy,prop.sensor_id,varargin{:});
-            prop.yyyy_doy = yyyy_doy;
-            entry_atf = get_entryATF_fromProp(prop);
+            propATF = obj.get_basenameProp();
+            [yyyy_doyATF] = obj.get_YYYY_DOY();
+            [atf_parent] = crismCDRATFread(yyyy_doyATF,propATF.sensor_id,varargin{:});
+            propATF.yyyy_doy = yyyy_doyATF;
+            entry_atf = crism_get_entryATF_fromProp(propATF);
             [v,i] = searchby('SCENE_EDR_NAME',entry_atf,atf_parent.tab.data,'COMP_FUNC','regexpi');
             fldnms = fieldnames(v);
             for j=1:length(fldnms)
                 fldnm = fldnms{j}; entry_atf = v.(fldnm);
-                prop_atf = entryATF2prop(entry_atf);
+                prop_atf = crism_entryATF2prop(entry_atf);
                 if isempty(prop_atf)
                     atf.(fldnm) = '';
                 else
