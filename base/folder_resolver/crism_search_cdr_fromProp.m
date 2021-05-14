@@ -84,7 +84,7 @@ end
 
 
 acro = propCDR.acro_calibration_type;
-folder_type = assessCDRForderType(acro);
+folder_type = crism_assessCDRForderType(acro);
 yyyy_doy = '';
     
 switch folder_type

@@ -39,7 +39,7 @@ else
 end
 
 acro = propCDRref.acro_calibration_type;
-[folder_type] = assessCDRForderType(acro);
+[folder_type] = crism_assessCDRForderType(acro);
 
 propCDR_search = propCDRref;
 propCDR_search.sclk = '(?<sclk>[\d]{10})';
