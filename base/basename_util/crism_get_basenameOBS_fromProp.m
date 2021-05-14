@@ -1,5 +1,5 @@
-function [basenameOBS] = get_basenameOBS_fromProp(prop)
-% [basenameOBS] = get_basenameOBS_fromProp(prop)
+function [basenameOBS] = crism_get_basenameOBS_fromProp(prop)
+% [basenameOBS] = crism_get_basenameOBS_fromProp(prop)
 %  Input Parameters
 %   prop: struct storing properties
 %    'obs_class_type'       

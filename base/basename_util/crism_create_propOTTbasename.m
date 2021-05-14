@@ -1,6 +1,5 @@
-function [prop]= create_propOTTbasename(varargin)
-
-% [ prop ] = create_propOTTbasename( varargin )
+function [prop]= crism_create_propOTTbasename(varargin)
+% [ prop ] = crism_create_propOTTbasename( varargin )
 %   return struct of the basename of OTT data
 %  Output
 %   prop: struct storing properties
@@ -35,9 +34,8 @@ else
                 mm = varargin{i+1};
             case 'DD'
                 dd = varargin{i+1};
-             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);   
+            otherwise
+                error('Unrecognized option: %s', varargin{i});   
         end
     end
 end

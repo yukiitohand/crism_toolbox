@@ -1,4 +1,4 @@
-function [vr] = get_version_from_CDR4basename(basename)
-    prop = getProp_basenameCDR4(basename);
+function [vr] = crism_get_version_from_CDR4basename(basename)
+    prop = crism_getProp_basenameCDR4(basename);
     vr = prop.version;
 end

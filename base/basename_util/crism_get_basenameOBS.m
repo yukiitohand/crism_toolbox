@@ -1,5 +1,5 @@
-function [basenameOBS] = get_basenameOBS(varargin)
-% [basenameOBS] = get_basenameOBS(varargin)
+function [basenameOBS] = crism_get_basenameOBS(varargin)
+% [basenameOBS] = crism_get_basenameOBS(varargin)
 %  create basename pattern of observation with given property
 %   Optional Parameters
 %    'obs_class_type'       : (default) '(?<obs_class_type>[a-zA-Z]{3})'
@@ -23,7 +23,7 @@ function [basenameOBS] = get_basenameOBS(varargin)
 %     ttt = product type (EDR, TRR for TRDR, DDR, LDR)
 %     v = version
 
-[ prop ] = create_propOBSbasename( varargin{:} );
+[ prop ] = crism_create_propOBSbasename( varargin{:} );
 
 obs_class_type = prop.obs_class_type;
 obs_id = prop.obs_id;

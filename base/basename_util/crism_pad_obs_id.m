@@ -1,5 +1,5 @@
-function [obs_id_strpadded] = pad_obs_id(obs_id)
-% [obs_id_strpadded] = pad_obs_id(obs_id)
+function [obs_id_strpadded] = crism_pad_obs_id(obs_id)
+% [obs_id_strpadded] = crism_pad_obs_id(obs_id)
 %  convert obs_id in string format or numeric format to 0 padded string
 %  format
 %  INPUT

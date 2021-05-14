@@ -1,5 +1,5 @@
-function [propCDRList] = getProp_basenameCDRList(basenameCDRList,level)
-% [propCDRList] = getProp_basenameCDRList(basenameCDRList)
+function [propCDRList] = crism_getProp_basenameCDRList(basenameCDRList,level)
+% [propCDRList] = crism_getProp_basenameCDRList(basenameCDRList,level)
 %  get struct of CDR property from the cell array of basenames
 %   Input Parameters
 %     basenameCDRList: cell array of the basenameCDRs
@@ -15,9 +15,9 @@ else
     for i=1:length(basenameCDRList)
         switch level
             case 4
-                propCDRtmp = getProp_basenameCDR4(basenameCDRList{i});
+                propCDRtmp = crism_getProp_basenameCDR4(basenameCDRList{i});
             case 6
-                propCDRtmp = getProp_basenameCDR6(basenameCDRList{i});
+                propCDRtmp = crism_getProp_basenameCDR6(basenameCDRList{i});
             otherwise
                 error('CDR Level %d is not defined',propCDR.level);
         end

@@ -1,5 +1,5 @@
-function [prop] = getProp_basenameOTT(basenameOTT)
-% [prop] = getProp_basenameOTT(basenameOTT)
+function [prop] = crism_getProp_basenameOTT(basenameOTT)
+% [prop] = crism_getProp_basenameOTT(basenameOTT)
 %   Get properties from the basename of OTT file
 %  Input Parameters
 %   basename: string, like
@@ -12,8 +12,8 @@ function [prop] = getProp_basenameOTT(basenameOTT)
 %     'yyyy' : year
 %     'mm'   : month
 %     'dd'   : day
-[ prop_ori ] = create_propOTTbasename();
-[basenameptrn] = get_basenameOTT_fromProp(prop_ori);
+[ prop_ori ]   = crism_create_propOTTbasename();
+[basenameptrn] = crism_get_basenameOTT_fromProp(prop_ori);
 
 prop = regexpi(basenameOTT,basenameptrn,'names');
 

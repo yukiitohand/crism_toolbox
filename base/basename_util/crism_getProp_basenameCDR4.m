@@ -1,5 +1,5 @@
-function [prop] = getProp_basenameCDR4(basenameCDR4,varargin)
-% [prop] = getProp_basenameCDR4(basenameCDR4)
+function [prop] = crism_getProp_basenameCDR4(basenameCDR4,varargin)
+% [prop] = crism_getProp_basenameCDR4(basenameCDR4,varargin)
 %   Get properties from the basename of CDR4
 %  Input Parameters
 %   basenameCDR4: string, like
@@ -28,8 +28,8 @@ function [prop] = getProp_basenameCDR4(basenameCDR4,varargin)
 %    'sensor_id'
 %    'version'
 
-[ prop_ori ] = create_propCDR4basename();
-[basenameptrn] = get_basenameCDR4_fromProp(prop_ori);
+[ prop_ori ]   = crism_create_propCDR4basename();
+[basenameptrn] = crism_get_basenameCDR4_fromProp(prop_ori);
 
 % ptrn_CDR4 = 'CDR(?<lelvel>[46]{1})(?<partition>[\d]{1})(?<sclk>[\d]{10})_(?<acro_calibration_type>[a-zA-Z]{2})(?<frame_rate>[0-4]{1})(?<binning>[0-3]{1})(?<exposure>[0-9]{3})(?<wavelength_filter>[0-3]{1})(?<side>[0-2]{1})(?<sensor_id>[sljSLJ]{1})_(?<version>[0-9]{1})';
 

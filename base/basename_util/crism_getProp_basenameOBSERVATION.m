@@ -1,6 +1,5 @@
-function [prop] = getProp_basenameOBSERVATION(basename,varargin)
-
-% [prop] = getProp_basenameOBSERVATION(basename)
+function [prop] = crism_getProp_basenameOBSERVATION(basename,varargin)
+% [prop] = crism_getProp_basenameOBSERVATION(basename,varargin)
 %   Get properties from the basename of EDR, DDR, LDR, and TRDR
 %  Input Parameters
 %   basename: string, like
@@ -24,8 +23,8 @@ function [prop] = getProp_basenameOBSERVATION(basename,varargin)
 %    'sensor_id'
 %    'version'
 
-[ prop ] = create_propOBSbasename();
-[basenameptrn] = get_basenameOBS_fromProp(prop);
+[ prop ]       = crism_create_propOBSbasename();
+[basenameptrn] = crism_get_basenameOBS_fromProp(prop);
 
 % baenameptrn = '(?<obs_class_type>[a-zA-Z]{3})(?<obs_id>[0-9a-fA-F]{8})_(?<obs_counter>[0-9a-fA-F]{2})_(?<activity_id>[a-zA-Z]{2})(?<activity_macro_num>[0-9]{3})(?<sensor_id>[sljSLJ]{1})_(?<product_type>[a-zA-Z]{3})(?<version>[0-9]{1})';
 

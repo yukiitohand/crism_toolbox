@@ -1,5 +1,5 @@
-function [ prop ] = create_propADRVSbasename( varargin )
-% [ prop ] = create_propADRVSbasename( varargin )
+function [ prop ] = crism_create_propADRVSbasename( varargin )
+% [ prop ] = crism_create_propADRVSbasename( varargin )
 %   return struct of ADR VS data property
 % 
 %   Output
@@ -58,9 +58,8 @@ else
                 sensor_id = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
-             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);   
+            otherwise
+                error('Unrecognized option: %s', varargin{i});   
         end
     end
 end

@@ -1,5 +1,5 @@
-function [basenameCDR4] = get_basenameCDR4_fromProp(prop)
-% [basenameCDR4] = get_basenameCDR4_fromProp(prop)
+function [basenameCDR4] = crism_get_basenameCDR4_fromProp(prop)
+% [basenameCDR4] = crism_get_basenameCDR4_fromProp(prop)
 %  Input Parameters
 %   prop: struct storing properties
 %    'level'

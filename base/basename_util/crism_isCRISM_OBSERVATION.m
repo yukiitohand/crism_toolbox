@@ -1,6 +1,6 @@
-function [decision] = isCRISM_OBSERVATION(basename)
+function [decision] = crism_isCRISM_OBSERVATION(basename)
 
-prop = getProp_basenameOBSERVATION(basename);
+prop = crism_getProp_basenameOBSERVATION(basename);
 
 if isempty(prop)
     decision = false;

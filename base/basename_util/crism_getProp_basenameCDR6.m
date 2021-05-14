@@ -1,5 +1,5 @@
-function [prop] = getProp_basenameCDR6(basenameCDR6,varargin)
-% [prop] = getProp_basenameCDR6(basenameCDR6)
+function [prop] = crism_getProp_basenameCDR6(basenameCDR6,varargin)
+%  [prop] = crism_getProp_basenameCDR6(basenameCDR6,varargin)
 %   Get properties from the basename of CDR6
 %  Input Parameters
 %   basenameCDR6: string, like
@@ -18,8 +18,8 @@ function [prop] = getProp_basenameCDR6(basenameCDR6,varargin)
 %    'version'
 
 
-[ prop_ori ] = create_propCDR6basename();
-[basenameptrn] = get_basenameCDR6_fromProp(prop_ori);
+[ prop_ori ]   = crism_create_propCDR6basename();
+[basenameptrn] = crism_get_basenameCDR6_fromProp(prop_ori);
 
 % ptrn_CDR6 = 'CDR6_(?<partition>[\d]{1})_(?<sclk>[\d]{10})_(?<acro>[a-zA-Z]{2})_(?<sensor_id>[sljSLJ]{1})_(?<version>[0-9]{1})';
 

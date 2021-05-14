@@ -1,5 +1,5 @@
-function [ prop ] = create_propCDR6basename( varargin )
-% [ prop ] = create_propCDR6basename( varargin )
+function [ prop ] = crism_create_propCDR6basename( varargin )
+% [ prop ] = crism_create_propCDR6basename( varargin )
 %   return struct of CDR6 property
 % 
 %   Output
@@ -56,9 +56,8 @@ else
                 sensor_id = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
-             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);   
+            otherwise
+                error('Unrecognized option: %s', varargin{i});   
         end
     end
 end

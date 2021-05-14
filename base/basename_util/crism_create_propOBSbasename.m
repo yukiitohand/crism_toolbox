@@ -1,5 +1,5 @@
-function [ prop ] = create_propOBSbasename( varargin )
-% [ prop ] = create_propOBSbasename( varargin )
+function [ prop ] = crism_create_propOBSbasename( varargin )
+% [ prop ] = crism_create_propOBSbasename( varargin )
 %   return struct of the basename of EDR, DDR, LDR, and TRDR
 %  Output
 %   prop: struct storing properties
@@ -63,9 +63,8 @@ else
                 yyyy_doy = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
-             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);   
+            otherwise
+                error('Unrecognized option: %s', varargin{i});   
         end
     end
 end

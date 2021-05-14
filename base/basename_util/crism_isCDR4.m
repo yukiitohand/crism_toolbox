@@ -1,6 +1,6 @@
-function [decision] = isCDR4(basename)
+function [decision] = crism_isCDR4(basename)
 
-prop = getProp_basenameCDR4(basename);
+prop = crism_getProp_basenameCDR4(basename);
 
 if isempty(prop)
     decision = false;

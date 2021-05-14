@@ -1,5 +1,5 @@
-function [basenameList,pdir] = getCDRbasenames(acro,varargin)
-% [] = getCDRbasenames(varargin)
+function [basenameList,pdir] = crism_getCDRbasenames(acro,varargin)
+% [basenameList,pdir] = crism_getCDRbasenames(acro,varargin)
 %   Get the basename of the CDR/(acro) files.
 %   Input Parameters
 %     acro: acronym for the CDR data, such as WA, SB etc.,...

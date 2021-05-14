@@ -1,5 +1,5 @@
-function [basenameOTT] = get_basenameOTT_fromProp(prop)
-% [basenameOTT] = get_basenameOTT_fromProp(prop)
+function [basenameOTT] = crism_get_basenameOTT_fromProp(prop)
+% [basenameOTT] = crism_get_basenameOTT_fromProp(prop)
 %  Input Parameters
 %   prop: struct storing properties
 %    'yyyy', 'mm', 'dd'       

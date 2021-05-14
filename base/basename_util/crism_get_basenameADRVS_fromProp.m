@@ -1,5 +1,5 @@
-function [basenameADRVS] = get_basenameADRVS_fromProp(prop)
-% [basenameCDR4] = get_basenameADRVS_fromProp(prop)
+function [basenameADRVS] = crism_get_basenameADRVS_fromProp(prop)
+% [basenameCDR4] = crism_get_basenameADRVS_fromProp(prop)
 %  Input Parameters
 %   prop: struct storing properties
 %    'partition'
