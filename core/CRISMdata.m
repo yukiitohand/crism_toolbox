@@ -64,7 +64,10 @@ classdef CRISMdata < ENVIRasterMultBand
                     dirname  = dir_info.dirname;
                     prop.yyyy_doy = yyyy_doy;
                 case {'CDR4','CDR6'}
-                    [dirpath_guess,~,~,yyyy_doy,dirname] = get_dirpath_cdr(basename);
+                    [dir_info] = crism_get_dirpath_cdr(basename);
+                    dirpath_guess = dir_info.dirfullpath_local;
+                    yyyy_doy = dir_info.yyyy_doy;
+                    dirname  = dir_info.dirname;
                 case {'OTT'}
                     [dirpath_guess,~,~] = get_dirpath_ott();
                     yyyy_doy = '';

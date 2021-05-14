@@ -1,5 +1,5 @@
-function [dir_info] = get_dirpath_cdr(basenameCDR,varargin)
-% [dir_info] = get_dirpath_cdr(basenameCDR,varargin)
+function [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
+% [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
 %  get directory path of the given basename of the CDR file. The file could
 %  be downloaded using an option
 %  Inputs
