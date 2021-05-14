@@ -26,6 +26,6 @@ function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_get_dirpath_adrv
 propADRVS = getProp_basenameADRVS(basenameADRVS);
 [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fromProp(propADRVS,varargin{:});
 
-dir_info.dirname = acro;
+dir_info.dirname = dir_info.acro;
 
 end

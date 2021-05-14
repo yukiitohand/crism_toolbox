@@ -37,6 +37,9 @@ force = 0;
 outfile = '';
 mtch_exact = false;
 overwrite = 0;
+cap_filename  = true;
+index_cache_update = false;
+verbose = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -53,6 +56,12 @@ else
                 outfile = varargin{i+1};
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
+            case 'INDEX_CACHE_UPDATE'
+                index_cache_update = varargin{i+1};
+            case 'CAPITALIZE_FILENAME'
+                cap_filename = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s',varargin{i});
         end
@@ -68,7 +77,9 @@ if dwld>0
     if isempty(basename) || dwld>0 || force
         [dirs,files_dwlded] = crism_pds_downloader(subdir_local,...
             'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
-            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,'EXTENSION',ext);
+            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,...
+            'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
+            'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
         
         % do the same thing again
         fnamelist = dir(dir_local);

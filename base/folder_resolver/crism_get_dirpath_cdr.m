@@ -18,17 +18,31 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_get_dirpath_cdr(base
 %   fnameCDR_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters (passed onto crism_search_cdr_fromProp.m)
+%      'Force'          : binary, whether or not to force performing
+%                         pds_downloader. (default) false
+%      'EXTENSION','EXT': Files with the extention will be downloaded. If
+%                         it is empty, then files with any extension will
+%                         be downloaded.
+%                         (default) ''
+%      'DIRSKIP'        : if skip directories or walk into them
+%                         (default) 1 (boolean)
+%      'PROTOCOL'       : internet protocol for downloading
+%                         (default) 'http'
+%      'OVERWRITE'      : if overwrite the file if exists
+%                         (default) 0
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
+%      'HTMLFILE'       : path to the html file to be read
+%                         (default) ''
 %      'OUT_FILE'       : path to the output file
 %                         (default) ''
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
+%      'VERBOSE'        : boolean, whether or not to show the downloading
+%                         operations.
+%                         (default) true
 
 propCDR = getProp_basenameCDR(basenameCDR);
 [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(propCDR,varargin{:});
-dir_info.dirname = acro;
-% dirname = acro;
+dir_info.dirname = dir_info.acro;
 
 end

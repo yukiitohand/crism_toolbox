@@ -47,7 +47,9 @@ else
                 basenamePtrn = varargin{i+1};
             case 'SUBDIR_REMOTE'
                 subdir_remote = varargin{i+1};
-            case {'DIRSKIP','PROTOCOL','OVERWRITE','HTML_FILE','DWLD','DOWNLOAD','OUT_FILE','EXT','EXTENSION'}
+            case {'EXT','EXTENSION','DIRSKIP','PROTOCOL','OVERWRITE',...
+                    'HTML_FILE','DWLD','DOWNLOAD','OUT_FILE', ...
+                    'VERBOSE','CAPITALIZE_FILENAME','INDEX_CACHE_UPDATE'}
 
             otherwise
                 error('Unrecognized option: %s',varargin{i});

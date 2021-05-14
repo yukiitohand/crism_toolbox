@@ -13,14 +13,28 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(
 %   fnameOTT_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters
-%      'EXT','EXTENSION': extenstion for which the download is performed.
+%      'Force'          : binary, whether or not to force performing
+%                         pds_downloader. (default) false
+%      'EXTENSION','EXT': Files with the extention will be downloaded. If
+%                         it is empty, then files with any extension will
+%                         be downloaded.
+%                         (default) ''
+%      'DIRSKIP'        : if skip directories or walk into them
+%                         (default) 1 (boolean)
+%      'PROTOCOL'       : internet protocol for downloading
+%                         (default) 'http'
+%      'OVERWRITE'      : if overwrite the file if exists
+%                         (default) 0
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
+%      'HTMLFILE'       : path to the html file to be read
+%                         (default) ''
 %      'OUT_FILE'       : path to the output file
 %                         (default) ''
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
+%      'VERBOSE'        : boolean, whether or not to show the downloading
+%                         operations.
+%                         (default) true
 
 global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
@@ -30,6 +44,11 @@ ext = '';
 dwld = 0;
 force = 0;
 outfile = '';
+
+overwrite = 0;
+cap_filename  = true;
+index_cache_update = false;
+verbose = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -42,8 +61,16 @@ else
                 dwld = varargin{i+1};
             case 'FORCE'
                 force = varargin{i+1};
+            case 'OVERWRITE'
+                overwrite = varargin{i+1};
             case 'OUT_FILE'
                 outfile = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
+            case 'INDEX_CACHE_UPDATE'
+                index_cache_update = varargin{i+1};
+            case 'CAPITALIZE_FILENAME'
+                cap_filename = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
@@ -57,8 +84,10 @@ dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 
 [basenamePtrn] = get_basenameOTT_fromProp(propOTT);
 [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
-                    subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile,...
-                    'EXT',ext);
+    subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile,...
+    'overwrite',overwrite,'EXTENSION',ext, ...
+    'INDEX_CACHE_UPDATE',index_cache_update, ...
+    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
                 
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;

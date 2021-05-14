@@ -15,7 +15,6 @@ function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fro
 %   fnameADRVS_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters
-%      'EXT','EXTENSION': extenstion for which the download is performed.
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
 %                         nothing happens
 %                         (default) 0

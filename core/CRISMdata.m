@@ -259,13 +259,13 @@ classdef CRISMdata < ENVIRasterMultBand
             obj.hkt = hkt;
         end
         
-        function [] = load_basenamesCDR(obj,varargin)
+        function [files_local] = load_basenamesCDR(obj,varargin)
             if isempty(obj.lbl)
                 error('no LBL file');
             end
             obj.basenamesCDR = readCDRnames_v2(obj.lbl);
             if ~isempty(obj.basenamesCDR)
-                [obj.dir_cdr] = finddirdownloadCDR_v3(...
+                [obj.dir_cdr,files_local] = finddirdownloadCDR_v3(...
                     obj.basenamesCDR,varargin{:});
             end
 

@@ -1,4 +1,4 @@
-function [fldtp] = assessCDRForderType(acro)
+function [fldtp] = crism_assessCDRForderType(acro)
 %    Acronyms of the products stored in "edr/CDR/YYYY_DOY/" folder
 %      ATF,BI,BK,BP,SP,ST,UB
 %    Acronyms of the products stored in "edr/CDR" directly
