@@ -1,5 +1,5 @@
-function [prop] = entryATF2prop(entry_atf)
-% [prop] = entryATF2prop(entry_atf)
+function [prop] = crism_entryATF2prop(entry_atf)
+% [prop] = crism_entryATF2prop(entry_atf)
 %   Get properties from the string entry in CDR ATF data.
 %  Input Parameters
 %   entry_atf: string, like
@@ -24,7 +24,7 @@ function [prop] = entryATF2prop(entry_atf)
 %    'product_type'
 
 [ prop ] = create_propOBSbasename();
-ptrn = get_entryATF_fromProp(prop);
+ptrn = crism_get_entryATF_fromProp(prop);
 
 prop_atf = regexpi(entry_atf,ptrn,'names');
 if ~isempty(prop_atf)

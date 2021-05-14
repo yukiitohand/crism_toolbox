@@ -1,5 +1,5 @@
-function [entry_atf] = get_entryATF_fromProp(prop)
-% [entry_atf] = get_entryATF_fromProp(prop)
+function [entry_atf] = crism_get_entryATF_fromProp(prop)
+% [entry_atf] = crism_get_entryATF_fromProp(prop)
 %   Convert properties from observation to an entry in CDR ATF data.
 %  Input Parameters
 %   prop: struct storing properties
