@@ -17,6 +17,7 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(
 %   fnameCDR_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters
+%      'EXT','EXTENSION': extenstion for which the download is performed.
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0

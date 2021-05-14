@@ -12,7 +12,8 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(
 %   basenameOTT  : basename of the matched file
 %   fnameOTT_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
-%  Optional Parameters 
+%  Optional Parameters
+%      'EXT','EXTENSION': extenstion for which the download is performed.
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
@@ -25,6 +26,7 @@ global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
 
+ext = '';
 dwld = 0;
 force = 0;
 outfile = '';
@@ -34,6 +36,8 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
+            case {'EXT','EXTENSION'}
+                ext = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
             case 'FORCE'
@@ -53,7 +57,8 @@ dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 
 [basenamePtrn] = get_basenameOTT_fromProp(propOTT);
 [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
-                    subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+                    subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile,...
+                    'EXT',ext);
                 
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;
