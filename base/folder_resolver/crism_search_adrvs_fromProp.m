@@ -1,13 +1,16 @@
-function [dirfullpath_local,subdir_local,subdir_remote,basenameADRVS,acro] = get_dirpath_adrvs_fromProp(propADRVS,varargin)
-% [dirfullpath_local,subdir_local,subdir_remote,basenameADRVS,acro] = get_dirpath_adrvs_fromProp(propADRVS,varargin)
+function [dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,varargin)
+% [dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,varargin)
 %  get directory path of the given basename of the ADR VS file. The file could
 %  be downloaded using an option
 %  Inputs
 %   propADRVS: basename of the ADR VS file, can be empty.
 %  Outputs
-%   dirfullpath_local: full local directroy path of the CDR file
-%   subdir_local     : subdirectory path
-%   subdir_remote    : subdirectory for the remote server
+%   dir_info struct
+%       dirfullpath_local: full local directroy path of the CDR file
+%       subdir_local     : subdirectory path
+%       subdir_remote    : subdirectory for the remote server
+%       acro             : acronym for the CDR data, usually same sa
+%                          dirname
 %   basenameADRVS: basename of the matched file
 %  Optional Parameters
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
@@ -70,6 +73,12 @@ if dwld == -1
 elseif dwld==1
     error('dwld==1 is not supported for folder_type=3');
 end
+
+dir_info = [];
+dir_info.dirfullpath_local = dirfullpath_local;
+dir_info.subdir_local      = subdir_local;
+dir_info.subdir_remote     = subdir_remote;
+dir_info.acro              = acro;
 
 
 end

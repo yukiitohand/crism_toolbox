@@ -1,13 +1,14 @@
-function [dirfullpath_local,subdir_local,subdir_remote,basenameOTT] = get_dirpath_ott_fromProp(propOTT,varargin)
-% [dirfullpath_local,subdir_local,subdir_remote,basenameOTT] = get_dirpath_ott_fromProp(propOTT,varargin)
+function [dir_info,basenameOTT] = crism_search_ott_fromProp(propOTT,varargin)
+% [dir_info,basenameOTT] = crism_search_ott_fromProp(propOTT,varargin)
 %  get directory path of the OTT files. The file could
 %  be downloaded using an option
 %  Inputs
 %   basenameOTT: basename of the OTT file
 %  Outputs
-%   dirfullpath_local: full local directroy path of the OTT file
-%   subdir_local     : subdirectory path
-%   subdir_remote    : subdirectory for the remote server
+%   dir_info struct
+%       dirfullpath_local: full local directroy path of the CDR file
+%       subdir_local     : subdirectory path
+%       subdir_remote    : subdirectory for the remote server
 %   basenameOTT  : basename of the matched file
 %  Optional Parameters 
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
@@ -51,5 +52,11 @@ dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 [basenamePtrn] = get_basenameOTT_fromProp(propOTT);
 [basenameOTT] = crism_readDownloadBasename(basenamePtrn,...
                     subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+                
+dir_info = [];
+dir_info.dirfullpath_local = dirfullpath_local;
+dir_info.subdir_local      = subdir_local;
+dir_info.subdir_remote     = subdir_remote;
+
 
 end

@@ -27,8 +27,8 @@ else
     end
 end
 
-
-[dirfullpath_local,~,~,basenameADRVS,~] = get_dirpath_adrvs_fromProp(propADRVS,'Dwld',dwld);
+[dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,'Dwld',dwld);
+dirfullpath_local = dir_info.dirfullpath_local;
 if ischar(basenameADRVS),basenameADRVS = {basenameADRVs}; end
 % read ADRVSdata
 ADRVSdataList = CRISMdata.empty(1,0);

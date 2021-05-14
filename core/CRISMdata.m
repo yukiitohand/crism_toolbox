@@ -69,11 +69,14 @@ classdef CRISMdata < ENVIRasterMultBand
                     yyyy_doy = dir_info.yyyy_doy;
                     dirname  = dir_info.dirname;
                 case {'OTT'}
-                    [dirpath_guess,~,~] = get_dirpath_ott();
+                    [dir_info] = crism_get_dirpath_ott();
+                    dirpath_guess = dir_info.dirfullpath_local;
                     yyyy_doy = '';
                     dirname = '';
                 case {'ADR_VS'}
-                    [dirpath_guess,~,dirname] = get_dirpath_adrvs(basename);
+                    [dir_info] = crism_get_dirpath_adrvs(basename);
+                    dirpath_guess = dir_info.dirfullpath_local;
+                    dirname  = dir_info.dirname;
                     yyyy_doy = '';
                 otherwise
                     error('Undefined data_type %s',data_type);
