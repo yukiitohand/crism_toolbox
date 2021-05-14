@@ -47,14 +47,14 @@ for i=1:length(fieldnms_source_obs)
             [dir_info,~,files_localk] = crism_get_dirpath_observation(basename,varargin{:});
             dir_source = dir_info.dirfullpath_local;
             dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source); 
-            files_local = addField(files_local,acro,files_localk);
+            files_local = addField(files_local,actID,files_localk);
         end
     elseif ischar(basenames_SOURCE_OBS.(actID))
         basename = basenames_SOURCE_OBS.(actID);
         [dir_info,~,files_localk] = crism_get_dirpath_observation(basename,varargin{:});
         dir_source = dir_info.dirfullpath_local;
         dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);
-        files_local.(acro)=files_localk;
+        files_local.(actID)=files_localk;
     else
         error('Value of the basenames_SOURCE_OBS.(%s) is not valid',actID);
     end
