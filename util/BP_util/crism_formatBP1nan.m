@@ -1,4 +1,4 @@
-function [BP1nan] = formatBP1nan(BPdata,varargin)
+function [BP1nan] = crism_formatBP1nan(BPdata,varargin)
 
 % input assessment
 band_inverse_default = true;

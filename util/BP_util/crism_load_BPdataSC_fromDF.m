@@ -1,5 +1,5 @@
-function [BPdata1,BPdata2,BPdata_post] = load_BPdataSC_fromDF(crismdata_obj,basename_df1_ptrn,basename_df2_ptrn)
-% [BPdata1,BPdata2,BPdata_post] = load_BPdataSC_fromDF(crismdata_obj,varargin)
+function [BPdata1,BPdata2,BPdata_post] = crism_load_BPdataSC_fromDF(crismdata_obj,basename_df1_ptrn,basename_df2_ptrn)
+% [BPdata1,BPdata2,BPdata_post] = crism_load_BPdataSC_fromDF(crismdata_obj,basename_df1_ptrn,basename_df2_ptrn)
 %  Examine types of CDR BP data recorded in source_product_id in LBL 
 %  information in crismdata_obj and return each BP data as a CRISMdata 
 %  object.

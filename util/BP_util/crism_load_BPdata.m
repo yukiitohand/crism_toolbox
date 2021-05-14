@@ -1,5 +1,5 @@
-function [BPdata1,BPdata2,BPdata_post] = load_BPdata(crismdata_obj)
-% [BPdata1,BPdata2,BPdata_post] = load_BPdata(crismdata_obj)
+function [BPdata1,BPdata2,BPdata_post] = crism_load_BPdata(crismdata_obj)
+% [BPdata1,BPdata2,BPdata_post] = crism_load_BPdata(crismdata_obj)
 %  Examine types of CDR BP data recorded in source_product_id in LBL 
 %  information in crismdata_obj and return each BP data as a CRISMdata 
 %  object.
