@@ -1,5 +1,5 @@
-function [ obj_file_table,obj_table ] = find_OBJECT_FILE_TABLE( lbl_info )
-%  [ obj_file_table ] = find_OBJECT_FILE_TABLE( lbl_info )
+function [ obj_file_table,obj_table ] = crism_find_OBJECT_FILE_TABLE( lbl_info )
+%  [ obj_file_table,obj_table ] = crism_find_OBJECT_FILE_TABLE( lbl_info )
 %    In the lbl_info, find OBJECT_FILE struct that contains field 
 %    OBJECT_TABLE
 %     Inputs:

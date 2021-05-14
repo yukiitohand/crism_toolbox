@@ -1,5 +1,5 @@
-function [ obj_file_hk_table,fldnmHKTname,fldnmHKTobj] = find_OBJECT_FILE_HK_TABLE( lbl_info,varargin )
-%  [ obj_file_hk_table,fldnmHKT ] = find_OBJECT_FILE_HK_TABLE( lbl_info )
+function [ obj_file_hk_table,fldnmHKTname,fldnmHKTobj] = crism_find_OBJECT_FILE_HK_TABLE( lbl_info,varargin )
+%  [ obj_file_hk_table,fldnmHKTname,fldnmHKTobj] = crism_find_OBJECT_FILE_HK_TABLE( lbl_info,varargin )
 %    In the lbl_info, find OBJECT_FILE struct that contains field 
 %    OBJECT_[acronym of PRODUCT TYPE]_HK_TABLE
 %     Inputs:

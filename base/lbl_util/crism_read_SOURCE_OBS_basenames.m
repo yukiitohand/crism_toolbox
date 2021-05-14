@@ -1,4 +1,4 @@
-function [source_obs_basenames] = read_SOURCE_OBS_basenames(lbl)    
+function [source_obs_basenames] = crism_read_SOURCE_OBS_basenames(lbl)    
 % read names of SOURCE OBSERVATIONS using lbl file.
 source_obs_basenames = [];
 for i=1:length(lbl.SOURCE_PRODUCT_ID)

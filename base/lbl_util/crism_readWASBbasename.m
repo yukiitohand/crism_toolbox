@@ -1,4 +1,4 @@
-function [cdr_basenames] = readWASBbasename(lbl)
+function [cdr_basenames] = crism_readWASBbasename(lbl)
 
 cdr_basenames = [];
 % wavelength and spectral response function.

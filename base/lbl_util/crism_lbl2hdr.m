@@ -23,7 +23,7 @@ else
     end
 end
 
-[ obj_file_image ] = find_OBJECT_FILE_IMAGE( lbl );
+[ obj_file_image ] = crism_find_OBJECT_FILE_IMAGE( lbl );
 
 if isempty(obj_file_image)
     hdr = [];

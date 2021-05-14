@@ -1,10 +1,10 @@
-function [ basenameHKT ] = get_basenameHKT( lbl )
-% [ basenameHKT ] = get_basenameHKT( lbl )
+function [ basenameHKT ] = crism_get_basenameHKT( lbl )
+% [ basenameHKT ] = crism_get_basenameHKT( lbl )
 %  get basename of HKT file from lbl
 %   INPUT: lbl, label struct of CRISM data
 %   OUTPUT : basenameHKT
 
-[ obj_file_hk_table,fldnmHKTname,fldnmHKTobj ] = find_OBJECT_FILE_HK_TABLE( lbl );
+[ obj_file_hk_table,fldnmHKTname,fldnmHKTobj ] = crism_find_OBJECT_FILE_HK_TABLE( lbl );
 
 if isempty(obj_file_hk_table)
     basenameHKT = '';

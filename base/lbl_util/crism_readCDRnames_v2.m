@@ -1,4 +1,4 @@
-function [cdr_basenames] = readCDRnames_v2(lbl)    
+function [cdr_basenames] = crism_readCDRnames_v2(lbl)    
 % read names of CDR file using lbl file.
 cdr_basenames = [];
 

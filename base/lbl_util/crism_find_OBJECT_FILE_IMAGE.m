@@ -1,5 +1,5 @@
-function [ obj_file_image ] = find_OBJECT_FILE_IMAGE( lbl_info )
-%  [ obj_file_image ] = find_OBJECT_FILE_IMAGE( lbl_info )
+function [ obj_file_image ] = crism_find_OBJECT_FILE_IMAGE( lbl_info )
+%  [ obj_file_image ] = crism_find_OBJECT_FILE_IMAGE( lbl_info )
 %    In the lbl_info, find OBJECT_FILE struct that contains field 
 %    OBJECT_IMAGE
 %     Inputs:
