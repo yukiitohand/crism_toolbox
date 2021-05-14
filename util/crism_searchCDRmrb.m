@@ -64,8 +64,8 @@ switch folder_type
         while (~exist_flg)
             % start looking from the one day ahead, just in case.
             
-            subdir_remote = get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
-            subdir_local = get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
+            subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+            subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
             % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
@@ -85,8 +85,8 @@ switch folder_type
             end
         end
     case 2
-        subdir_remote = get_subdir_CDR_remote(acro,folder_type,'');
-        subdir_local = get_subdir_CDR_local(acro,folder_type,'');
+        subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+        subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
         % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});

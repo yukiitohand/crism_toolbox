@@ -67,8 +67,8 @@ switch folder_type
         while (~exist_flg && (j<5))
             shift_day = j*(-1)^(j)*init_move_coef;
             yyyy_doy_shifted = shift_yyyy_doy(yyyy_doy_shifted,shift_day);
-            subdir_remote = get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
-            subdir_local = get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
+            subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+            subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
             [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
             [basenameCDR] = crism_readDownloadBasename(basenameCDRPtrn,...
@@ -84,8 +84,8 @@ switch folder_type
             warning('%s cannot be found in the local directory',basenameCDRPtrn);
         end
     case 2
-        subdir_remote = get_subdir_CDR_remote(acro,folder_type,'');
-        subdir_local = get_subdir_CDR_local(acro,folder_type,'');
+        subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+        subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
         [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
         [basenameCDR] = crism_readDownloadBasename(basenameCDRPtrn,...
