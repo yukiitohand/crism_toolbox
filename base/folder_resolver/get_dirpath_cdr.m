@@ -1,16 +1,20 @@
-function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname] = get_dirpath_cdr(basenameCDR,varargin)
-% [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname] = get_dirpath_cdr(basenameCDR,varargin)
+function [dir_info] = get_dirpath_cdr(basenameCDR,varargin)
+% [dir_info] = get_dirpath_cdr(basenameCDR,varargin)
 %  get directory path of the given basename of the CDR file. The file could
 %  be downloaded using an option
 %  Inputs
 %   basenameCDR: basename of the CDR file
 %  Outputs
-%   dirfullpath_local: full local directroy path of the CDR file
-%   subdir_local     : subdirectory path
-%   subdir_remote    : subdirectory for the remote server
-%   yyyy_doy    : yyyy_doy, if applicable,
-%   dirname: directory name, two character acronym.
-%  Optional Parameters (passed onto get_dirpath_cdr_fromProp)
+%   dir_info struct
+%       dirfullpath_local: full local directroy path of the CDR file
+%       subdir_local     : subdirectory path
+%       subdir_remote    : subdirectory for the remote server
+%       acro             : acronym for the CDR data, usually same sa
+%                          dirname
+%       folder_type      : folder_type {1,2,3}
+%       yyyy_doy         : year and day of the year
+%       dirname          : same as acro
+%  Optional Parameters (passed onto crism_search_cdr_fromProp.m)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
@@ -20,9 +24,8 @@ function [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname] = get_d
 %                         pds_downloader. (default) false
 
 propCDR = getProp_basenameCDR(basenameCDR);
-[dirfullpath_local,subdir_local,subdir_remote,~,...
-    acro,~,yyyy_doy] = get_dirpath_cdr_fromProp(propCDR,varargin{:});
-
-dirname = acro;
+[dir_info] = crism_search_cdr_fromProp(propCDR,varargin{:});
+dir_info.dirname = acro;
+% dirname = acro;
 
 end

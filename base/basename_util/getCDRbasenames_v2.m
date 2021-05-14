@@ -6,13 +6,14 @@ function [basenameList,pdir] = getCDRbasenames_v2(prop)
 %     basenameList: cell array, list of the basenames
 %     pdir: directory of the specified CDR data (below PDS)
 
-basenameWAPtr = get_basenameCDR4_fromProp(prop);
-pdir = get_dirpath_cdr_fromProp(prop);
+basenamePtr = get_basenameCDR4_fromProp(prop);
+[dir_info] = crism_search_observation_fromProp(prop);
+pdir = dir_info.dirfullpath_local;
 
 fnamelist = dir(pdir);
 fnamelist = {fnamelist.name};
 
-[basenameList] = extractMatchedBasename_v2(basenameWAPtr,fnamelist);
+[basenameList] = extractMatchedBasename_v2(basenamePtr,fnamelist);
 
 
 end

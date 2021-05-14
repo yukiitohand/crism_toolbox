@@ -1,14 +1,18 @@
-function [dirfullpath_local,subdir_local,subdir_remote,basenameCDR,...
-    acro,folder_type,yyyy_doy] = get_dirpath_cdr_fromProp(propCDR,varargin)
-% [dirfullpath_local,subdir_local,subdir_remote,basenameCDR] = get_dirpath_cdr_fromProp(propCDR,varargin)
+function [dir_info,basenameCDR] = crism_search_cdr_fromProp(propCDR,varargin)
+% [dir_info,basenameCDR] = crism_search_cdr_fromProp(propCDR,varargin)
 %  get directory path of the given basename of the CDR file. The file could
 %  be downloaded using an option
 %  Inputs
 %   propCDR: basename of the CDR file
 %  Outputs
-%   dirfullpath_local: full local directroy path of the CDR file
-%   subdir_local     : subdirectory path
-%   subdir_remote    : subdirectory for the remote server
+%   dir_info struct
+%       dirfullpath_local: full local directroy path of the CDR file
+%       subdir_local     : subdirectory path
+%       subdir_remote    : subdirectory for the remote server
+%       acro             : acronym for the CDR data, usually same sa
+%                          dirname
+%       folder_type      : folder_type {1,2,3}
+%       yyyy_doy         : year and day of the year
 %   basenameCDR: basename of the matched file
 %  Optional Parameters
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
@@ -120,5 +124,14 @@ switch folder_type
     otherwise
         error('not defined case');
 end
+
+
+dir_info = [];
+dir_info.dirfullpath_local = dirfullpath_local;
+dir_info.subdir_local      = subdir_local;
+dir_info.subdir_remote     = subdir_remote;
+dir_info.acro              = acro;
+dir_info.folder_type       = folder_type;
+dir_info.yyyy_doy          = yyyy_doy;
 
 end

@@ -15,7 +15,9 @@ propWV = create_propCDR6basename(...
     'acro','WV','Partition',propWA.partition,...
     'sclk',propWA.sclk,'sensor_id',propWA.sensor_id);
 
-[dirfullpath_local,~,~,basenameWV,~,~,~] = get_dirpath_cdr_fromProp(propWV);
+[dir_info,basenameWV] = crism_search_cdr_fromProp(propWV);
+dirfullpath_local = dir_info.dirfullpath_local;
+
 WVdata = CRISMdata(basenameWV,dirfullpath_local);
 
 end

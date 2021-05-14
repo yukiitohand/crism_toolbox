@@ -19,7 +19,8 @@ propSWBW = create_propCDR6basename(...
     'sclk',propWA.sclk,'sensor_id',propWA.sensor_id);
 
 
-[dirfullpath_local,~,~,basenameSWBW,~,~,~] = get_dirpath_cdr_fromProp(propSWBW);
+[dir_info,basenameSWBW] = crism_search_cdr_fromProp(propSWBW);
+dirfullpath_local = dir_info.dirfullpath_local;
 
 if isempty(basenameSWBW)
     % sclk of SW BW may not match sclk or WA
