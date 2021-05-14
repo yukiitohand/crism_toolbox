@@ -11,7 +11,7 @@ function [ hkt ] = crismHKTread( dirpath,lbl )
 %         colinfo_names - meta information of column, easy accss with NAME
 %         of each column
 
-[ obj_file_hk_table,fldnmHKTname,fldnmHKTobj ] = find_OBJECT_FILE_HK_TABLE( lbl );
+[ obj_file_hk_table,fldnmHKTname,fldnmHKTobj ] = crism_find_OBJECT_FILE_HK_TABLE( lbl );
 
 if isempty(obj_file_hk_table)
     hkt = [];

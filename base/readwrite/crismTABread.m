@@ -33,7 +33,7 @@ end
 
 
 % determine obj_table
-[ obj_file_table, obj_table ] = find_OBJECT_FILE_TABLE( lbl );
+[ obj_file_table, obj_table ] = crism_find_OBJECT_FILE_TABLE( lbl );
 
 if ~isempty(obj_file_table)
     if exist(fdpath,'dir')==7 % isdir

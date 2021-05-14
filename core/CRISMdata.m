@@ -208,7 +208,7 @@ classdef CRISMdata < ENVIRasterMultBand
         
         function [wa] = readWA(obj,varargin)
             if isempty(obj.basenamesCDR) || isempty(obj.dir_cdr) 
-                cdr_basename = readWASBbasename(obj.lbl);
+                cdr_basename = crism_readWASBbasename(obj.lbl);
                 obj.basenamesCDR = cdr_basename;
                 [obj.dir_cdr] = finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
             end
@@ -263,7 +263,7 @@ classdef CRISMdata < ENVIRasterMultBand
             if isempty(obj.lbl)
                 error('no LBL file');
             end
-            obj.basenamesCDR = readCDRnames_v2(obj.lbl);
+            obj.basenamesCDR = crism_readCDRnames_v2(obj.lbl);
             if ~isempty(obj.basenamesCDR)
                 [obj.dir_cdr,files_local] = finddirdownloadCDR_v3(...
                     obj.basenamesCDR,varargin{:});
@@ -296,7 +296,7 @@ classdef CRISMdata < ENVIRasterMultBand
             if isempty(obj.lbl)
                 error('no LBL file');
             end
-            [source_basenames] = read_SOURCE_OBS_basenames(obj.lbl);
+            [source_basenames] = crism_read_SOURCE_OBS_basenames(obj.lbl);
             obj.basenames_SOURCE_OBS = source_basenames;
             obj.dir_SOURCE_OBS = finddirdownload_SOURCE_OBS(...
                 obj.basenames_SOURCE_OBS,varargin{:});
@@ -432,7 +432,7 @@ classdef CRISMdata < ENVIRasterMultBand
         end
         
         function load_basenameHKT(obj)
-            [ obj.basenameHKT ] = get_basenameHKT( obj.lbl );
+            [ obj.basenameHKT ] = crism_get_basenameHKT( obj.lbl );
                 
         end
         

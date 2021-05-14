@@ -2,7 +2,7 @@ function [ rownum_table ] = crismrownumtableread( imgpath,lbl )
 % [ rownum_tbl ] = crismrownumtableread( imgpath,lbl )
 %   Read row
 
-[ obj_file_img ] = find_OBJECT_FILE_IMAGE( lbl );
+[ obj_file_img ] = crism_find_OBJECT_FILE_IMAGE( lbl );
 obj_rownum_tbl = obj_file_img.OBJECT_ROWNUM_TABLE;
 obj_img = obj_file_img.OBJECT_IMAGE;
 switch obj_rownum_tbl.OBJECT_COLUMN.DATA_TYPE

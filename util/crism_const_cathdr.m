@@ -72,7 +72,7 @@ hdr_cat.fwhm(isnan(hdr_cat.fwhm)) = 65535;
 hdr_cat.bbl = bbl;
 
 hdr_cat.cat_start_time = TRRdata.lbl.START_TIME;
-[partition,sclk] = get_startsclkfromlbl(TRRdata.lbl);
+[partition,sclk] = crism_get_startsclkfromlbl(TRRdata.lbl);
 sclk = round(sclk);
 hdr_cat.cat_sclk_start = sprintf('%d/%010d',partition,sclk);
 hdr_cat.cat_crism_obsid = propTRRdata.obs_id;

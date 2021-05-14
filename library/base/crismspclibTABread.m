@@ -13,7 +13,7 @@ function [tab,lbl] = crismspclibTABread(fpath)
 
 lbl = crismlblread_v2(fpath);
 
-[ obj_file_table, obj_table ] = find_OBJECT_FILE_TABLE( lbl );
+[ obj_file_table, obj_table ] = crism_find_OBJECT_FILE_TABLE( lbl );
 
 [data,colinfo,colinfo_names] = crismTABread_sub(fpath,obj_table,...
     'SKIP_LINE',lbl.LABEL_RECORDS,'MODE','fast');
