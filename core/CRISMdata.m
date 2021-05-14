@@ -410,24 +410,25 @@ classdef CRISMdata < ENVIRasterMultBand
             obj.is_gp1nan_inverse = true;
         end
         
-        function [] = download(obj,dwld,varargin)
+        function [fname_wext_local] = download(obj,dwld,varargin)
             switch upper(obj.data_type)
                 case 'OBSERVATION'
-                    crism_get_dirpath_observation(obj.basename,'Download',dwld,varargin{:});
+                    [~,~,fname_wext_local] = crism_get_dirpath_observation(obj.basename,'Download',dwld,varargin{:});
                     if ~isempty(obj.lbl) && any(strcmpi(obj.prop.product_type,{'EDR','TRR'}))
                         if isempty(obj.basenameHKT)
                             obj.load_basenameHKT();
                         end
                         if ~isempty(obj.basenameHKT)
-                            crism_get_dirpath_observation(obj.basenameHKT,'Download',dwld,varargin{:});
+                            [~,~,fnameHKT_wext_local] = crism_get_dirpath_observation(obj.basenameHKT,'Download',dwld,varargin{:});
+                            fname_wext_local = [fname_wext_local fnameHKT_wext_local];
                         end
                     end
                 case {'CDR4','CDR6'}
-                    crism_get_dirpath_cdr(obj.basename,'Download',dwld,varargin{:});
+                    [~,~,fname_wext_local] = crism_get_dirpath_cdr(obj.basename,'Download',dwld,varargin{:});
                 otherwise
                     error('Undefined data_type %s',obj.data_type);
             end
-            crism_get_dirpath_observation(obj.basename,'Download',dwld,varargin{:});
+            % crism_get_dirpath_observation(obj.basename,'Download',dwld,varargin{:});
         end
         
         function load_basenameHKT(obj)
