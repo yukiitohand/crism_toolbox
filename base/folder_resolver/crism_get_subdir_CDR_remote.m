@@ -1,5 +1,5 @@
-function [subdir_remote] = get_subdir_CDR_remote(acro,cdr_folder_type,yyyy_doy)
-% [subdir_remote] = get_subdir_CDR_remote(acro,cdr_folder_type,yyyy_doy)
+function [subdir_remote] = crism_get_subdir_CDR_remote(acro,cdr_folder_type,yyyy_doy)
+% [subdir_remote] = crism_get_subdir_CDR_remote(acro,cdr_folder_type,yyyy_doy)
 %  get subdir_local that can be used for an input of pds_downloader.m. This
 %  is a wrapper function for actually produce subdir, of which is named
 %   'get_subdir_CDR_[local_fldsys](acro,cdr_folder_type,yyyy_doy)

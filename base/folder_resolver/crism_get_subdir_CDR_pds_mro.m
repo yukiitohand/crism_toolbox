@@ -1,5 +1,5 @@
-function [subdir] = get_subdir_CDR_pds_mro(acro,cdr_folder_type,yyyy_doy)
-% [subdir] = get_subdir_CDR_pds_mro(acro,cdr_folder_type,yyyy_doy)
+function [subdir] = crism_get_subdir_CDR_pds_mro(acro,cdr_folder_type,yyyy_doy)
+% [subdir] = crism_get_subdir_CDR_pds_mro(acro,cdr_folder_type,yyyy_doy)
 %  get subdir for jhuapl pds mro server that can be used for an input of 
 %  pds_downloader.m
 %  INPUTS

@@ -1,5 +1,5 @@
-function [subdir] = get_subdir_CDR_pds_unified(acro,cdr_folder_type,yyyy_doy)
-% [subdir] = get_subdir_CDR_pds_unified(acro,cdr_folder_type,yyyy_doy)
+function [subdir] = crism_get_subdir_CDR_pds_unified(acro,cdr_folder_type,yyyy_doy)
+% [subdir] = crism_get_subdir_CDR_pds_unified(acro,cdr_folder_type,yyyy_doy)
 %  get subdir for pds_unified folder system
 %  INPUTS
 %    acro: two character acronym for the CDR product
