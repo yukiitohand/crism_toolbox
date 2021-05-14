@@ -210,7 +210,7 @@ classdef CRISMdata < ENVIRasterMultBand
             if isempty(obj.basenamesCDR) || isempty(obj.dir_cdr) 
                 cdr_basename = crism_readWASBbasename(obj.lbl);
                 obj.basenamesCDR = cdr_basename;
-                [obj.dir_cdr] = finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
+                [obj.dir_cdr] = crism_finddirdownloadCDR_v3(obj.basenamesCDR,varargin{:});
             end
             obj.readCDR('WA');
             wa = obj.cdr.WA.readimg();
@@ -265,7 +265,7 @@ classdef CRISMdata < ENVIRasterMultBand
             end
             obj.basenamesCDR = crism_readCDRnames_v2(obj.lbl);
             if ~isempty(obj.basenamesCDR)
-                [obj.dir_cdr,files_local] = finddirdownloadCDR_v3(...
+                [obj.dir_cdr,files_local] = crism_finddirdownloadCDR_v3(...
                     obj.basenamesCDR,varargin{:});
             end
 
@@ -298,7 +298,7 @@ classdef CRISMdata < ENVIRasterMultBand
             end
             [source_basenames] = crism_read_SOURCE_OBS_basenames(obj.lbl);
             obj.basenames_SOURCE_OBS = source_basenames;
-            obj.dir_SOURCE_OBS = finddirdownload_SOURCE_OBS(...
+            obj.dir_SOURCE_OBS = crism_finddirdownload_SOURCE_OBS(...
                 obj.basenames_SOURCE_OBS,varargin{:});
 
         end

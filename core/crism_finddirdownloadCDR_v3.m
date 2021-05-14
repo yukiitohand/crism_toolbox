@@ -1,5 +1,5 @@
-function [dir_cdr,files_local] = finddirdownloadCDR_v3(basenamesCDR,varargin)
-% [dir_cdr,files_local] = finddirdownloadCDR_v3(basenamesCDR,varargin)
+function [dir_cdr,files_local] = crism_finddirdownloadCDR_v3(basenamesCDR,varargin)
+% [dir_cdr,files_local] = crism_finddirdownloadCDR_v3(basenamesCDR,varargin)
 %   get local full paths for CDR files
 %   INPUTS
 %    basenamesCDR: struct of CDR basenames, field names are two character 

@@ -1,5 +1,5 @@
-function [dir_SOURCE_OBS,files_local] = finddirdownload_SOURCE_OBS(basenames_SOURCE_OBS,varargin)
-% [dir_SOURCE_OBS,files_local] = finddirdownload_SOURCE_OBS(basenames_SOURCE_OBS,varargin)
+function [dir_SOURCE_OBS,files_local] = crism_finddirdownload_SOURCE_OBS(basenames_SOURCE_OBS,varargin)
+% [dir_SOURCE_OBS,files_local] = crism_finddirdownload_SOURCE_OBS(basenames_SOURCE_OBS,varargin)
 %   get local full paths for observation files
 %   INPUTS
 %    basenames_SOURCE_OBS: struct of basenames, field names are two character 
