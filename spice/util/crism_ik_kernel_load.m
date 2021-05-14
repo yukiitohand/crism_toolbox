@@ -49,7 +49,7 @@ crism_camera_info.rownum           = rownum_crism;
 %% next spatial sampling is resolved
 xtrck_smpls_full = 0:639;
 binx = crismdata_obj.lbl.PIXEL_AVERAGING_WIDTH;
-[xtrck_smpls] = bin_image_frames(xtrck_smpls_full,'binx',binx);
+[xtrck_smpls] = crism_bin_image_frames(xtrck_smpls_full,'binx',binx);
 crism_camera_info.xtrck_smpls_full = xtrck_smpls_full;
 crism_camera_info.xtrck_smpls = xtrck_smpls;
 
