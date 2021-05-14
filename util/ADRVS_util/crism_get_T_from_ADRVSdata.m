@@ -1,5 +1,5 @@
-function [ T ] = get_T_from_ADRVSdata( adrvsdata_obj,varargin )
-% [ T ] = get_T_from_ADRVSdata( adrvsdata_obj,varargin )
+function [ T ] = crism_get_T_from_ADRVSdata( adrvsdata_obj,varargin )
+% [ T ] = crism_get_T_from_ADRVSdata( adrvsdata_obj,varargin )
 %   get transmission spectrum frame from ADRVSdata
 %   INPUT
 %    adrvsdata_obj: CRISMdata obj, ADR VS data
@@ -30,8 +30,7 @@ else
             case 'ARTIFACT_IDX'
                 artifact_idx = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end

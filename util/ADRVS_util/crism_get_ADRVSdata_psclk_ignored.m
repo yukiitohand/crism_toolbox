@@ -1,5 +1,5 @@
-function [ADRVSdataList_s,idxes_selected] = get_ADRVSdata_psclk_ignored(ADRVSdataList)
-% [ADRVSdataList_s,idxes_selected] = get_ADRVSdata_psclk_ignored(ADRVSdataList)
+function [ADRVSdataList_s,idxes_selected] = crism_get_ADRVSdata_psclk_ignored(ADRVSdataList)
+% [ADRVSdataList_s,idxes_selected] = crism_get_ADRVSdata_psclk_ignored(ADRVSdataList)
 %   Remove all the ADRVSdata that are same except partition and sclk time.
 %   Because such data seem to be duplicates. Among them, usually ADRVSdata 
 %   withsclk=0 tend to be selected.

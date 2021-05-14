@@ -1,5 +1,5 @@
-function [ADRVSdataList] = get_ADRVSdata(propADRVS,varargin)
-% [ADRVSdataList] = get_ADRVSdata(propADRVS,varargin)
+function [ADRVSdataList] = crism_get_ADRVSdata(propADRVS,varargin)
+% [ADRVSdataList] = crism_get_ADRVSdata(propADRVS,varargin)
 % get ADRVSdata that match the input propADRVS. If propADRVS is empty, all
 % ADRVSdata will be retured.
 %  
@@ -21,8 +21,7 @@ else
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end

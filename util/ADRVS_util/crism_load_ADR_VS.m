@@ -1,5 +1,5 @@
-function [ trans_spcs ] = load_ADR_VS( varargin )
-% [ trans_spcs ] = load_ADR_VS( varargin )
+function [ trans_spcs ] = crism_load_ADR_VS( varargin )
+% [ trans_spcs ] = crism_load_ADR_VS( varargin )
 % 
 % OUTPUTS
 %  trans_spcs: stacked transmission spectra [n x S x L]
@@ -105,17 +105,17 @@ if ~exist(cachedpath,'dir'), mkdir(cachedpath); end
 if ~overwrite && exist(cachefpath,'file')
     load(cachefpath,'trans_spcs');
 else
-    [ADRVSdataList] = get_ADRVSdata(propADRVSPtr,'Dwld',dwld);
+    [ADRVSdataList] = crism_get_ADRVSdata(propADRVSPtr,'Dwld',dwld);
     if vr_latest
         % select the latest versions if vr='latest' is set
-        [ADRVSdataList,idxes_latest] = select_latest_version_ADRVSdata(ADRVSdataList);
+        [ADRVSdataList,idxes_latest] = crism_select_latest_version_ADRVSdata(ADRVSdataList);
     end
     % the data only different in psclk are same. 
-    [ADRVSdataList,idxes_selected] = get_ADRVSdata_psclk_ignored(ADRVSdataList);
+    [ADRVSdataList,idxes_selected] = crism_get_ADRVSdata_psclk_ignored(ADRVSdataList);
     
     trans_spcs = [];
     for i=1:length(ADRVSdataList)
-        [ T ] = get_T_from_ADRVSdata(ADRVSdataList(i),'MODE',mode_artifact,...
+        [ T ] = crism_get_T_from_ADRVSdata(ADRVSdataList(i),'MODE',mode_artifact,...
             'Artifact_idx',artifact_idx,'band_inverse',is_band_inverse);
         trans_spcs = cat(1,trans_spcs,T);
     end
