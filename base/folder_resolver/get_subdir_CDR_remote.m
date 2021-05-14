@@ -14,7 +14,7 @@ function [subdir_remote] = get_subdir_CDR_remote(acro,cdr_folder_type,yyyy_doy)
 global crism_env_vars
 
 remote_fldsys = crism_env_vars.remote_fldsys;
-get_subdir_CDR_remote_func = str2func(['get_subdir_CDR_' remote_fldsys]);
+get_subdir_CDR_remote_func = str2func(['crism_get_subdir_CDR_' remote_fldsys]);
 subdir_remote = get_subdir_CDR_remote_func(acro,cdr_folder_type,yyyy_doy);
 
 end
