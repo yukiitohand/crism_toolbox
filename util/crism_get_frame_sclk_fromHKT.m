@@ -49,7 +49,7 @@ rate_id = cat(1,hkt.data.RATE);
 integ_t = cat(1,hkt.data.EXPOSURE);
 
 % convert integ parameter (0-480) to integration time [ms]
-[exp_t] = get_integrationTime(integ_t,rate_id);
+[exp_t] = crism_get_integrationTime(integ_t,rate_id);
 exp_t = exp_t ./ 1000;
 
 % get start sclk time to 
