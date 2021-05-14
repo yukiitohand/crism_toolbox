@@ -1,5 +1,5 @@
-function [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRList,propCDRref)
-%  [propCDRmrb,idx_mrb] = find_psclk_mrb_fromCDRpropList(propCDRList,propCDRref)
+function [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRList,propCDRref)
+%  [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRList,propCDRref)
 %   find the most recent CDR property before the reference CDR. Note that
 %   partition is also considered. psclk means partition sclk
 %  Input Parameters

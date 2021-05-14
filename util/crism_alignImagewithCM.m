@@ -1,4 +1,4 @@
-function [img_aligned] = alignImagewithCM(img_ref,CMimg_ref,CMimg_tar,DMmask_ref,DMmask_tar)
+function [img_aligned] = crism_alignImagewithCM(img_ref,CMimg_ref,CMimg_tar,DMmask_ref,DMmask_tar)
 % Perform aligning image with CM (camara model)
 % Input parameters
 %   img_ref: image to be projected [L,S,B]

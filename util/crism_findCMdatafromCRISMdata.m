@@ -1,4 +1,4 @@
-function [CMdata] = findCMdatafromCRISMdata(CRISMdataobj)
+function [CMdata] = crism_findCMdatafromCRISMdata(CRISMdataobj)
 % find CDR CM data from CRISMdata object
 %   Input Parameters
 %     CRISMdataobj: 

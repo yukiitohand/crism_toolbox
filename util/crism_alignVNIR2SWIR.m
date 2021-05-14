@@ -8,8 +8,8 @@ function [img_aligned,wa_aligned] = crism_alignVNIR2SWIR(CRISMdataSobj,CRISMdata
 %   img_aligned: VNIR image aligned to IR CRISMdata detector space.
 
 % load CDR CMdata
-[CMdataL] = findCMdatafromCRISMdata(CRISMdataLobj);
-[CMdataS] = findCMdatafromCRISMdata(CRISMdataSobj);
+[CMdataL] = crism_findCMdatafromCRISMdata(CRISMdataLobj);
+[CMdataS] = crism_findCMdatafromCRISMdata(CRISMdataSobj);
 
 % read CDR DM data
 DMdataL = CRISMdataLobj.readCDR('DM');
@@ -29,9 +29,9 @@ CRISMdataSobj.readCDR('WA');
 CRISMdataSobj.cdr.WA.readimg();
 
 % perform the alignment of the image
-[img_aligned] = alignImagewithCM(CRISMdataSobj.img,CMdataS.img,CMdataL.img,DMmaskS,DMmaskL);
+[img_aligned] = crism_alignImagewithCM(CRISMdataSobj.img,CMdataS.img,CMdataL.img,DMmaskS,DMmaskL);
 % perform the alignment of the wavelength
-[wa_aligned] = alignImagewithCM(CRISMdataSobj.cdr.WA.img,CMdataS.img,CMdataL.img,DMmaskS,DMmaskL);
+[wa_aligned] = crism_alignImagewithCM(CRISMdataSobj.cdr.WA.img,CMdataS.img,CMdataL.img,DMmaskS,DMmaskL);
 
 
 end

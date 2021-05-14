@@ -1,4 +1,4 @@
-function [ img ] = missing_replace( img,lbl,hdr )
+function [ img ] = crism_missing_replace( img,lbl,hdr )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 if ~isempty(lbl)

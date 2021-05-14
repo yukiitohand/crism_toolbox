@@ -70,7 +70,7 @@ switch folder_type
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
             % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
             [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
-            [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
+            [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
             if ~isempty(propCDRmrb)
                 if iscell(basenameCDRList)
                     basenameCDRmrb = basenameCDRList{idx_mrb};
@@ -91,7 +91,7 @@ switch folder_type
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
         % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
         [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
-        [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
+        [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
         if iscell(basenameCDRList)
             basenameCDRmrb = basenameCDRList{idx_mrb};
         elseif ischar(basenameCDRList)
@@ -106,7 +106,7 @@ switch folder_type
         fnamelist = dir(dirfullpath_local);
         [basenameCDRList] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);
         [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
-        [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
+        [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
         if iscell(basenameCDRList)
             basenameCDRmrb = basenameCDRList{idx_mrb};
         elseif ischar(basenameCDRList)
