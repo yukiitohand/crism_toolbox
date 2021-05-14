@@ -1,5 +1,5 @@
-function [dir_info,basenameOTT] = crism_search_ott_fromProp(propOTT,varargin)
-% [dir_info,basenameOTT] = crism_search_ott_fromProp(propOTT,varargin)
+function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(propOTT,varargin)
+% [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(propOTT,varargin)
 %  get directory path of the OTT files. The file could
 %  be downloaded using an option
 %  Inputs
@@ -10,6 +10,8 @@ function [dir_info,basenameOTT] = crism_search_ott_fromProp(propOTT,varargin)
 %       subdir_local     : subdirectory path
 %       subdir_remote    : subdirectory for the remote server
 %   basenameOTT  : basename of the matched file
+%   fnameOTT_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters 
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
@@ -50,7 +52,7 @@ end
 dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 
 [basenamePtrn] = get_basenameOTT_fromProp(propOTT);
-[basenameOTT] = crism_readDownloadBasename(basenamePtrn,...
+[basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
                     subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
                 
 dir_info = [];

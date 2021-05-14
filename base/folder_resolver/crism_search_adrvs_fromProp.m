@@ -1,5 +1,5 @@
-function [dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,varargin)
-% [dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,varargin)
+function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fromProp(propADRVS,varargin)
+% [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fromProp(propADRVS,varargin)
 %  get directory path of the given basename of the ADR VS file. The file could
 %  be downloaded using an option
 %  Inputs
@@ -12,7 +12,10 @@ function [dir_info,basenameADRVS] = crism_search_adrvs_fromProp(propADRVS,vararg
 %       acro             : acronym for the CDR data, usually same sa
 %                          dirname
 %   basenameADRVS: basename of the matched file
+%   fnameADRVS_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters
+%      'EXT','EXTENSION': extenstion for which the download is performed.
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
 %                         nothing happens
 %                         (default) 0
@@ -52,7 +55,7 @@ subdir_remote = '';
 
 [basenameADRVSPtrn] = get_basenameADRVS_fromProp(propADRVS);
 fnamelist = dir(dirfullpath_local);
-[basenameADRVS] = extractMatchedBasename_v2(basenameADRVSPtrn,[{fnamelist.name}]);
+[basenameADRVS,fnameADRVS_wext_local] = extractMatchedBasename_v2(basenameADRVSPtrn,[{fnamelist.name}]);
 if ischar(basenameADRVS), basenameADRVS = {basenameADRVS}; end
 if dwld == -1
     if ~isempty(outfile)

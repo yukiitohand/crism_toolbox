@@ -1,5 +1,5 @@
-function [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
-% [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
+function [dir_info,basenameOBS,fnameOBS_wext_local] = crism_get_dirpath_observation(basenameOBS,varargin)
+% [dir_info,basenameOBS,fnameOBS_wext_local] = crism_get_dirpath_observation(basenameOBS,varargin)
 %  get directory path of the given basename of observation basename. 
 %  The file could be downloaded using an option
 %  Inputs
@@ -11,6 +11,9 @@ function [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
 %       subdir_remote    : subdirectory for the remote server
 %       yyyy_doy         : yyyy_doy
 %       dirname          : directory name
+%   basenameOBS: basename of the matched file
+%   fnameOBS_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters (passed onto crism_search_observation_fromProp)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
@@ -21,6 +24,6 @@ function [dir_info] = crism_get_dirpath_observation(basenameOBS,varargin)
 %                         pds_downloader. (default) false
 
 propOBS = getProp_basenameOBSERVATION(basenameOBS);
-[dir_info] = crism_search_observation_fromProp(propOBS,varargin{:});
+[dir_info,basenameOBS,fnameOBS_wext_local] = crism_search_observation_fromProp(propOBS,varargin{:});
 
 end

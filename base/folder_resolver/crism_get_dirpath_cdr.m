@@ -1,5 +1,5 @@
-function [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
-% [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
+function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_get_dirpath_cdr(basenameCDR,varargin)
+% [dir_info,basenameCDR,fnameCDR_wext_local] = crism_get_dirpath_cdr(basenameCDR,varargin)
 %  get directory path of the given basename of the CDR file. The file could
 %  be downloaded using an option
 %  Inputs
@@ -14,6 +14,9 @@ function [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
 %       folder_type      : folder_type {1,2,3}
 %       yyyy_doy         : year and day of the year
 %       dirname          : same as acro
+%   basenameCDR: basename of the matched file
+%   fnameCDR_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters (passed onto crism_search_cdr_fromProp.m)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
@@ -24,7 +27,7 @@ function [dir_info] = crism_get_dirpath_cdr(basenameCDR,varargin)
 %                         pds_downloader. (default) false
 
 propCDR = getProp_basenameCDR(basenameCDR);
-[dir_info] = crism_search_cdr_fromProp(propCDR,varargin{:});
+[dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(propCDR,varargin{:});
 dir_info.dirname = acro;
 % dirname = acro;
 

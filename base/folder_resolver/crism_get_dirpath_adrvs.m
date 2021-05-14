@@ -1,5 +1,5 @@
-function [dir_info] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
-% [dir_info] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
+function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
+% [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
 %  get directory path of the given basename of the ADR VS file. The file could
 %  be downloaded using an option
 %  Inputs
@@ -12,6 +12,9 @@ function [dir_info] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
 %       acro             : acronym for the CDR data, usually same sa
 %                          dirname
 %       dirname          : same as acro
+%   basenameADRVS: basename of the matched file
+%   fnameADRVS_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters (passed onto crism_search_adrvs_fromProp)
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
 %                         nothing happens
@@ -21,7 +24,7 @@ function [dir_info] = crism_get_dirpath_adrvs(basenameADRVS,varargin)
 %                         (default) ''
 
 propADRVS = getProp_basenameADRVS(basenameADRVS);
-[dir_info,~] = crism_search_adrvs_fromProp(propADRVS,varargin{:});
+[dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fromProp(propADRVS,varargin{:});
 
 dir_info.dirname = acro;
 

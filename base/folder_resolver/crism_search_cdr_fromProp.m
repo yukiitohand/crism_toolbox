@@ -1,5 +1,5 @@
-function [dir_info,basenameCDR] = crism_search_cdr_fromProp(propCDR,varargin)
-% [dir_info,basenameCDR] = crism_search_cdr_fromProp(propCDR,varargin)
+function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(propCDR,varargin)
+% [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(propCDR,varargin)
 %  get directory path of the given basename of the CDR file. The file could
 %  be downloaded using an option
 %  Inputs
@@ -14,6 +14,8 @@ function [dir_info,basenameCDR] = crism_search_cdr_fromProp(propCDR,varargin)
 %       folder_type      : folder_type {1,2,3}
 %       yyyy_doy         : year and day of the year
 %   basenameCDR: basename of the matched file
+%   fnameCDR_wext_local : cell array of the filenames (with extensions) existing 
+%                      locally.
 %  Optional Parameters
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
@@ -28,6 +30,7 @@ localCATrootDir = crism_env_vars.localCATrootDir;
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
 
+ext  = '';
 dwld = 0;
 force = 0;
 outfile = '';
@@ -37,6 +40,8 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
+            case {'EXT','EXTENSION'}
+                ext = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
             case 'FORCE'
@@ -75,8 +80,9 @@ switch folder_type
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
             [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
-            [basenameCDR] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+            [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+                subdir_local,subdir_remote,dwld,'Force',force, ...
+                'Out_File',outfile,'Extension',ext);
             if ~isempty(basenameCDR)
                 exist_flg = 1;
             else
@@ -92,15 +98,15 @@ switch folder_type
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
         [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
-        [basenameCDR] = crism_readDownloadBasename(basenameCDRPtrn,...
-            subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+        [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+            subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile,'Extension',ext);
     case 3
         subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
         dirfullpath_local = joinPath(localCATrootDir,subdir_local);
         subdir_remote = '';
         [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
         fnamelist = dir(dirfullpath_local);
-        [basenameCDR] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);
+        [basenameCDR,fnameCDR_wext_local] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);
         if ischar(basenameCDR), basenameCDR = {basenameCDR}; end
         if dwld == -1
             if ~isempty(outfile)
