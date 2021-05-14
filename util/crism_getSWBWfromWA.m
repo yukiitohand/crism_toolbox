@@ -1,5 +1,5 @@
-function [SWBWdata] = getSWBWfromWA(WAdata,acro)
-% [SWdata] = getSWBWfromWA(WAdata,acro)
+function [SWBWdata] = crism_getSWBWfromWA(WAdata,acro)
+% [SWBWdata] = crism_getSWBWfromWA(WAdata,acro)
 %   Get CDR SW/BW for the given WA file.
 %   Input: 
 %     WAdata: CDR WA data, CRISMdata obj

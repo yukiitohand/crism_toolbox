@@ -1,5 +1,5 @@
-function [wv_sweetspot,wv_sweetspot_rownum] = getWV_sweetspotfromSW(WAdata,varargin)
-% [wv_sweetspot,wv_sweetspot_rownum] = getWV_sweetspotfromSW(WAdata,acro)
+function [wv_sweetspot,wv_sweetspot_rownum] = crism_getWV_sweetspotfromSW(WAdata,varargin)
+% [wv_sweetspot,wv_sweetspot_rownum] = crism_getWV_sweetspotfromSW(WAdata,varargin)
 %   Get sweetspot wavelength for the given WA file.
 %   Input: 
 %     WAdata: CDR WA data, CRISMdata obj
@@ -30,8 +30,8 @@ end
 
 propWA = crism_getProp_basenameCDR4(WAdata.basename);
 
-[WVdata] = getWVfromWA(WAdata);
-[SWdata] = getSWBWfromWA(WAdata,'SW');
+[WVdata] = crism_getWVfromWA(WAdata);
+[SWdata] = crism_getSWBWfromWA(WAdata,'SW');
 
 wv_tab = WVdata.readTAB();
 sw_tab = SWdata.readTAB();

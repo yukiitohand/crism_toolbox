@@ -1,5 +1,5 @@
-function [wv_sweetspot,is_band_inverse,colsw] = getWV_sweetspot(WAdata)
-% [wv_sweetspot,is_band_inverse] = getWV_sweetspot(WAdata)
+function [wv_sweetspot,is_band_inverse,colsw] = crism_getWV_sweetspot(WAdata)
+% [wv_sweetspot,is_band_inverse,colsw] = crism_getWV_sweetspot(WAdata)
 %   Get sweetspot wavelengths for the given WA file.
 %   Input: 
 %     WAdata: CDR WA data, CRISMdata obj

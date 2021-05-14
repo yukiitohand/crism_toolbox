@@ -1,5 +1,5 @@
-function [WVdata] = getWVfromWA(WAdata)
-% [WVdata] = getWVfromWA(WAdata)
+function [WVdata] = crism_getWVfromWA(WAdata)
+% [WVdata] = crism_getWVfromWA(WAdata)
 %   Get CDR WV data for the given WA file.
 %   Input: 
 %     WAdata: CDR WA data, CRISMdata obj

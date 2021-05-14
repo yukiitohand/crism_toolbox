@@ -8,7 +8,7 @@ function [sw,unit] = crism_get_sw(WAdata)
 %   unit: unit of the wavelength
 %
 
-SWdata = getSWBWfromWA(WAdata,'SW');
+SWdata = crism_getSWBWfromWA(WAdata,'SW');
 SWdata.readTAB();
 rownumtbl_sw = [SWdata.tab.data.ROWNUM];
 % Get ROWNUMTABLE

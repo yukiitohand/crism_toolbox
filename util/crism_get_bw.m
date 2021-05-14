@@ -8,7 +8,7 @@ function [bw,unit] = crism_get_bw(WAdata)
 %   unit: string
 %
 
-BWdata = getSWBWfromWA(WAdata,'BW');
+BWdata = crism_getSWBWfromWA(WAdata,'BW');
 BWdata.readTAB();
 rownumtbl_sw = [BWdata.tab.data.ROWNUM];
 % Get ROWNUMTABLE

@@ -34,11 +34,11 @@ if isempty(TRRdata.basenamesCDR), TRRdata.load_basenamesCDR(); end
 propTRRdata = crism_getProp_basenameOBSERVATION(TRRdata.basename);
 
 WAdata = TRRdata.readCDR('WA');
-SWdata = getSWBWfromWA(WAdata,'SW');
+SWdata = crism_getSWBWfromWA(WAdata,'SW');
 
-wv_sweetspot = getWV_sweetspotfromSW(WAdata,'BAND_INVERSE',band_inverse,'SENSOR_ID',TRRdata.prop.sensor_id);
+wv_sweetspot = crism_getWV_sweetspotfromSW(WAdata,'BAND_INVERSE',band_inverse,'SENSOR_ID',TRRdata.prop.sensor_id);
 wv_sweetspot(wv_sweetspot==65535) = nan;
-fwhm_sweetspot = getFWHM_sweetspotfromBW(WAdata,'BAND_INVERSE',band_inverse,'SENSOR_ID',TRRdata.prop.sensor_id);
+fwhm_sweetspot = crism_getFWHM_sweetspotfromBW(WAdata,'BAND_INVERSE',band_inverse,'SENSOR_ID',TRRdata.prop.sensor_id);
 fwhm_sweetspot(fwhm_sweetspot==65535) = nan;
 bbl = create_crism_bbl(wv_sweetspot,TRRdata.lbl.MRO_SENSOR_ID,'BAND_INVERSE',false);
 

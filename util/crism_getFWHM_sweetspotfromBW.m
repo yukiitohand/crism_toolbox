@@ -1,5 +1,5 @@
-function [fwhm_sweetspot,sweetspot_rownum] = getFWHM_sweetspotfromBW(WAdata,varargin)
-% [fwhm,sweetspot_rownum] = getFWHM_sweetspotfromBW(WAdata,acro)
+function [fwhm_sweetspot,sweetspot_rownum] = crism_getFWHM_sweetspotfromBW(WAdata,varargin)
+% [fwhm_sweetspot,sweetspot_rownum] = crism_getFWHM_sweetspotfromBW(WAdata,varargin)
 %   Get sCDR SW/BW for the given WA file.
 %   Input: 
 %     WAdata: CDR WA data, CRISMdata obj
@@ -30,8 +30,8 @@ end
 
 propWA = crism_getProp_basenameCDR4(WAdata.basename);
 
-[WVdata] = getWVfromWA(WAdata);
-[BWdata] = getSWBWfromWA(WAdata,'BW');
+[WVdata] = crism_getWVfromWA(WAdata);
+[BWdata] = crism_getSWBWfromWA(WAdata,'BW');
 
 wv_tab = WVdata.readTAB();
 bw_tab = BWdata.readTAB();
