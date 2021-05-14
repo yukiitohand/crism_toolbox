@@ -1,5 +1,5 @@
-function [bbl] = create_crism_bbl(wv_sweetspot,sensor_id,varargin)
-% [bbl] = create_crism_bbl(wv_sweetspot,sensor_id)
+function [bbl] = crism_create_bbl(wv_sweetspot,sensor_id,varargin)
+% [bbl] = crism_create_bbl(wv_sweetspot,sensor_id,varargin)
 %   refer 'create_crism_bbl.pro' and 'crism_bad_bands.pro' in CAT
 %  Input
 %   wv_sweetspot: wavelength at sweet spot

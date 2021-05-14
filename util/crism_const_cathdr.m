@@ -40,7 +40,7 @@ wv_sweetspot = crism_getWV_sweetspotfromSW(WAdata,'BAND_INVERSE',band_inverse,'S
 wv_sweetspot(wv_sweetspot==65535) = nan;
 fwhm_sweetspot = crism_getFWHM_sweetspotfromBW(WAdata,'BAND_INVERSE',band_inverse,'SENSOR_ID',TRRdata.prop.sensor_id);
 fwhm_sweetspot(fwhm_sweetspot==65535) = nan;
-bbl = create_crism_bbl(wv_sweetspot,TRRdata.lbl.MRO_SENSOR_ID,'BAND_INVERSE',false);
+bbl = crism_create_bbl(wv_sweetspot,TRRdata.lbl.MRO_SENSOR_ID,'BAND_INVERSE',false);
 
 hdr_cat = [];
 % dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
