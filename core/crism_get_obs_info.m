@@ -175,7 +175,7 @@ else
             case 'DOWNLOAD_TRRRA'
                 dwld_trrra = varargin{i+1};
             case 'DOWNLOAD_TRRRAHKP'
-                dwld_trrra = varargin{i+1};
+                dwld_trrrahkp = varargin{i+1};
             case 'DOWNLOAD_EDRSCDF'
                 dwld_edrscdf = varargin{i+1};
             case 'DOWNLOAD_TER'
@@ -472,7 +472,7 @@ end
 [~,basenameDFHKP,fnameDFHKPwext_local] = search_product_EDR('DF',obs_counter_df,'HKP',dwld_edrscdf,0,ext_edrscdf);
 
 fnamesEDRwext_local = [fnameEDRSCwext_local fnameEDRSCHKPwext_local ...
-    fnameEPFSCwext_local fnameEPFSCHKPwext_local fnameEPFDFwext_local 
+    fnameEPFSCwext_local fnameEPFSCHKPwext_local fnameEPFDFwext_local ...
     fnameEPFDFHKPwext_local fnameBIwext_local fnameBIHKPwext_local ...
     fnameSPwext_local fnameSPHKPwext_local fnameUNwext_local ...
     fnameDFwext_local fnameDFHKPwext_local];
