@@ -22,7 +22,7 @@ else
         basenames = {basenames};
     end
 
-    propList = cellfun(@(x) getProp_basenameOBSERVATION(x), basenames);
+    propList = cellfun(@(x) crism_getProp_basenameOBSERVATION(x), basenames);
     obs_ctrs = cellfun(@(x) hex2dec(x), {propList.obs_counter});
     idx = find(obs_ctrs==ffc_counter);
     

@@ -12,7 +12,7 @@ function [wv_sweetspot,is_band_inverse,colsw] = getWV_sweetspot(WAdata)
 
 if isempty(WAdata.img), WAdata.readimgi(); end
 
-propWA = getProp_basenameCDR4(WAdata.basename);
+propWA = crism_getProp_basenameCDR4(WAdata.basename);
 
 [colsw] = crism_get_columns_sweetspot_wavelength(propWA.sensor_id,propWA.binning);
 

@@ -35,22 +35,22 @@ propCRISMdata = crismdata_obj.prop;
 obs_counterCRISMdata = propCRISMdata.obs_counter;
 
 
-propDF = create_propOBSbasename();
+propDF = crism_create_propOBSbasename();
 propDF.obs_class_type = propCRISMdata.obs_class_type;
 propDF.ob_id = propCRISMdata.obs_id;
 propDF.sensor_id = propCRISMdata.sensor_id;
 propDF.activity_id = 'DF';
 propDF.product_type = 'EDR';
-DFptrn = get_basenameOBS_fromProp(propDF);
+DFptrn = crism_get_basenameOBS_fromProp(propDF);
 
-% propEDRSC = create_propOBSbasename();
+% propEDRSC = crism_create_propOBSbasename();
 % propEDRSC.obs_class_type = propCRISMdata.obs_class_type;
 % propEDRSC.ob_id = propCRISMdata.obs_id;
 % propEDRSC.sensor_id = propCRISMdata.sensor_id;
 % propEDRSC.activity_macro_num = propCRISMdata.activity_macro_num;
 % propEDRSC.activity_id = 'SC';
 % propEDRSC.product_type = 'EDR';
-% EDRSCptrn = get_basenameOBS_fromProp(propEDRSC);
+% EDRSCptrn = crism_get_basenameOBS_fromProp(propEDRSC);
 
 EDRSCptrn = crismdata_obj.basenames_SOURCE_OBS.SC;
 
@@ -66,7 +66,7 @@ for i=1:length(crismdata_obj.cdr.BP)
         if isempty(basename_df)
             error('check %s',bpdata.basename);
         end
-        propDF_test = getProp_basenameOBSERVATION(basename_df);
+        propDF_test = crism_getProp_basenameOBSERVATION(basename_df);
         if hex2dec(propDF_test.obs_counter) < hex2dec(obs_counterCRISMdata)
             BPdata1 = [BPdata1 bpdata];
         elseif hex2dec(propDF_test.obs_counter) > hex2dec(obs_counterCRISMdata)

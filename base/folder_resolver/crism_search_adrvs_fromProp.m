@@ -38,13 +38,13 @@ else
             case 'OUT_FILE'
                 outfile = varargin{i+1};
             otherwise
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
 
 if isempty(propADRVS)
-    propADRVS = create_propADRVSbasename();
+    propADRVS = crism_create_propADRVSbasename();
 end
 
 acro = propADRVS.acro_calibration_type;
@@ -52,7 +52,7 @@ subdir_local = joinPath('CAT_ENVI/aux_files/ADR/',acro);
 dirfullpath_local = joinPath(localCATrootDir,subdir_local);
 subdir_remote = '';
 
-[basenameADRVSPtrn] = get_basenameADRVS_fromProp(propADRVS);
+[basenameADRVSPtrn] = crism_get_basenameADRVS_fromProp(propADRVS);
 fnamelist = dir(dirfullpath_local);
 [basenameADRVS,fnameADRVS_wext_local] = extractMatchedBasename_v2(basenameADRVSPtrn,[{fnamelist.name}]);
 if ischar(basenameADRVS), basenameADRVS = {basenameADRVS}; end

@@ -35,7 +35,7 @@ classdef CRISMTRRdataset < dynamicprops
             end
             
             % Error handling
-            prop_trr3if = getProp_basenameOBSERVATION(basename_trr3if);
+            prop_trr3if = crism_getProp_basenameOBSERVATION(basename_trr3if);
             if isempty(prop_trr3if)
                 error('Input basename_trr3if %s is invalid',basename_trr3if);
             elseif ~strcmpi(prop_trr3if.activity_id,'IF')
@@ -53,7 +53,7 @@ classdef CRISMTRRdataset < dynamicprops
             % RA and RA_IF
             prop_ra = TRR3IFdata.prop;
             prop_ra.activity_id = 'RA';
-            basename_ra = get_basenameOBS_fromProp(prop_ra);
+            basename_ra = crism_get_basenameOBS_fromProp(prop_ra);
             obj.append('trr3ra',basename_ra,TRR3IFdata.dirpath);
             obj.appendCAT('trr3raif',basename_ra,TRR3IFdata.dirpath,'IF');
             

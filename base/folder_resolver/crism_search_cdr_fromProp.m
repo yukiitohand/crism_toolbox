@@ -107,7 +107,7 @@ switch folder_type
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
-            [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
+            [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,subdir_remote,dwld,'Force',force, ...
                 'Out_File',outfile,'overwrite',overwrite,...
@@ -127,7 +127,7 @@ switch folder_type
         subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
-        [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
+        [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
             subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile, ...
             'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
@@ -136,7 +136,7 @@ switch folder_type
         subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
         dirfullpath_local = joinPath(localCATrootDir,subdir_local);
         subdir_remote = '';
-        [basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR);
+        [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         fnamelist = dir(dirfullpath_local);
         [basenameCDR,fnameCDR_wext_local] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);
         if ischar(basenameCDR), basenameCDR = {basenameCDR}; end

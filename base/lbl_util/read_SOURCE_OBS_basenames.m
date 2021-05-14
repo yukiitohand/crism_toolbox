@@ -3,7 +3,7 @@ function [source_obs_basenames] = read_SOURCE_OBS_basenames(lbl)
 source_obs_basenames = [];
 for i=1:length(lbl.SOURCE_PRODUCT_ID)
     name = lbl.SOURCE_PRODUCT_ID{i};
-    propOBS = getProp_basenameOBSERVATION(name);
+    propOBS = crism_getProp_basenameOBSERVATION(name);
     if ~isempty(propOBS)
         activityID = propOBS.activity_id;
         source_obs_basenames = addField(source_obs_basenames,activityID,name);

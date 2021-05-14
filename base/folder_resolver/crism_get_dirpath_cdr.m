@@ -41,7 +41,7 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_get_dirpath_cdr(base
 %                         operations.
 %                         (default) true
 
-propCDR = getProp_basenameCDR(basenameCDR);
+propCDR = crism_getProp_basenameCDR(basenameCDR);
 [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(propCDR,varargin{:});
 dir_info.dirname = dir_info.acro;
 

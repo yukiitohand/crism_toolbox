@@ -1,5 +1,5 @@
 function [dirname] = crism_get_dirname_fromPropOBS(propOBS)
-% [dirname] = get_dirname_fromPropOBS(propOBS)
+% [dirname] = crism_get_dirname_fromPropOBS(propOBS)
 %   get dirname from property struct of observation
 %  INPUT
 %    propOBS: property struct of the observation

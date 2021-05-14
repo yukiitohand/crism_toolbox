@@ -39,20 +39,20 @@ classdef CRISMdata < ENVIRasterMultBand
     methods
         function obj = CRISMdata(basename,dirpath,varargin)
             % load property and find out the type of data from "basename"
-            if ~isempty(getProp_basenameOBSERVATION(basename))
-                prop = getProp_basenameOBSERVATION(basename);
+            if ~isempty(crism_getProp_basenameOBSERVATION(basename))
+                prop = crism_getProp_basenameOBSERVATION(basename);
                 data_type = 'OBSERVATION';
-            elseif ~isempty(getProp_basenameCDR4(basename))
-                prop = getProp_basenameCDR4(basename);
+            elseif ~isempty(crism_getProp_basenameCDR4(basename))
+                prop = crism_getProp_basenameCDR4(basename);
                 data_type = 'CDR4';
-            elseif ~isempty(getProp_basenameCDR6(basename))
-                prop = getProp_basenameCDR6(basename);
+            elseif ~isempty(crism_getProp_basenameCDR6(basename))
+                prop = crism_getProp_basenameCDR6(basename);
                 data_type = 'CDR6';
-            elseif ~isempty(getProp_basenameOTT(basename))
-                prop = getProp_basenameOTT(basename);
+            elseif ~isempty(crism_getProp_basenameOTT(basename))
+                prop = crism_getProp_basenameOTT(basename);
                 data_type = 'OTT';
-            elseif ~isempty(getProp_basenameADRVS(basename))
-                prop = getProp_basenameADRVS(basename);
+            elseif ~isempty(crism_getProp_basenameADRVS(basename))
+                prop = crism_getProp_basenameADRVS(basename);
                 data_type = 'ADR_VS';
             end
             % find out yyyy_doy and dirname
@@ -346,7 +346,7 @@ classdef CRISMdata < ENVIRasterMultBand
         end
         
         function [prop] = get_basenameProp(obj)
-            prop = getProp_basenameOBSERVATION(obj.basename);
+            prop = crism_getProp_basenameOBSERVATION(obj.basename);
         end
         
         function [yyyy_doy] = get_YYYY_DOY(obj)
@@ -370,7 +370,7 @@ classdef CRISMdata < ENVIRasterMultBand
                     atf.(fldnm) = '';
                 else
                     prop_atf.product_type = 'EDR';
-                    basenamePtr = get_basenameOBS_fromProp(prop_atf);
+                    basenamePtr = crism_get_basenameOBS_fromProp(prop_atf);
                     [dir_info]  = crism_search_observation_fromProp(prop_atf,varargin{:});
                     dirpath     = dir_info.dirfullpath_local;
                     remote_subdir = dir_info.subdir_remote;

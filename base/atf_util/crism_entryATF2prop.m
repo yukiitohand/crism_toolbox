@@ -23,7 +23,7 @@ function [prop] = crism_entryATF2prop(entry_atf)
 %    'version'
 %    'product_type'
 
-[ prop ] = create_propOBSbasename();
+[ prop ] = crism_create_propOBSbasename();
 ptrn = crism_get_entryATF_fromProp(prop);
 
 prop_atf = regexpi(entry_atf,ptrn,'names');

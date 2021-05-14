@@ -23,5 +23,5 @@ end
     
 propTRRX = TRRdata.prop;
 propTRRX.version = vr;
-basename_trrx = get_basenameOBS_fromProp(propTRRX);
+basename_trrx = crism_get_basenameOBS_fromProp(propTRRX);
 end

@@ -13,7 +13,7 @@ classdef CRISMdataCAT < CRISMdata
         
         function obj = readCRISMdata_parent(obj,basename_ascend,dirpath_ascend,varargin)
             if isempty(basename_ascend)
-                basename_ascend = get_basenameOBS_fromProp(obj.prop);
+                basename_ascend = crism_get_basenameOBS_fromProp(obj.prop);
             end
             obj.CRISMdata_parent = CRISMdata(basename_ascend,dirpath_ascend,varargin{:});
         end

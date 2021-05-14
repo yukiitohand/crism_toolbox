@@ -77,13 +77,12 @@ else
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
 
-propADRVSPtr = create_propADRVSbasename();
+propADRVSPtr = crism_create_propADRVSbasename();
 if ~isempty(binning), propADRVSPtr.binning = binning; end
 if ~isempty(wv_filter), propADRVSPtr.wavelength_filter = wv_filter; end
 if ~isempty(vr), propADRVSPtr.version = vr; end

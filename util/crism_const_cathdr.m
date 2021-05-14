@@ -31,7 +31,7 @@ end
 
 if isempty(TRRdata.basenamesCDR), TRRdata.load_basenamesCDR(); end
 
-propTRRdata = getProp_basenameOBSERVATION(TRRdata.basename);
+propTRRdata = crism_getProp_basenameOBSERVATION(TRRdata.basename);
 
 WAdata = TRRdata.readCDR('WA');
 SWdata = getSWBWfromWA(WAdata,'SW');

@@ -28,7 +28,7 @@ else
     end
 end
 
-propWA = getProp_basenameCDR4(WAdata.basename);
+propWA = crism_getProp_basenameCDR4(WAdata.basename);
 
 [WVdata] = getWVfromWA(WAdata);
 [BWdata] = getSWBWfromWA(WAdata,'BW');

@@ -190,10 +190,10 @@ switch upper(geo_coord_systm)
 end
 
 %% filename
-propGLT = getProp_basenameOBSERVATION(DEdata.basename);
+propGLT = crism_getProp_basenameOBSERVATION(DEdata.basename);
 propGLT.product_type = 'GLT';
 propGLT.version = glt_ver;
-basenameGLT = get_basenameOBS_fromProp(propGLT);
+basenameGLT = crism_get_basenameOBS_fromProp(propGLT);
 basenameGLT = [basenameGLT suffix];
 dir_glt_info = crism_get_dirpath_observation(basenameGLT);
 dir_glt = dir_glt_info.dirfullpath_local;
@@ -202,7 +202,7 @@ fpath_GLT_hdr = joinPath(dir_glt,[basenameGLT '.HDR']);
 
 propGRD = propGLT;
 propGRD.product_type = 'GRD';
-basenameGRD = get_basenameOBS_fromProp(propGRD);
+basenameGRD = crism_get_basenameOBS_fromProp(propGRD);
 basenameGRD = [basenameGRD suffix];
 fpath_GRD_mat = joinPath(dir_glt,[basenameGRD '.mat']);
 

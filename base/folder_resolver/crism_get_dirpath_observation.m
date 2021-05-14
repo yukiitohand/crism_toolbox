@@ -38,7 +38,7 @@ function [dir_info,basenameOBS,fnameOBS_wext_local] = crism_get_dirpath_observat
 %                         operations.
 %                         (default) true
 
-propOBS = getProp_basenameOBSERVATION(basenameOBS);
+propOBS = crism_getProp_basenameOBSERVATION(basenameOBS);
 [dir_info,basenameOBS,fnameOBS_wext_local] = crism_search_observation_fromProp(propOBS,varargin{:});
 
 end

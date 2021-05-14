@@ -80,7 +80,7 @@ else
 end
 
 yyyy_doy = crism_searchOBSID2YYYY_DOY_v2(propOBS.obs_id);
-dirname  = get_dirname_fromPropOBS(propOBS);
+dirname  = crism_get_dirname_fromPropOBS(propOBS);
 
 
 switch lower(propOBS.product_type)
@@ -102,7 +102,7 @@ end
 subdir_local  = crism_get_subdir_OBS_local(yyyy_doy,dirname,product_type);
 subdir_remote = crism_get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
 
-[basenamePtrn] = get_basenameOBS_fromProp(propOBS);
+[basenamePtrn] = crism_get_basenameOBS_fromProp(propOBS);
 
 [basenameOBS,fnameOBS_wext_local,files_dwlded]  = crism_readDownloadBasename( ...
     basenamePtrn,...

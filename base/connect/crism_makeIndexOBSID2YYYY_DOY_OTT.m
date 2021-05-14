@@ -46,8 +46,8 @@ if exist(fpath,'file') && ~overwrite
 else
 
     LUT_OBSID2YYYY_DOY = [];  
-    prop = create_propOTTbasename();
-    ptrn = get_basenameOTT_fromProp(prop); 
+    prop = crism_create_propOTTbasename();
+    ptrn = crism_get_basenameOTT_fromProp(prop); 
     % basenames = readDownloadBasename_v3(ptrn,dirpath_OTT,remote_subdir,varargin{:});
     
     [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...

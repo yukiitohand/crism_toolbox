@@ -44,7 +44,7 @@ acro = propCDRref.acro_calibration_type;
 propCDR_search = propCDRref;
 propCDR_search.sclk = '(?<sclk>[\d]{10})';
 propCDR_search.partition = '(?<partition>[\d]{1})';
-[basenameCDRPtrn] = get_basenameCDR_fromProp(propCDR_search);
+[basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR_search);
 
 propCDRmrb = [];
 basenameCDRmrb = '';
@@ -69,7 +69,7 @@ switch folder_type
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
             % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
-            [propCDRcandidates] = getProp_basenameCDRList(basenameCDRList,propCDRref.level);
+            [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
             [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
             if ~isempty(propCDRmrb)
                 if iscell(basenameCDRList)
@@ -90,7 +90,7 @@ switch folder_type
         [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
         % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
-        [propCDRcandidates] = getProp_basenameCDRList(basenameCDRList,propCDRref.level);
+        [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
         [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
         if iscell(basenameCDRList)
             basenameCDRmrb = basenameCDRList{idx_mrb};
@@ -105,7 +105,7 @@ switch folder_type
         subdir_remote = '';
         fnamelist = dir(dirfullpath_local);
         [basenameCDRList] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);
-        [propCDRcandidates] = getProp_basenameCDRList(basenameCDRList,propCDRref.level);
+        [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
         [propCDRmrb,idx_mrb,psclk_mrb] = find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
         if iscell(basenameCDRList)
             basenameCDRmrb = basenameCDRList{idx_mrb};

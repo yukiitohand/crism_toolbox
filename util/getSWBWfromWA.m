@@ -12,9 +12,9 @@ function [SWBWdata] = getSWBWfromWA(WAdata,acro)
 
 if isempty(WAdata.img), WAdata.readimgi(); end
 
-propWA = getProp_basenameCDR4(WAdata.basename);
+propWA = crism_getProp_basenameCDR4(WAdata.basename);
 
-propSWBW = create_propCDR6basename(...
+propSWBW = crism_create_propCDR6basename(...
     'acro',acro,'Partition',propWA.partition,...
     'sclk',propWA.sclk,'sensor_id',propWA.sensor_id);
 
