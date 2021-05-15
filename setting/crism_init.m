@@ -31,8 +31,8 @@ function crism_init()
     global CRISM_INDEX_OBS_ID
     global CRISM_INDEX_YYYY
     global CRISM_INDEX_DOY
-    if exist('LUT_OBSID2YYYY_DOY_v2.mat','file')
-        lut_val = load('LUT_OBSID2YYYY_DOY_v2.mat');
+    if exist('CRISM_LUT_OBSID2YYYY_DOY_v2.mat','file')
+        lut_val = load('CRISM_LUT_OBSID2YYYY_DOY_v2.mat');
         CRISM_INDEX_OBS_CLASS_TYPE = lut_val.CRISM_INDEX_OBS_CLASS_TYPE;
         CRISM_INDEX_OBS_ID = lut_val.CRISM_INDEX_OBS_ID;
         CRISM_INDEX_YYYY = lut_val.CRISM_INDEX_YYYY;
