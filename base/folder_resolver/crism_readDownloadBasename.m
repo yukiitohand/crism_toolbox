@@ -12,16 +12,27 @@ function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(b
 %          -1: show the list of file that match the input pattern present
 %          in the local directory.
 %  Optional input parameters
-%      'EXT','EXTENSION': char or cell. Can be with or without '.'.
-%                         Files with the extension(s) will be downloaded.
-%      'MATCH_EXACT'    : binary, if basename match should be exact match
-%                         or not.
-%                         (default) false
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
 %      'Force'          : binary, whether or not to force performing
 %                         pds_downloader. (default) false
-%      'Overwrite'      : binary, whether or not to overwrite the image
+%      'EXTENSION','EXT': Files with the extention will be downloaded. If
+%                         it is empty, then files with any extension will
+%                         be downloaded.
+%                         (default) ''
+%      'OVERWRITE'      : if overwrite the file if exists
+%                         (default) 0
+%      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
+%                         access an only show the path, 0: nothing
+%                         (default) 0
+%      'OUT_FILE'       : path to the output file
+%                         (default) ''
+%      'VERBOSE'        : boolean, whether or not to show the downloading
+%                         operations.
+%                         (default) true
+%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or
+%      not
+%        (default) true
+%      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
+%        (default) false
 %  Output parameters
 %    basename: basename matched.
 %    fname_wext_local : file name with extensions that exist localy.

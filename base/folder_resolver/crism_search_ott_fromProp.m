@@ -19,22 +19,21 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(
 %                         it is empty, then files with any extension will
 %                         be downloaded.
 %                         (default) ''
-%      'DIRSKIP'        : if skip directories or walk into them
-%                         (default) 1 (boolean)
-%      'PROTOCOL'       : internet protocol for downloading
-%                         (default) 'http'
 %      'OVERWRITE'      : if overwrite the file if exists
 %                         (default) 0
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'HTMLFILE'       : path to the html file to be read
-%                         (default) ''
 %      'OUT_FILE'       : path to the output file
 %                         (default) ''
 %      'VERBOSE'        : boolean, whether or not to show the downloading
 %                         operations.
 %                         (default) true
+%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or
+%      not
+%        (default) true
+%      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
+%        (default) false
 
 global crism_env_vars
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;

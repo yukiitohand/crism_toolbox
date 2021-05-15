@@ -47,7 +47,11 @@ for i=1:length(fieldnms_cdr)
             [dir_info,~,files_localk] = crism_get_dirpath_cdr(basename_acro,varargin{:});
             dir_acro = dir_info.dirfullpath_local;
             dir_cdr = addField(dir_cdr,acro,dir_acro); 
-            files_local = addField(files_local,acro,files_localk);
+            if k==1
+                files_local = addField(files_local,acro,{files_localk});
+            else
+                files_local = addField(files_local,acro,files_localk);
+            end
         end
     elseif ischar(basenamesCDR.(acro))
         basename_acro = basenamesCDR.(acro);
