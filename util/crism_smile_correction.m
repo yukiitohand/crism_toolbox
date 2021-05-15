@@ -1,77 +1,73 @@
-function [img_corr] = smile_correction(img,wa,wv,varargin)
-% [img_corr] = smile_correction(img,wa,wv,varargin)
-% Smile correction using wavelength frame file
+function [img_ds] = crism_smile_correction(img,wa,wv,bands,varargin)
+% [img_corr] = crism_smile_correction(img,wa,wv,varargin)
+% Smile correction of CRISM image
 %  INPUTS
-%   img: image before correction [LxSxB]
-%   wa: wavelength frame [1 x S x B]
-%   wv: wavelength samples for which interpolation is performed [Bx1]
+%   img  : image before correction [L x S x B]
+%   wa   : wavelength frame [1 x S x B]
+%   wv   : wavelength samples for which interpolation is performed [Bx1]
+%   bands: list of bands for which de-smiling is performed.
 %  OUTPUTS
-%   img_corr: image file
+%   img_ds: image file [L x S x B]
 %  OPTIONAL PARAMETERS
-%      'METHOD' : {'interpGaussConv', 'interp1'}
-%                 (default) 'interp1'
-%                 interpCRISMspc is recommended for high spectral resolutio
-%                 data, otherwise use 'interp1'
-%      'RETAINRATIO': option for 'interpGaussConv'
-%                     (default) 0.1
-%      'FWHM'       : option for 'interpGaussConv'
-%                     (default) []
+%   'EXTRAP': boolean
+%       Whether or not to extrapolate spectra if you encounterd such
+%       situation. Extrapolation is not applied to channels outside of
+%       "bands". Recommend to turn on since, edges of WQ are slightly
+%       outside for some columns due to smile effect.
+%       (default) true
 
-method = 'interp1';
-retainRatio = 0.1;
-fwhm = [];
+
+do_extrap = true;
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
-            case 'METHOD'
-                method = varargin{i+1};
-            case 'RETAINRATIO'
-                retainRatio = varargin{i+1};
-            case 'FWHM'
-                fwhm = varargin{i+1};
+            case 'EXTRAP'
+                do_extrap = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
                 error('Unrecognized option: %s',varargin{i});
         end
     end
 end
 
+if do_extrap
+    interp_extrap_opt = {'extrap'};
+else
+    interp_extrap_opt = {};
+end
+
 [L,S,B] = size(img);
 Bw = length(wv);
 
-img_corr = nan([L,S,Bw]);
-
-isvalid_wv = ~isnan(wv);
-switch lower(method)
-    case 'interpgaussconv'
-        isvalid_fwhm = ~isnan(fwhm);
-        isvalid_wv = and(isvalid_wv,isvalid_fwhm);
+if Bw~=B
+    error('wv needs to the same number of bands as wa.');
 end
-Bw_valid = sum(isvalid_wv);
 
-for s=1:S
-    wv_in = squeeze(wa(1,s,:));
-    isnan_wv_in = isnan(wv_in);
-    if ~all(isnan_wv_in)
-        isvalid_wv_in = ~isnan_wv_in;
-        img_s = squeeze(img(:,s,isvalid_wv_in))';
-        wv_in_valid = wv_in(isvalid_wv_in);
-        switch lower(method)
-            case 'interp1'
-                img_corr_s_valid = interp1(wv_in_valid,img_s,wv(isvalid_wv),'linear');
-            case 'interpgaussconv'
-                if isempty(fwhm)
-                    error('specify fwhm for method interpgaussconv');
-                end
-                img_corr_s_valid = interpGaussConv_v2(wv_in_valid,img_s,...
-                    wv(isvalid_wv),fwhm(isvalid_wv),'RETAINRATIO',retainRatio);
-            otherwise
-                error('Undefined method %s.',method);  
-        end
-        img_corr(:,s,isvalid_wv) = reshape(img_corr_s_valid',[L,1,Bw_valid]);
+
+
+%%
+
+wv_tar = wv(bands); Btar = length(wv_tar);
+if isnan(wv_tar)
+    error('wv has nan over the specified bands.');
+end
+
+% only applied to bands
+img_b = img(:,:,bands);
+wa_b_sq = squeeze(wa(:,:,bands))';
+img_b_ds = nan([L,S,Btar]);
+
+for c=1:S
+    img_b_ds_c = permute(img_b(:,c,:),[3,1,2]);
+    wac = wa_b_sq(:,c);
+    if ~all(isnan(img_b_ds_c),'all')
+        img_b_ds_c = interp1(wac,img_b_ds_c,wv_tar,'linear',interp_extrap_opt{:});
+        img_b_ds(:,c,:) = permute(img_b_ds_c,[2,3,1]);
     end
 end
+
+img_ds = img;
+img_ds(:,:,bands) = img_b_ds;
 
 end
