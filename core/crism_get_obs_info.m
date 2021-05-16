@@ -109,6 +109,7 @@ function [ obs_info ] = crism_get_obs_info(obs_id,varargin)
 %                  (default) 1
 %      'FORCE_DWLD': {0,1}, whether or not to forcefully download the
 %                    files specified.
+%      'DWLD_OVERWRITE': {0,1}, whether or not to overwrite the images
 %      'OUT_FILE'  : file path to the output file of the list of relative
 %                    path to be downloaded
 %                    (default) ''
@@ -154,6 +155,7 @@ ext_epf      = '';
 ext_un       = '';
 
 force_dwld = 0;
+dwld_overwrite = 0;
 verbose=1;
 outfile = '';
 
@@ -219,6 +221,8 @@ else
                 force_dwld = varargin{i+1};
             case 'OUT_FILE'
                 outfile = varargin{i+1};
+            case 'DWLD_OVERWRITE'
+                dwld_overwrite = varargin{i+1};
             case 'OBS_COUNTER_SCENE'
                 obs_counter_tmp = varargin{i+1};
                 OBS_COUNTER_SCENE_custom = 1;
@@ -311,7 +315,7 @@ if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
         'SENSOR_ID','J','product_type','TER'),...
         'Dwld',dwld_ter,'Match_Exact',true,'Force',force_dwld, ...
-        'OUT_FILE',outfile,'EXT',ext_ter,'INDEX_CACHE_UPDATE',dwld_index_cache_update);
+        'OUT_FILE',outfile,'EXT',ext_ter,'INDEX_CACHE_UPDATE',dwld_index_cache_update,'overwrite',dwld_overwrite);
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
     [dir_info,basenameTERIF,fnameTERIFwext_local] = search_product_TER('IF');
@@ -341,7 +345,7 @@ switch upper(obs_classType)
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
             'SENSOR_ID',y_si,'product_type','MTR'),...
             'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld, ...
-            'OUT_FILE',outfile,'EXT', ext_mtrdr,'INDEX_CACHE_UPDATE',dwld_index_cache_update);
+            'OUT_FILE',outfile,'EXT', ext_mtrdr,'INDEX_CACHE_UPDATE',dwld_index_cache_update,'overwrite',dwld_overwrite);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
         [dir_info,basenameMTRIF,fnameMTRIFwext_local] = search_product_MTR('IF','J');
@@ -374,7 +378,7 @@ switch upper(obs_classType)
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
             'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile, ...
-            'EXTENSION',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update);
+            'EXTENSION',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update,'overwrite',dwld_overwrite);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
         [dir_info,basenameIF,fnameTRRIFwext_local] = search_product_TRR('IF',obs_counter,'TRR',dwld_trrif,3,ext_trrif);
@@ -411,7 +415,7 @@ search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v,xx_ext) crism_search_observation_
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
         'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
         'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
-        'OUT_FILE',outfile,'EXT',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update);
+        'OUT_FILE',outfile,'EXT',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update,'overwrite',dwld_overwrite);
 
 switch upper(obs_classType)
     case {'FRT','ATO','FRS','HRL','HRS','MSP','HSP','FFC'}
@@ -491,7 +495,7 @@ switch upper(obs_classType)
             'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type','DDR'),...
             'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
-            'OUT_FILE',outfile,'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update);
+            'OUT_FILE',outfile,'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update,'overwrite',dwld_overwrite);
         [dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,dwld_ddr);
         dir_ddr = dir_info.dirfullpath_local;
     
