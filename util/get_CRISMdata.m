@@ -16,9 +16,15 @@ function [crismdata_obj] = get_CRISMdata(basename,dirpath,varargin)
 %   'IDX': index to be loaded in case basename is a cell array
 %     (default) []
 %   'OBS_COUNTER': future implementation
+%   'VERSION' : version of the data to be returned
+%     (default) []
+%   'IS_DDR' : If it is ddr, return CRISMDDRdata obj
+%     (default) 0
 
 idx = [];
 obs_counter = '';
+vr = [];
+is_ddr = 0;
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -28,16 +34,25 @@ else
                 idx = varargin{i+1};
             case 'OBS_COUNTER'
                 obs_counter = varargin{i+1};
+            case 'VERSION'
+                vr = varargin{i+1};
+            case 'IS_DDR'
+                is_ddr = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
 
+if is_ddr
+    class_crismdata = @CRISMDDRdata;
+else
+    class_crismdata = @CRISMdata;
+end
+
 if ~isempty(basename) 
     if ischar(basename) && (ischar(dirpath) || isempty(dirpath))
-        crismdata_obj = CRISMdata(basename,dirpath);
+        crismdata_obj = class_crismdata(basename,dirpath);
     elseif iscell(basename)
         if isempty(idx)
             idx = 1:length(basename);
@@ -45,13 +60,19 @@ if ~isempty(basename)
         crismdata_obj = [];
         for i=idx
             if ischar(dirpath) || isempty(dirpath)
-                crismdata_obji = CRISMdata(basename{i},dirpath);
+                crismdata_obji = class_crismdata(basename{i},dirpath);
             elseif iscell(dirpath)
-                crismdata_obji = CRISMdata(basename{i},dirpath{i});
+                crismdata_obji = class_crismdata(basename{i},dirpath{i});
             else
                 error('dirpath may be something wrong.');
             end
-            crismdata_obj = [crismdata_obj crismdata_obji];
+            if isempty(vr)
+                crismdata_obj = [crismdata_obj crismdata_obji];
+            else
+                if crismdata_obji.prop.version==vr
+                    crismdata_obj = [crismdata_obj crismdata_obji];
+                end
+            end
         end
     else
         error('basename is something wrong.');
