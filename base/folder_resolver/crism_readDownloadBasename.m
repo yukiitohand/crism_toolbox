@@ -91,10 +91,12 @@ if dwld>0
             'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,...
             'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
             'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-        
-        % do the same thing again
+        % basename is searched from the remote database.
+        [basename,~] = extractMatchedBasename_v2(basenamePtr,files_dwlded,'exact',mtch_exact);
+        % Get the list of files in the local database after download is
+        % performed.
         fnamelist = dir(dir_local);
-        [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
+        [~,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
         
     end
 elseif dwld == -1
