@@ -75,7 +75,7 @@ classdef CRISMTRRdataset < dynamicprops
         end
         
         function append(obj,propName,bname,dirpath)
-            if exist(joinPath(dirpath,[bname '.IMG']),'file') && exist(joinPath(dirpath,[bname '.LBL']),'file')
+            if exist(joinPath(dirpath,[bname '.LBL']),'file')
                 if ~isprop(obj,propName)
                     addprop(obj,propName);
                 end
