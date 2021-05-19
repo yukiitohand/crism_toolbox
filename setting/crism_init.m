@@ -9,12 +9,9 @@ function crism_init()
             [status] = mkdir(crism_env_vars.localCRISM_PDSrootDir);
             if status
                 fprintf('%s is created...\n',crism_env_vars.localCRISM_PDSrootDir);
-                if isunix
-                    [yesno777] = doyouwantto('change the permission to 777', '');
-                    if yesno777
-                        system(['chmod -R 777 ' crism_env_vars.localCRISM_PDSrootDir]);
-                        fprintf('"%s": permission is set to 777.\n',crism_env_vars.localCRISM_PDSrootDir);
-                    end
+                [yesno777] = doyouwantto('change the permission to 777', '');
+                if yesno777
+                    chmod777(crism_env_vars.localCRISM_PDSrootDir,1);
                 end
             else
                 error('Failed to create %s', crism_env_vars.localCRISM_PDSrootDir);
@@ -29,7 +26,7 @@ function crism_init()
             
     end
     
-    if exist(crism_env_vars.localCATrootDir)
+    if exist(crism_env_vars.localCATrootDir,'dir')
     else
         fprintf('localCATrootDir is not configured. ');
         fprintf('Functionality of crism_toolbox may be limited.\n');
