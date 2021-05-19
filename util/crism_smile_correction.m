@@ -61,9 +61,16 @@ img_b_ds = nan([L,S,Btar]);
 for c=1:S
     img_b_ds_c = permute(img_b(:,c,:),[3,1,2]);
     wac = wa_b_sq(:,c);
+    if verLessThan('matlab','9.4')
+        if ~all(all(all(isnan(img_b_ds_c),1),2),3)
+            img_b_ds_c = interp1(wac,img_b_ds_c,wv_tar,'linear',interp_extrap_opt{:});
+            img_b_ds(:,c,:) = permute(img_b_ds_c,[2,3,1]);
+        end
+    else
     if ~all(isnan(img_b_ds_c),'all')
         img_b_ds_c = interp1(wac,img_b_ds_c,wv_tar,'linear',interp_extrap_opt{:});
         img_b_ds(:,c,:) = permute(img_b_ds_c,[2,3,1]);
+    end
     end
 end
 
