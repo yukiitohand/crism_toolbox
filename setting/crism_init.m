@@ -6,8 +6,19 @@ function crism_init()
     [yesno,doyoucreate] = check_mkdir(crism_env_vars.localCRISM_PDSrootDir);
     switch lower(doyoucreate)
         case 'yes'
-            mkdir(crism_env_vars.localCRISM_PDSrootDir);
-            fprintf('%s is created...\n',crism_env_vars.localCRISM_PDSrootDir);
+            [status] = mkdir(crism_env_vars.localCRISM_PDSrootDir);
+            if status
+                fprintf('%s is created...\n',crism_env_vars.localCRISM_PDSrootDir);
+                if isunix
+                    [yesno777] = doyouwantto('change the permission to 777', '');
+                    if yesno777
+                        system(['chmod -R 777 ' crism_env_vars.localCRISM_PDSrootDir]);
+                        fprintf('"%s": permission is set to 777.\n',crism_env_vars.localCRISM_PDSrootDir);
+                    end
+                end
+            else
+                error('Failed to create %s', crism_env_vars.localCRISM_PDSrootDir);
+            end
         case 'no'
             if strcmpi(yesno,'no')
                 fprintf('No local database will be created. ');
