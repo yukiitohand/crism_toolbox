@@ -22,10 +22,12 @@ function [ trans_spcs ] = crism_load_ADR_VS( varargin )
 %                    (default) 2
 %    'OVERWRITE' : whether or not to overwrite the cache file
 %                  (default) false
+%    'DIR_CACHE' : Directory path where cache files are saved.
+%       (default) crism_env_vars.dir_CACHE
 %
 
 global crism_env_vars
-local_rootDir = crism_env_vars.localCRISM_PDSrootDir;
+dir_cache = crism_env_vars.dir_CACHE;
 
 is_band_inverse = true;
 artifact_idx = 2;
@@ -76,6 +78,8 @@ else
                 overwrite = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
+            case 'DIR_CACHE'
+                dir_cache = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
@@ -90,7 +94,6 @@ if ~isempty(obs_id_short), propADRVSPtr.obs_id_short = obs_id_short; end
 
 %%
 
-cachedpath = joinPath(local_rootDir,'cache/');
 if isempty(obs_id_short)
     cachefname = sprintf('adr_VS%1s%1s%1s_art%s_aid%d.mat',...
         binning,wv_filter,vr,mode_artifact,artifact_idx);
@@ -99,8 +102,8 @@ else
         obs_id_short,binning,wv_filter,vr,mode_artifact,artifact_idx);
 end
     
-cachefpath = joinPath(cachedpath,cachefname);
-if ~exist(cachedpath,'dir'), mkdir(cachedpath); end
+cachefpath = joinPath(dir_cache,cachefname);
+if ~exist(dir_cache,'dir'), mkdir(dir_cache); end
 
 if ~overwrite && exist(cachefpath,'file')
     load(cachefpath,'trans_spcs');
