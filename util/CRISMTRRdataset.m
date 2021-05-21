@@ -20,7 +20,7 @@ classdef CRISMTRRdataset < dynamicprops
         function obj = CRISMTRRdataset(basename_trr3if,dirpath,varargin)
             % Constructor
             global crism_env_vars
-            pdirpath_trrx = crism_env_vars.dir_YUK;
+            pdirpath_trrx = crism_env_vars.dir_TRRX;
             if (rem(length(varargin),2)==1)
                 error('Optional parameters should always go by pairs');
             else
