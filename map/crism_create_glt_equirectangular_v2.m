@@ -23,20 +23,29 @@ function [GLTdata] = crism_create_glt_equirectangular_v2(DEdata,RAdata,varargin)
 %      (default) []   
 %   "Pixel_Size" <meters>: scalar, size of a pixel.
 %      (default) []
-%   "ProjectionAlignment" : {'Individual','CutOff@Center'}
+%   "ProjectionAlignment" : {'Individual','CutOff'}
 %     option for how to define the pixel centers.
 %     'Individual' : [range_lond(1),range_latd(1)] becomes the coordinate
 %     of the center of the lower left corner pixel.
-%     'CutOff@Center' : center of the longitude and center of the latitude
-%     becomes the border of the pixels. It is recommended to provide two
-%     other optional parameters, "CenterLongitude" and "CenterLatitude"
-%     (default) 'CutOff@Center'
+%     'CutOff' : CutOffLongitude and CutOffLatitude becomes the border of 
+%     the pixels. 
+%     (default) 'CutOff'
 %   "StandardParallel" <degrees>: projection center planetocentric latitude
 %     at which the true pixel_size is achieved. 
-%     With the mode 'CutOff@Center', from this latitude pixels are gridded.
 %     (default) 0 degree
 %   "CenterLongitude" <degrees>: center of the longitude from which pixels 
 %     are gridded. Only used with "ProjectionAlignment" = 'CutOff@Center'.
+%     (default) 0 degree
+%   "CenterLatitude" <degrees>: 
+%     center of the latitude at which local radius is calculated.
+%     (default) same as "standard_parallel"
+%   "CutOffLongitude" <degrees>: 
+%     only used with the mode 'CutOff'. Pixel grid is created so that this 
+%     longitude becomes a pixel border.
+%     (default) 0 degree
+%   "CutOffLatitude" <degrees>: 
+%     only used with the mode 'CutOff'. Pixel grid is created so that this 
+%     laitude becomes a pixel border.
 %     (default) 0 degree
 %   "LatitudeOfOrigin" <degrees>: Planetocentric Latitude at which northing
 %     is zero. It is not recommended to change this parameters.
@@ -55,8 +64,8 @@ function [GLTdata] = crism_create_glt_equirectangular_v2(DEdata,RAdata,varargin)
 %     If the distance to input DDR pixels is closer than the value, pixel 
 %     is  assigned with the input CRISM pixel. 
 %     (default) 2
-%   "GLT_VERSION": string
-%     (default) 'V3'
+%   "GLT_VERSION": version number
+%     (default) 4
 %   "SAVE_FILE": boolean, save the file or not
 %     (default) true
 %   "SUFFIX": string,
@@ -66,7 +75,23 @@ function [GLTdata] = crism_create_glt_equirectangular_v2(DEdata,RAdata,varargin)
 %   "SKIP_IFEXIST": boolean, whether or not to skip processing if the file
 %   exist or not.
 %     (default) false
+%   'SAVE_PDIR': any string
+%       root directory path where the processed data are stored. The
+%       processed image will be saved at <SAVE_PDIR>/CCCNNNNNNNN, where CCC
+%       the class type of the obervation and NNNNNNNN is the observation id.
+%       It doesn't matter if trailing slash is there or not. If this is
+%       empty, then stored part of localCRISMrootDir.
+%       (default) []
+%   'SAVE_DIR_YYYY_DOY': boolean
+%       Only effective if "save_pdir" is entered. Otherwise, always true.
+%       if true, processed images are saved at 
+%           <SAVE_PDIR>/YYYY_DOY/CCCNNNNNNNN,
+%       otherwise, 
+%           <SAVE_PDIR>/CCCNNNNNNNN.
+%       (default) false
 %     
+
+global crism_env_vars
 
 geo_coord_systm = 'MARS_Sphere'; % {'MARS_Sphere','MARS_2000_IAU_IAG_CUSTOM_SPHERE'}
 % rMars = 3396190.0;
@@ -89,6 +114,11 @@ force = 0;
 dst_lmt_param = 2;
 save_file = 0;
 skip_ifexist = false;
+
+save_pdir = -1;
+save_dir_yyyy_doy = false;
+
+verbose = true;
 
 
 if (rem(length(varargin),2)==1)
@@ -137,6 +167,10 @@ else
                 force = varargin{i+1};
             case 'SKIP_IFEXIST'
                 skip_ifexist = varargin{i+1};
+            case 'SAVE_PDIR'
+                save_pdir = varargin{i+1};
+            case 'SAVE_DIR_YYYY_DOY'
+                save_dir_yyyy_doy = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
@@ -189,53 +223,112 @@ switch upper(geo_coord_systm)
         error('Undefined geographic coordinate system %s.',geo_coord_systm);
 end
 
-%% filename
-propGLT = crism_getProp_basenameOBSERVATION(DEdata.basename);
-propGLT.product_type = 'GLT';
-propGLT.version = glt_ver;
-basenameGLT = crism_get_basenameOBS_fromProp(propGLT);
-basenameGLT = [basenameGLT suffix];
-dir_glt_info = crism_get_dirpath_observation(basenameGLT);
-dir_glt = dir_glt_info.dirfullpath_local;
-fpath_GLT_img = joinPath(dir_glt,[basenameGLT '.IMG']);
-fpath_GLT_hdr = joinPath(dir_glt,[basenameGLT '.HDR']);
+%% Output directory and filename management
 
-propGRD = propGLT;
-propGRD.product_type = 'GRD';
-basenameGRD = crism_get_basenameOBS_fromProp(propGRD);
-basenameGRD = [basenameGRD suffix];
-fpath_GRD_mat = joinPath(dir_glt,[basenameGRD '.mat']);
-
-outputs_fpath = {fpath_GLT_img,fpath_GLT_hdr,fpath_GRD_mat};
-
-% examine if all the output files exist.
-exist_flg = all(cellfun(@(x) exist(x,'file'),outputs_fpath));
-
-if exist_flg
-    if skip_ifexist
-        return;
-    elseif ~force
-        flg = 1;
-        while flg
-            prompt = sprintf('There exists processed images. Do you want to continue to process and overwrite?(y/n)');
-            ow = input(prompt,'s');
-            if any(strcmpi(ow,{'y','n'}))
-                flg=0;
-            else
-                fprintf('Input %s is not valid.\n',ow);
+if save_file
+    propGLT = crism_getProp_basenameOBSERVATION(DEdata.basename);
+    propGLT.product_type = 'GLT';
+    propGLT.version = glt_ver;
+    basenameGLT = crism_get_basenameOBS_fromProp(propGLT);
+    basenameGLT = [basenameGLT suffix];
+    if save_pdir==-1 % meaning not specified,
+        dir_glt_info = crism_get_dirpath_observation(basenameGLT);
+        save_dir = dir_glt_info.dirfullpath_local;
+        url_local_root = crism_env_vars.url_local_root;
+        subdir_local_split = split(joinPath(url_local_root,dir_glt_info.subdir_local),'/');
+        cur_dir = crism_env_vars.localCRISM_PDSrootDir;
+        if exist(cur_dir,'dir')
+            for i=1:length(subdir_local_split)
+                cur_dir = joinPath(cur_dir,subdir_local_split{i});
+                if ~exist(cur_dir,'dir')
+                    [status] = mkdir(save_dir); 
+                    if status
+                        if verbose, fprintf('"%s" is created.\n',cur_dir); end
+                        chmod777(cur_dir,verbose);
+                    else
+                        error('Failed to create %s',cur_dir);
+                    end
+                end
+            end
+        else
+            error('localCRISM_PDSrootDir %s does not exist.',cur_dir);
+        end
+    else
+        yyyy_doy = RAdata.yyyy_doy; dirname = RAdata.dirname;
+        if save_dir_yyyy_doy
+            dirpath_yyyy_doy = joinPath(save_pdir,yyyy_doy);
+            if ~exist(dirpath_yyyy_doy,'dir')
+                status = mkdir(dirpath_yyyy_doy);
+                if status
+                    if verbose, fprintf('"%s" is created.\n',dirpath_yyyy_doy); end
+                    chmod777(dirpath_yyyy_doy,verbose);
+                else
+                    error('Failed to create %s',dirpath_yyyy_doy);
+                end
+            end
+            save_dir = joinPath(dirpath_yyyy_doy,dirname);
+            if ~exist(save_dir,'dir')
+                status = mkdir(save_dir);
+                if status
+                    if verbose, fprintf('"%s" is created.\n',save_dir); end
+                    chmod777(save_dir,verbose);
+                else
+                    error('Failed to create %s',save_dir);
+                end
+            end
+        else
+            save_dir = joinPath(save_pdir,dirname);
+            if ~exist(save_dir,'dir')
+                status = mkdir(save_dir);
+                if status
+                    if verbose, fprintf('"%s" is created.\n',save_dir); end
+                    chmod777(save_dir,verbose);
+                else
+                    error('Failed to create %s',save_dir);
+                end
             end
         end
-        if strcmpi(ow,'n')
-            fprintf('Process aborted...\n');
+    end
+
+
+    fpath_GLT_img = joinPath(save_dir,[basenameGLT '.IMG']);
+    fpath_GLT_hdr = joinPath(save_dir,[basenameGLT '.HDR']);
+    propGRD = propGLT;
+    propGRD.product_type = 'GRD';
+    basenameGRD = crism_get_basenameOBS_fromProp(propGRD);
+    basenameGRD = [basenameGRD suffix];
+    fpath_GRD_mat = joinPath(save_dir,[basenameGRD '.mat']);
+
+    outputs_fpath = {fpath_GLT_img,fpath_GLT_hdr,fpath_GRD_mat};
+
+    % examine if all the output files exist.
+    exist_flg = all(cellfun(@(x) exist(x,'file'),outputs_fpath));
+
+    if exist_flg
+        if skip_ifexist
             return;
-        elseif strcmpi(ow,'y')
-            fprintf('processing continues and will overwrite...\n');
+        elseif ~force
+            flg = 1;
+            while flg
+                prompt = sprintf('There exists processed images. Do you want to continue to process and overwrite?(y/n)');
+                ow = input(prompt,'s');
+                if any(strcmpi(ow,{'y','n'}))
+                    flg=0;
+                else
+                    fprintf('Input %s is not valid.\n',ow);
+                end
+            end
+            if strcmpi(ow,'n')
+                fprintf('Process aborted...\n');
+                GLTdata = ENVIRasterMultBandEquirectProjRot0(basenameGLT,save_dir);
+                return;
+            elseif strcmpi(ow,'y')
+                fprintf('processing continues and will overwrite...\n');
+            end
         end
     end
+
 end
-
-if ~exist(dir_glt,'dir'), mkdir(dir_glt); end
-
 
 %% Main Routine
 % if isempty(DEdata.img), DEdata.readimg(); end
@@ -428,4 +521,9 @@ GLTdata.hdr = hdr_glt;
 GLTdata.img = img_glt;
 GLTdata.proj_info = proj_info;
 
+if save_file
+    GLTdata.basename = basenameGLT;
+    GLTdata.dirpath  = save_dir;
+    GLTdata.imgpath  = fpath_GLT_img;
+    GLTdata.hdrpath  = fpath_GLT_hdr;
 end
