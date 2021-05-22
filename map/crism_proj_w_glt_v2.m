@@ -72,41 +72,44 @@ else
 end
 
 %% check the existence of the file
+if save_file
+    if ~exist(save_dir,'dir'), mkdir(save_dir); end
+    basename_proj = [in_crismdata.basename suffix];
 
-basename_proj = [in_crismdata.basename suffix];
+    fpath_hdr_proj = joinPath(save_dir, [basename_proj '.hdr']);
+    fpath_img_proj = joinPath(save_dir, [basename_proj '.img']);
 
-fpath_hdr_proj = joinPath(save_dir, [basename_proj '.hdr']);
-fpath_img_proj = joinPath(save_dir, [basename_proj '.img']);
+    outputs_fpath = {fpath_hdr_proj,fpath_img_proj};
 
-outputs_fpath = {fpath_hdr_proj,fpath_img_proj};
+    % examine if all the output files exist.
+    exist_flg = all(cellfun(@(x) exist(x,'file'),outputs_fpath));
 
-% examine if all the output files exist.
-exist_flg = all(cellfun(@(x) exist(x,'file'),outputs_fpath));
-
-if exist_flg
-    if skip_ifexist
-        return;
-    elseif ~force
-        flg = 1;
-        while flg
-            prompt = sprintf('There exists processed images. Do you want to continue to process and overwrite?(y/n)');
-            ow = input(prompt,'s');
-            if any(strcmpi(ow,{'y','n'}))
-                flg=0;
-            else
-                fprintf('Input %s is not valid.\n',ow);
+    if exist_flg
+        if skip_ifexist
+            return;
+        elseif ~force
+            flg = 1;
+            while flg
+                prompt = sprintf('There exists processed images. Do you want to continue to process and overwrite?(y/n)');
+                ow = input(prompt,'s');
+                if any(strcmpi(ow,{'y','n'}))
+                    flg=0;
+                else
+                    fprintf('Input %s is not valid.\n',ow);
+                end
+            end
+            if strcmpi(ow,'n')
+                fprintf('Process aborted...\n');
+                PROJIMGdata = ENVIRasterMultBandEquirectProjRot0(basename_proj,save_dir);
+                return;
+            elseif strcmpi(ow,'y')
+                fprintf('processing continues and will overwrite...\n');
             end
         end
-        if strcmpi(ow,'n')
-            fprintf('Process aborted...\n');
-            return;
-        elseif strcmpi(ow,'y')
-            fprintf('processing continues and will overwrite...\n');
-        end
     end
-end
 
-if ~exist(save_dir,'dir'), mkdir(save_dir); end
+    
+end
 
 %% main processing
 if band_inverse
@@ -199,13 +202,20 @@ if save_file
     envihdrwritex(hdr_proj,fpath_hdr_proj,'OPT_CMOUT',false);
     fprintf('Done\n');
     fprintf('Saving %s ...\n',fpath_img_proj);
-    envidatawrite(single(img_proj),fpath_img_proj,hdr_proj);
+    envidatawrite(img_proj,fpath_img_proj,hdr_proj);
     fprintf('Done\n');
 end
 
-PROJIMGdata = HSI('','');
+PROJIMGdata = ENVIRasterMultBandEquirectProjRot0('','');
 PROJIMGdata.hdr = hdr_proj;
 PROJIMGdata.img = img_proj;
+
+if save_file
+    PROJIMGdata.basename = basename_proj;
+    PROJIMGdata.dirpath  = save_dir;
+    PROJIMGdata.imgpath  = fpath_img_proj;
+    PROJIMGdata.hdrpath  = fpath_hdr_proj;
+end
 
 
 

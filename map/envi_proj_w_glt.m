@@ -138,5 +138,5 @@ fprintf('Saving %s ...\n',fpath_hdr_proj);
 envihdrwritex(hdr_proj,fpath_hdr_proj,'OPT_CMOUT',false);
 fprintf('Done\n');
 fprintf('Saving %s ...\n',fpath_img_proj);
-envidatawrite(single(img_proj),fpath_img_proj,hdr_proj);
+envidatawrite(img_proj,fpath_img_proj,hdr_proj);
 fprintf('Done\n');

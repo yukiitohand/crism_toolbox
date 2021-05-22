@@ -199,19 +199,31 @@ range_latd_isempty = isempty(range_latd);
 if range_latd_isempty
     rMars_tmp = 3396190.0;
     mrgn_deflt = 18*DEdata.lbl.PIXEL_AVERAGING_WIDTH / (rMars_tmp*pi) * 180;
+    if verLessThan('matlab','9.4')
+        range_latd = [...
+            min(min(DEdata.ddr.Latitude.img(valid_lines,valid_samples),[],1,'omitnan'),[],2,'omitnan') - mrgn_deflt*10, ...
+            max(max(DEdata.ddr.Latitude.img(valid_lines,valid_samples),[],1,'omitnan'),[],2,'omitnan') + mrgn_deflt*10];
+    else
     range_latd = [...
         min(DEdata.ddr.Latitude.img(valid_lines,valid_samples),[],'all','omitnan') - mrgn_deflt*10, ...
         max(DEdata.ddr.Latitude.img(valid_lines,valid_samples),[],'all','omitnan') + mrgn_deflt*10];
+    end
 end
 
 range_lond_isempty = isempty(range_lond);
 if range_lond_isempty
     rMars_tmp = 3396190.0;
-    latmean = mean(DEdata.ddr.Latitude.img(valid_lines,valid_samples),'all','omitnan');
+    latmean = mean(mean(DEdata.ddr.Latitude.img(valid_lines,valid_samples),1,'omitnan'),2,'omitnan');
     mrgn_deflt = 18*DEdata.lbl.PIXEL_AVERAGING_WIDTH / (rMars_tmp*pi*cosd(latmean)) * 180;
+    if verLessThan('matlab','9.4')
+        range_lond = [...
+            min(min(DEdata.ddr.Longitude.img(valid_lines,valid_samples),[],1,'omitnan'),[],2,'omitnan') - mrgn_deflt*10,...
+            max(max(DEdata.ddr.Longitude.img(valid_lines,valid_samples),[],1,'omitnan'),[],2,'omitnan') + mrgn_deflt*10];
+    else
     range_lond = [...
         min(DEdata.ddr.Longitude.img(valid_lines,valid_samples),[],'all') - mrgn_deflt*10,...
         max(DEdata.ddr.Longitude.img(valid_lines,valid_samples),[],'all') + mrgn_deflt*10];
+    end
 end
 
 switch upper(geo_coord_systm)
@@ -391,17 +403,32 @@ if range_lond_isempty
 end
 
 img_glt = cat(3,x_glt,y_glt);
-if max(img_glt,[],'all') < intmax('int16')
-    img_glt   = int16(img_glt);
-    data_type = 2;
-elseif  max(img_glt,[],'all') < intmax('int32')
-    img_glt   = int32(img_glt);
-    data_type = 3;
-elseif  max(img_glt,[],'all') < intmax('int64')
-    img_glt   = int64(img_glt);
-    data_type = 14;
+if verLessThan('matlab','9.4')
+    if max(max(max(img_glt,[],1),[],2),[],3) < intmax('int16')
+        img_glt   = int16(img_glt);
+        data_type = 2;
+    elseif max(max(max(img_glt,[],1),[],2),[],3) < intmax('int32')
+        img_glt   = int32(img_glt);
+        data_type = 3;
+    elseif max(max(max(img_glt,[],1),[],2),[],3) < intmax('int64')
+        img_glt   = int64(img_glt);
+        data_type = 14;
+    else
+        error('The input image may be too big.');
+    end
 else
-    error('The input image may be too big.');
+    if max(img_glt,[],'all') < intmax('int16')
+        img_glt   = int16(img_glt);
+        data_type = 2;
+    elseif  max(img_glt,[],'all') < intmax('int32')
+        img_glt   = int32(img_glt);
+        data_type = 3;
+    elseif  max(img_glt,[],'all') < intmax('int64')
+        img_glt   = int64(img_glt);
+        data_type = 14;
+    else
+        error('The input image may be too big.');
+    end
 end
 
 %% create Header for GLT
