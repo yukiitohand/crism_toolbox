@@ -9,7 +9,8 @@ function [PROJIMGdata] = crism_proj_w_glt_v2(in_crismdata,GLTdata,varargin)
 %   Default directory is the directory of the input CRISM data. Default
 %   basename is the basename of the input CRISM data suffixed with suffix
 %  Optional Parameters
-%   'BANDS' : selected bands, boolean or array
+%   'BANDS' : selected bands, boolean or array. If BAND_INVERSE is true,
+%             the bands are applied after BAND_INVERSE is applied.
 %             (default) all the bands will be used
 %   'BAND_INVERSE' : whether or not to invert bands or not
 %                    (default) false
@@ -32,7 +33,7 @@ save_dir = in_crismdata.dirpath; % default is the same directory as the input im
 force = 0;
 skip_ifexist = false;
 save_file = 0;
-set_default_bands = true;
+set_default_bands = false
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -149,13 +150,24 @@ end
 if isfield(hdr_proj,'fwhm')
     hdr_proj.fwhm = hdr_proj.fwhm(bands);
 end
-if band_inverse
-    hdr_proj.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),(hdr_proj.bands-bands+1),...
-    'UniformOutput',false);
+
+if isfield(hdr_proj,'band_names')
+    if band_inverse
+        hdr_proj.band_names = flip(hdr_proj.band_names);
+        hdr_proj.band_names = hdr_proj.band_names(bands);
+    else
+        hdr_proj.band_names = hdr_proj.band_names(bands);
+    end
 else
-    hdr_proj.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),bands,...
+    if band_inverse
+        hdr_proj.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),(hdr_proj.bands-bands+1),...
         'UniformOutput',false);
+    else
+        hdr_proj.band_names = arrayfun(@(x) sprintf('Georef (Band %d: %s)',x,in_crismdata.basename),bands,...
+            'UniformOutput',false);
+    end
 end
+    
 hdr_proj.samples = GLTdata.hdr.samples;
 hdr_proj.lines = GLTdata.hdr.lines;
 hdr_proj.bands = B;
@@ -166,13 +178,20 @@ hdr_proj.cat_input_files = [in_crismdata.basename ', ' GLTdata.basename];
 hdr_proj.map_info = GLTdata.hdr.map_info;
 hdr_proj.projection_info = GLTdata.hdr.projection_info;
 
-% if set_default_bands
-%     if isempty(default_bands)
-%         hdr_proj.default_bands = get_default_bands(hdr_proj.wavelength);
-%     else
-%         hdr_proj.default_bands = default_bands;
-%     end
-% end
+if set_default_bands
+    if isempty(default_bands)
+        switch upper(in_crismdata.prop.sensor_id)
+            case 'L'
+                hdr_proj.default_bands = crism_get_default_bands_L(hdr_proj.wavelength);
+            case 'S'
+                hdr_proj.default_bands = crism_get_default_bands_S(hdr_proj.wavelength,1);
+            otherwise
+                error('Unsupported sensor_id %s',in_crismdata.prop.sensor_id);
+        end
+    else
+        hdr_proj.default_bands = default_bands;
+    end
+end
 
 %% saving the image
 if save_file
