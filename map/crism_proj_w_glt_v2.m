@@ -28,12 +28,12 @@ function [PROJIMGdata] = crism_proj_w_glt_v2(in_crismdata,GLTdata,varargin)
 bands = 1:in_crismdata.hdr.bands;
 band_inverse = false;
 suffix = '_p';
-default_bands = []; % if this is empty, estimated with "get_default_bands.m"
+default_bands = []; % if this is empty, estimated with "crism_get_default_bands_L.m" or "crism_get_default_bands_S.m"
 save_dir = in_crismdata.dirpath; % default is the same directory as the input image.
 force = 0;
 skip_ifexist = false;
 save_file = 0;
-set_default_bands = false
+set_default_bands = false;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
