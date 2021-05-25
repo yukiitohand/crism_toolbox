@@ -49,7 +49,7 @@ for i = 1:length(fnamelist)
 end
 crismTypeLib = struct('name', bnames);
 for i=1:length(bnames)
-    lbl = crismlblread_v2(joinPath(dir_crismTypeLib_data,[bnames{i} '.lbl']));
+    lbl = pds3lblread(joinPath(dir_crismTypeLib_data,[bnames{i} '.lbl']));
     fpath = joinPath(dir_crismTypeLib_data,[bnames{i} '.tab']);
     [ tab ] = crismTABread(fpath,lbl);
     L = length(tab.data);

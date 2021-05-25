@@ -78,7 +78,7 @@ if exist(cachefilepath,'file') && ~clearcache
     load(cachefilepath,'fmt');
 else
     fmtfpath = joinPath(dirfullpath_local, fmtfname);
-    fmt = crismlblread_v2(fmtfpath);
+    fmt = pds3lblread(fmtfpath);
     save(cachefilepath,'fmt');
 end
 

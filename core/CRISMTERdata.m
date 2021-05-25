@@ -22,7 +22,7 @@ classdef CRISMTERdata < CRISMdata
         
         function [] = readlblhdr(obj)
             % TER image has both lbl and hdr
-            obj.lbl = crismlblread_v2(obj.lblpath);
+            obj.lbl = pds3lblread(obj.lblpath);
             p = crism_getProp_basenameOBSERVATION(obj.basename);
             if ~strcmpi(p.activity_id,'WV')
                 obj.hdr = envihdrreadx(obj.hdrpath);

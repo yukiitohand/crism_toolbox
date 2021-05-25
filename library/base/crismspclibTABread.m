@@ -11,7 +11,7 @@ function [tab,lbl] = crismspclibTABread(fpath)
 %     of each column
 %  lbl: LABEL in a struct format
 
-lbl = crismlblread_v2(fpath);
+lbl = pds3lblread(fpath);
 
 [ obj_file_table, obj_table ] = crism_find_OBJECT_FILE_TABLE( lbl );
 
