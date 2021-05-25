@@ -31,13 +31,19 @@ if ismac || ispc
 elseif isunix
     lblname = [basename '.lbl'];
     [lblname] = findfilei(lblname,dirPath);
-    if isempty(lblname) 
+    if isempty(lblname)
         if iswarning
             warning('LBL file cannot be found');
         end
         lblPath = '';
-    end
-    if ~isempty(lblname)
+    else
+        if iscell(lblname)
+            if all(strcmpi(lblname{1},lblname))
+                lblname = lblname{1};
+            else
+                error('Ambiguity error. Multiple LBL files are detected.');
+            end
+        end
         lblPath = joinPath(dirPath,lblname);
     end
 end

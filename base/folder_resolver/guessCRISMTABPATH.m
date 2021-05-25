@@ -37,8 +37,14 @@ elseif isunix
             warning('TAB file cannot be found');
         end
         tabPath = '';
-    end
-    if ~isempty(tabname)
+    else
+        if iscell(tabname)
+            if all(strcmpi(tabname{1},tabname))
+                tabname = tabname{1};
+            else
+                error('Ambiguity error. Multiple TAB files are detected.');
+            end
+        end
         tabPath = joinPath(dirPath,tabname);
     end
 end
