@@ -47,7 +47,7 @@ if ~isempty(obj_file_table)
     obj_TAB = obj_file_table.OBJECT_TABLE;
 
     [data,colinfo,colinfo_names] = crismTABread_sub(fpath,obj_TAB,...
-        'SKIP_LINE',skip_line,'MODE',readmode);
+        'SKIP_LINE',skip_line,'MODE',readmode,'File_Records',obj_file_table.FILE_RECORDS);
 
     tab=[];
     tab.colinfo = colinfo;

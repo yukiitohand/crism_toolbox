@@ -1,5 +1,5 @@
 function [ fmt ] = crismHKFMTread( product_type,varargin )
-% [ fmt ] = crismHKFMTread( lbl )
+% [ fmt ] = crismHKFMTread( product_type,varargin )
 %   Read the meta/header information of the House Keeping TABLE file.
 %   
 %   Inputs
@@ -70,8 +70,16 @@ else
     end
 end
 
-crism_readDownloadBasename(fmtfname, subdir_local,...
+[basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(fmtfname, subdir_local,...
     subdir_remote,dwld,'Force',force,'Out_File',outfile);
+
+if isempty(fname_wext_local)
+    yesno = doyouwantto('download it',sprintf('%s does not exist.',fmtfname));
+    if yesno
+        [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(fmtfname, subdir_local,...
+            subdir_remote,2,'Force',force,'Out_File',outfile);
+    end
+end
 
 cachefilepath = joinPath(dirfullpath_local,[fmtfname '.mat']);
 if exist(cachefilepath,'file') && ~clearcache

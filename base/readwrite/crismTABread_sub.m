@@ -14,6 +14,8 @@ function [ data,colinfo2,colinfo_names ] = crismTABread_sub(fpath,obj_table,vara
 %              obj_table.OBJECT_COLUMN, field names are colinfo(i).NAME for
 %              easy access with their names.
 %    Optional Parameters
+%     'FILE_RECORDS': sometimes ROWs value is not right...
+%             (default) []
 %     'SKIPLINE': number of lines to be skipped
 %             (default) 0
 %     'MODE': 'normal' or 'fast'
@@ -23,6 +25,7 @@ function [ data,colinfo2,colinfo_names ] = crismTABread_sub(fpath,obj_table,vara
 
 skip_line = 0;
 readmode = 'normal';
+file_records = [];
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -32,6 +35,8 @@ else
                 skip_line = varargin{i+1};
             case 'MODE'
                 readmode = varargin{i+1};
+            case 'FILE_RECORDS'
+                file_records = varargin{i+1};
             otherwise
                 % Hmmm, something wrong with the parameter string
                 error(['Unrecognized option: ''' varargin{i} '''']);
@@ -44,6 +49,24 @@ end
 nCols = obj_table.COLUMNS;
 nRows = obj_table.ROWS;
 colinfo = obj_table.OBJECT_COLUMN;
+
+if ~isempty(file_records) && file_records~=nRows
+    fprintf('Something wrong with LBL: FILE_RECORDS %d but ROWS %d\n',file_records,nRows);
+    s = dir(fpath);
+    file_size = s.bytes;
+    nRows_guess = file_size/obj_table.ROW_BYTES;
+    fprintf('Maybe the number of rows=%d from file size(%d)/ROW_BYTES(%d)\n', ...
+        nRows_guess,file_size,obj_table.ROW_BYTES);
+    if nRows_guess==file_records
+        nRows = file_records;
+        fprintf('Believe FILE_RECORDS\n');
+    elseif nRows_guess == nRows
+        nRows = nRows;
+        fprintf('Believe ROWS\n');
+    else
+        error('FILE_RECORDS and ROWS both seem incorrect');
+    end
+end
 
 if length(colinfo)==1
     colinfo = {colinfo};
@@ -65,7 +88,7 @@ switch lower(readmode)
     case 'normal'
 
 
-        tab = repmat(' ', obj_table.ROWS,obj_table.ROW_BYTES);
+        tab = repmat(' ', nRows,obj_table.ROW_BYTES);
 
         fp = fopen(fpath,'r');
 
