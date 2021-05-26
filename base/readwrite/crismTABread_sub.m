@@ -38,8 +38,7 @@ else
             case 'FILE_RECORDS'
                 file_records = varargin{i+1};
             otherwise
-                % Hmmm, something wrong with the parameter string
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
@@ -51,7 +50,8 @@ nRows = obj_table.ROWS;
 colinfo = obj_table.OBJECT_COLUMN;
 
 if ~isempty(file_records) && file_records~=nRows
-    fprintf('Something wrong with LBL: FILE_RECORDS %d but ROWS %d\n',file_records,nRows);
+    fprintf('Something wrong with LBL: %s\n',fpath);
+    fprintf('FILE_RECORDS %d but ROWS %d\n',file_records,nRows);
     s = dir(fpath);
     file_size = s.bytes;
     nRows_guess = file_size/obj_table.ROW_BYTES;
