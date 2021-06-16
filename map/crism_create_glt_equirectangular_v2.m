@@ -464,7 +464,11 @@ end
 
 map_info = [];
 map_info.projection = projcs_name;
-map_info.image_coords = [1 1];
+% [1,1] is considered as the center of the most upper left pixel by the 
+% class SphereEquiRectangularProj, while in ENVI, [1.5 1.5] is considered 
+% as the center of the most upper left pixel. [1 1] is the upper left
+% vertex of the upper left most pixel.
+map_info.image_coords = [1.5 1.5];
 map_info.mapx = easting;
 map_info.mapy = northing;
 map_info.dx = pixel_size;

@@ -151,7 +151,11 @@ hdr_glt.sensor_type = 'Unknown';
 hdr_glt.byte_order = 0;
 hdr_glt.map_info = [];
 hdr_glt.map_info.projection = 'Mars Sphere-Based Equirectangular';
-hdr_glt.map_info.image_coords = [1 1];
+% [1,1] is considered as the center of the most upper left pixel by the 
+% class SphereEquiRectangularProj, while in ENVI, [1.5 1.5] is considered 
+% as the center of the most upper left pixel. [1 1] is the upper left
+% vertex of the upper left most pixel.
+hdr_glt.map_info.image_coords = [1.5 1.5];
 hdr_glt.map_info.mapx = easting;
 hdr_glt.map_info.mapy = northing;
 hdr_glt.map_info.dx = pixel_size;
