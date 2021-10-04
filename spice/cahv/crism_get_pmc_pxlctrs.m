@@ -19,6 +19,7 @@ function [pmc_pxlctrs] = crism_get_pmc_pxlctrs(crism_camera_info,cahv_mdl,vararg
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 
 proj_mode = 'ANGULARX'; % {'ANGULARX','ANGULARXY','PLANE'}
+binx = 1;
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -26,6 +27,8 @@ else
         switch upper(varargin{i})
             case 'PROJ_MODE'
                 proj_mode = varargin{i+1};
+            case 'BINX'
+                binx = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});   
         end
@@ -33,7 +36,7 @@ else
 end
 
 x = 0:639;
-binx = 1;
+
 h = fspecial('average',[1,binx]); % convolution vector
 xbinx = conv(x,h,'valid'); % take convolution and 
 xbinx = xbinx(1:binx:end);
