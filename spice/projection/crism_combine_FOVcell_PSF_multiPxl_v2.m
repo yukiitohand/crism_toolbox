@@ -60,7 +60,7 @@ lend_mat = lend_mat - msldemc_hdr.line_offset;
 
 %%
 for l=l1:lend
-    bname = sprintf('%s_l%03d',fname_top,l-1);
+    bname = sprintf('%s_l%03d',fname_top,l);
     fpath = joinPath(dirpath,[bname '.mat']);
     load(fpath,'crism_FOVcell_lcomb');
     for xi=1:Ncrism
