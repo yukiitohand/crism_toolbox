@@ -104,10 +104,10 @@ mrgn = -0.2; % margin is the additional wing (with zero, 0.5 pixels from its cen
 % sgm_psf = 0.67;
 
 %
-[pmc_pxlbrdrctrs] = crism_get_pmc_pxlbrdrctrs(crism_camera_info,cahv_mdl, ...
-    'Margin',mrgn,'PROJ_MODE_CTR','AngularX','PROJ_MODE_VRTCS','AngularX');
-pmc_pxlbrdctrs_imxy = cahv_mdl.get_xy_from_p_minus_c(pmc_pxlbrdrctrs);
-pmc_pxlbrdctrs_imx = pmc_pxlbrdctrs_imxy(1,:);
+% [pmc_pxlbrdrctrs] = crism_get_pmc_pxlbrdrctrs(crism_camera_info,cahv_mdl, ...
+%     'Margin',mrgn,'PROJ_MODE_CTR','AngularX','PROJ_MODE_VRTCS','AngularX');
+% pmc_pxlbrdctrs_imxy = cahv_mdl.get_xy_from_p_minus_c(pmc_pxlbrdrctrs);
+% pmc_pxlbrdctrs_imx = pmc_pxlbrdctrs_imxy(1,:);
 
 % thresh = 0.01;
 
@@ -118,28 +118,22 @@ L = size(sclk_str,1);
 N = size(sclk_str,2);
 
 % crism_FOVcell = cell(L,Ncrism);
-crismPxlctrx = nan(L,Ncrism);
-crismPxlctry = nan(L,Ncrism);
-crismPxlctrz = nan(L,Ncrism);
+crismPxlctrx = nan(L,Ncrism,N);
+crismPxlctry = nan(L,Ncrism,N);
+crismPxlctrz = nan(L,Ncrism,N);
 
 vr = 0;
-fname_top = sprintf('%s_MSLGaleDEMproj_v%1d',crism_info.info.dirname,vr);
-save_dir  = joinPath('/Users/yukiitoh/src/matlab/crism_projection/', fname_top);
-if ~exist(save_dir,'dir')
-    mkdir(save_dir);
-end
+% fname_top = sprintf('%s_MSLGaleDEMproj_v%1d',crism_info.info.dirname,vr);
+% save_dir  = joinPath('/Users/yukiitoh/src/matlab/crism_projection/', fname_top);
+% if ~exist(save_dir,'dir')
+%     mkdir(save_dir);
+% end
 
 %%
-for l=1
+for l=1:L
     fprintf('Start processing for line=%d\n',l);
     tic;
-    crism_FOVcells_l   = cell(N,Ncrism);
-    crismPxl_sofst_l = (-1)*ones(N,Ncrism,'int32');
-    crismPxl_lofst_l = (-1)*ones(N,Ncrism,'int32');
-    crismPxl_smpls_l = (-1)*ones(N,Ncrism,'int32');
-    crismPxl_lines_l = (-1)*ones(N,Ncrism,'int32');
-    
-    for n=1
+    for n=1:N
         % fprintf('j=%d\n',j);
         % tic;
         sclkch = sclk_str{l,n};
@@ -179,7 +173,7 @@ for l=1
             msldemcc_hdr,crismPxl_smplofst_ap, crismPxl_smpls_ap,  ...
             crismPxl_lineofst_ap, crismPxl_lines_ap);
         
-        m = crism_get_FOVap_mask_from_lList_crange_mex(msldemcc_hdr,lList_crange);
+        % m = crism_get_FOVap_mask_from_lList_crange_mex(msldemcc_hdr,lList_crange);
         
 
         %%
@@ -204,43 +198,20 @@ for l=1
                 lList_cols_ap,           ... 7
                 cahv_mdl_iaumars_etemit, ... 8
                 pmc_pxlctrs_imxy,        ... 9
-                sgm_psf,                 ... 10
+                0,                       ... 10
                 mrgn                     ... 11
             );
         % toc;
         
-        %% Find out invisible pixels (takes time, turned off by default)
-        if 0
-            tic; [ msldemc_imUFOVmask_ctr] =  ...
-                    iaumars_get_msldemtUFOVmask_ctr_L2PBK_LL0_M3_4crism_mex(...
-                    MSLDEMdata.imgpath,      ... 0
-                    MSLDEMdata.hdr,          ... 1
-                    MSLDEMdata.OFFSET,       ... 2
-                    msldemcc_hdr,            ... 3
-                    msldem_latitude_rad,     ... 4
-                    msldem_longitude_rad,    ... 5
-                    msldemc_imFOVmask,       ... 6
-                    lList_lofst,             ... 7
-                    lList_lines,             ... 8
-                    lList_cofst,             ... 9
-                    lList_cols,              ... 10
-                    640,                     ... 11 S_im
-                    1,                       ... 12 L_im
-                    cahv_mdl_iaumars_etemit, ... 13 
-                    50,                      ... 14 K_L
-                    50,                      ... 15 K_S
-                    1                        ... 16 dyu
-                    ); 
-            toc;
-        end
         %% Get pixel footprint function PFF
         % tic;
-        [crism_FOVcell_ln,crismPxl_sofst_ln,crismPxl_smpls_ln, ...
-            crismPxl_lofst_ln,crismPxl_lines_ln] = ...
-            crism_gale_get_msldemFOVcell_PFF_L2fa2_mex(...
+        [pmc_pxlctrs_iaumars_etemit] = rotate * pmc_pxlctrs;
+        [im_xiaumars,im_yiaumars,im_ziaumars,im_refx,im_refy,im_refs, ...
+            im_range,im_nnx,im_nny] = ...
+            cahvor_iaumars_proj_crism2MSLDEM_v6_mex(...
                 MSLDEMdata.imgpath,      ... 0
                 MSLDEMdata.hdr,          ... 1
-                mslradius_offset,        ... 2 
+                mslradius_offset,        ... 2
                 msldemcc_hdr,            ... 3
                 msldem_latitude_rad,     ... 4
                 msldem_longitude_rad,    ... 5
@@ -249,83 +220,31 @@ for l=1
                 lList_lines,             ... 8
                 lList_cofst,             ... 9
                 lList_cols,              ...10
-                cahv_mdl_iaumars_etemit, ...11
-                pmc_pxlctrs_imxy,        ...12
-                sgm_psf,                 ...13
-                mrgn,                    ...14
-                thresh                   ...15
+                640,                     ...11
+                1,                       ...12
+                cahv_mdl_iaumars_etemit, ...13
+                pmc_pxlctrs_iaumars_etemit(1,:) ,...14
+                pmc_pxlctrs_iaumars_etemit(2,:) ,...15
+                pmc_pxlctrs_iaumars_etemit(3,:)  ...16
             );
         % toc;
         
         
         
         %% storing the result for combining FOV
-
-        crism_FOVcells_l(n,:) = crism_FOVcell_ln;
-        
-        % Pixel ranges are stacked.
-        % index values are based on the original DEM image
-        crismPxl_sofst_l(n,:) = crismPxl_sofst_ln+msldemcc_hdr.sample_offset;
-        crismPxl_lofst_l(n,:) = crismPxl_lofst_ln+msldemcc_hdr.line_offset;
-        crismPxl_smpls_l(n,:) = crismPxl_smpls_ln;
-        crismPxl_lines_l(n,:) = crismPxl_lines_ln;
-        
+        crismPxlctrx(l,:,n) = im_xiaumars;
+        crismPxlctry(l,:,n) = im_yiaumars;
+        crismPxlctrz(l,:,n) = im_ziaumars;
         
         
     end
-    %%
-    [crism_FOVcell_lcomb,crismPxl_sofst_lcomb,crismPxl_smpls_lcomb, ...
-        crismPxl_lofst_lcomb, crismPxl_lines_lcomb] ...
-        = crism_combine_FOVcell_PSF_1expo_v3_mex( ...
-            crism_FOVcells_l, ... 0
-            crismPxl_sofst_l, ... 1
-            crismPxl_smpls_l, ... 2
-            crismPxl_lofst_l, ... 3
-            crismPxl_lines_l  ... 4
-        );
-    
-%     crism_FOVcell(i,:) = crism_FOVcell_l_cmb;
-    crismPxl_sofst(l,:)= crismPxl_sofst_lcomb;
-    crismPxl_smpls(l,:)= crismPxl_smpls_lcomb;
-    crismPxl_lofst(l,:)= crismPxl_lofst_lcomb;
-    crismPxl_lines(l,:)= crismPxl_lines_lcomb;
-    
-    
     toc;
-    %%
-    % saving the each pixel footprint
-%     fprintf('Now saving ...');
-%     bname = sprintf('%s_l%03d',fname_top,l-1);
-%     fpath = joinPath(save_dir,[bname '.mat']);
-%     for s=1:640
-%         crism_FOVcell_lcomb{s} = single(crism_FOVcell_lcomb{s});
-%     end
-%     save(fpath,'crism_FOVcell_lcomb');
-    
-%     for s=1:640
-%         bname = sprintf('%s_l%03ds%03d',fname_top,l-1,s-1);
-%         img = single(crism_FOVcell_lcomb{s});
-%         hdr_ls = [];
-%         dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
-%         hdr_ls.description = sprintf('{CRISM PFF [%s] header editted timestamp}',dt);
-%         hdr_ls.samples = crismPxl_smpls_lcomb(s);
-%         hdr_ls.lines   = crismPxl_lines_lcomb(s);
-%         hdr_ls.bands   = 1;
-%         hdr_ls.header_offset = 0;
-%         hdr_ls.file_type = 'ENVI Standard';
-%         hdr_ls.data_type = 4; % 4 for float
-%         hdr_ls.interleave = 'bsq';
-%         hdr_ls.sensor_type = 'Unknown';
-%         hdr_ls.byte_order = 0;
-%         
-%         fpath = joinPath(save_dir,bname);
-%         envihdrwritex(hdr_ls,[fpath '.hdr'],'OPT_CMOUT',false);
-%         envidatawrite(img,[fpath '.img'],hdr_ls);
-%         
-%     end
-    fprintf('Done.\n');
-    
 end
+
+% Convert 
+crismPxl_radius = sqrt(crismPxlctrx.^2 + crismPxlctry.^2 + crismPxlctrz.^2);
+crismPxl_latd   = asind(crismPxlctrz./crismPxl_radius);
+crismPxl_lond   = atan2d(crismPxlctry,crismPxlctrx);
 
 %%
 % save offsets and # of samples and lines
