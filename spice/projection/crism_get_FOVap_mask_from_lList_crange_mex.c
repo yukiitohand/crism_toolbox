@@ -27,13 +27,13 @@
 /* main computation routine */
 void crism_get_FOVap_mask_from_lList_crange(
         int32_t msldemc_samples, int32_t msldemc_lines,
-        int32_t **lList_crange, int8_t **msldemc_imFOVmask)
+        int32_t *lList_cofst, int32_t *lList_cols, int8_t **msldemc_imFOVmask)
 {
     int32_t c,l,c0,cend;
     
     for(l=0;l<msldemc_lines;l++){
-        c0 = lList_crange[l][0];
-        cend = lList_crange[l][1];
+        c0   = lList_cofst[l];
+        cend = c0 + lList_cols[l];
         for(c=c0;c<cend;c++){
             msldemc_imFOVmask[c][l] = 1;
         }
@@ -79,7 +79,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     msldemc_lines   = (mwSize) mxGetScalar(mxGetField(prhs[0],0,"lines"));
     
     lList_cofst = mxGetInt32s(prhs[1]);
-    lLIst_cols  = mxGetInt32s(prhs[2]);
+    lList_cols  = mxGetInt32s(prhs[2]);
     
     /* OUTPUT 0 lList_crange */
     plhs[0] = mxCreateNumericMatrix(msldemc_lines,msldemc_samples,mxINT8_CLASS,mxREAL);
@@ -103,7 +103,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     crism_get_FOVap_mask_from_lList_crange(
         (int32_t) msldemc_samples, (int32_t) msldemc_lines,
-        lList_crange,msldemc_imFOVmask);
+        lList_cofst,lList_cols,msldemc_imFOVmask);
     
     /* free memories */
     mxFree(msldemc_imFOVmask);
