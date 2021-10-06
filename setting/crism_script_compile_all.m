@@ -128,10 +128,4 @@ if msl_toolbox_exist
     end
 end
 
-% If you manually compile mex codes, include the two directories 
-%     pds3_toolbox_mex_include_path
-%     msl_toolbox_mex_include_path
-%     crism_toolbox_mex_include_path
-% using -I option.
-% Also do not forget to add '-R2018a'
 
