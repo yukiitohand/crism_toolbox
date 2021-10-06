@@ -1,3 +1,4 @@
+function [] = crism_script_compile_all()
 % crism_script_compile_all.m
 % Script for compiling all the necessary C/MEX codes
 %
@@ -19,10 +20,10 @@ if ~exist(pds3_toolbox_path,'dir')
     error('pds3_toolbox does not exist. Get at github.com/yukiitohand/pds3_toolbox/');
 end
 
-if ~exist(msl_toolbox_path,'dir')
-    fprintf('msl_toolbox is not detected.');
+if exist(msl_toolbox_path,'dir')
     msl_toolbox_exist = true;
 else
+    fprintf('msl_toolbox is not detected.');
     msl_toolbox_exist = false;
 end
 
@@ -103,21 +104,22 @@ for i=1:length(source_filepaths_crism_proj)
         '-outdir',out_dir);
 end
 
-% mex files linked to SPICE/MICE
-for i=1:length(source_filepaths_crism_proj_spice)
-    filepath = source_filepaths_crism_proj_spice{i};
-    fprintf('Compiling %s ...\n',filepath);
-    mex(filepath, '-R2018a', ['-I' pds3_toolbox_mex_include_path], ...
-        ['-I' msl_toolbox_mex_include_path], ...
-        ['-I' crism_toolbox_mex_include_path], ...
-        ['-I' SpiceUsr_include_path], ...
-        joinPath(spice_lib_path,'cspice.a'), ...
-        '-lm', ...
-        '-outdir',out_dir);
-end
+
 
 
 if msl_toolbox_exist
+    % mex files linked to SPICE/MICE
+    for i=1:length(source_filepaths_crism_proj_spice)
+        filepath = source_filepaths_crism_proj_spice{i};
+        fprintf('Compiling %s ...\n',filepath);
+        mex(filepath, '-R2018a', ['-I' pds3_toolbox_mex_include_path], ...
+            ['-I' msl_toolbox_mex_include_path], ...
+            ['-I' crism_toolbox_mex_include_path], ...
+            ['-I' SpiceUsr_include_path], ...
+            joinPath(spice_lib_path,'cspice.a'), ...
+            '-lm', ...
+            '-outdir',out_dir);
+    end
     for i=1:length(source_filepaths_crism_mastcam_mapper)
         filepath = source_filepaths_crism_mastcam_mapper{i};
         fprintf('Compiling %s ...\n',filepath);
@@ -128,4 +130,4 @@ if msl_toolbox_exist
     end
 end
 
-
+end
