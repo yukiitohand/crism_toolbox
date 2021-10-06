@@ -4,8 +4,8 @@ function [] = crism_startup_addpath()
 fpath_self = mfilename('fullpath');
 [dirpath_self,filename] = fileparts(fpath_self);
 
-idx_sep = strfind(dirpath_self,'crism_toolbox/');
-toolbox_root_dir = dirpath_self(1:idx_sep-1);
+mtch = regexpi(dirpath_self,'(?<parent_dirpath>.*)/crism_toolbox[/]{0,1}','names');
+toolbox_root_dir = mtch.parent_dirpath;
 
 
 %-------------------------------------------------------------------------%
@@ -14,11 +14,15 @@ base_toolbox_dirname          = 'base';
 envi_toolbox_dirname          = 'envi';
 pds3_toolbox_dirname          = 'pds3_toolbox';
 crism_toolbox_dirname         = 'crism_toolbox';
+spice_dirname                 = 'spice';
+
+%-------------------------------------------------------------------------%
+pathCell = strsplit(path, pathsep);
 
 %-------------------------------------------------------------------------%
 %%
 % base toolbox
-base_toolbox_dir = [toolbox_root_dir base_toolbox_dirname '/'];
+base_toolbox_dir = [toolbox_root_dir '/' base_toolbox_dirname '/'];
 addpath(base_toolbox_dir);
 % joinPath in base toolbox will be used in the following. "base" toolbox
 % need to be loaded first. base/joinPath.m automatically determine the
