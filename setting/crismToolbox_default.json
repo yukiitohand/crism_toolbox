@@ -5,5 +5,7 @@
     "pds_unified_URL"       : "crism_pds_archive/",
     "pds_mro_URL"           : "pds-geosciences.wustl.edu/mro/",
     "local_fldsys"          : "pds_unified",
-    "remote_fldsys"         : "pds_mro"
+    "remote_fldsys"         : "pds_mro",
+    "dir_PFFMSLDEM"         : "~/data/crism2MSLDEMprojection/",
+    "dir_PFFMASTCAM"        : "~/data/crism2Mastcam_projection/"
 }

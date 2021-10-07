@@ -18,7 +18,10 @@ function [crismPFFonMASTCAMObj] = crism_get_PFFonMASTCAM(crismPFFonMSLDEMobj,MST
 %
 %
 
-pdir_cache = '/Volumes/LaCie5TB/data/crism2MSLDEMprojection/';
+global crism_env_vars
+
+pdir_cache = crism_env_vars.dir_PFFMASTCAM;
+% pdir_cache = '/Volumes/LaCie5TB/data/crism2MSLDEMprojection/';
 save_file = true;
 force = false;
 load_cache_ifexist = true;
