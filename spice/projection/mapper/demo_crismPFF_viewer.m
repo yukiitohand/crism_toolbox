@@ -4,6 +4,8 @@ obs_id     = 'b6f1';
 correction = true;
 sensor_id_gcp_cor_param = 'L';
 
+global crism_env_vars
+
 %% Determine use the correction parameter or not
 crism_info = CRISMObservation(obs_id,'sensor_id',sensor_id);
 if correction
@@ -26,7 +28,7 @@ else
     fname_top = sprintf('%s_%s_MSLGaleDEMproj_v%1d',crism_info.info.dirname,crism_info.info.sensor_id,vr);
 end
 
-save_dir  = joinPath('/Volumes/LaCie5TB/data/crism2MSLDEMprojection/', fname_top);
+save_dir  = joinPath(crism_env_vars.dir_PFFMSLDEM, fname_top);
 if ~exist(save_dir,'dir')
     mkdir(save_dir);
 end
