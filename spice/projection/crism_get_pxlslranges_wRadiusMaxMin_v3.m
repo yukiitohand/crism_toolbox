@@ -108,9 +108,7 @@ crismPxl_lrngs_ap(2,:) = min(crismPxl_lrngs_ap(2,:)+1, lendc);
 msldemcc_hdr = [];
 
 % Find out the total region of crismPxl sample line ranges
-ss = crismPxl_srngs_ap(:,[1 end]);
-ll = crismPxl_lrngs_ap(:,[1 end]);
-ss = ss(:); ll = ll(:);
+ss = crismPxl_srngs_ap(:); ll = crismPxl_lrngs_ap(:);
 s1cc = min(ss); sendcc = max(ss); l1cc = min(ll); lendcc = max(ll);
 
 % create msldemcc_hdr

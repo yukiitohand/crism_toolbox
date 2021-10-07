@@ -41,8 +41,8 @@ void crism_combine_FOVap(
     int32_t *lList_c0;
     int32_t *lList_cend;
     
-    lList_c0   = (int32_t*) malloc(sizeof(int32_t)*(size_t) msldemc_lines);
-    lList_cend = (int32_t*) malloc(sizeof(int32_t)*(size_t) msldemc_lines);
+    lList_c0   = (int32_t*) malloc(sizeof(int32_t) * ((size_t) msldemc_lines));
+    lList_cend = (int32_t*) malloc(sizeof(int32_t) * ((size_t) msldemc_lines));
     
     for(l=0;l<msldemc_lines;l++){
         lList_c0[l]   = -1;
@@ -54,6 +54,12 @@ void crism_combine_FOVap(
         lend = l0 + crismPxl_lines_ap[xi];
         c0   = crismPxl_smplofst_ap[xi];
         cend = c0 + crismPxl_smpls_ap[xi];
+        if(l0<0){
+            l0=0;
+        }
+        if(lend>msldemc_lines){
+            lend=msldemc_lines;
+        }
         for(l=l0;l<lend;l++){
             if(lList_c0[l]==-1){
                 lList_c0[l]   = c0;
