@@ -134,24 +134,28 @@ end
 % Resolving the directory path of the file
 %
 global naif_archive_env_vars
-global crism_env_vars
+% global crism_env_vars
 
 localrootDir    = naif_archive_env_vars.local_naif_archive_rootDir;
 url_local_root  = naif_archive_env_vars.naif_archive_root_URL;
 url_remote_root = naif_archive_env_vars.naif_archive_root_URL;
 
+NAIF_GENERICSPICE_subdir = naif_archive_env_vars.NAIF_GENERICSPICE_subdir;
+NAIF_MROSPICE_subdir     = naif_archive_env_vars.NAIF_MROSPICE_subdir;
+NAIF_MROSPICE_pds_subdir = naif_archive_env_vars.NAIF_MROSPICE_pds_subdir;
+
 switch upper(dirpath_opt)
     case 'GENERIC'
-        subdir_local  = joinPath(crism_env_vars.NAIF_GENERICSPICE_subdir,'pck');
-        subdir_remote = joinPath(crism_env_vars.NAIF_GENERICSPICE_subdir,'pck');
+        subdir_local  = joinPath(NAIF_GENERICSPICE_subdir,'pck');
+        subdir_remote = joinPath(NAIF_GENERICSPICE_subdir,'pck');
         dirpath = joinPath(localrootDir,url_local_root,subdir_local);
     case 'MRO'
-        subdir_local  = joinPath(crism_env_vars.NAIF_MROSPICE_subdir,'pck');
-        subdir_remote = joinPath(crism_env_vars.NAIF_MROSPICE_subdir,'pck');
+        subdir_local  = joinPath(NAIF_MROSPICE_subdir,'pck');
+        subdir_remote = joinPath(NAIF_MROSPICE_subdir,'pck');
         dirpath = joinPath(localrootDir,url_local_root,subdir_local);
     case 'PDS'
-        subdir_local  = joinPath(crism_env_vars.NAIF_MROSPICE_pds_subdir,'pck');
-        subdir_remote = joinPath(crism_env_vars.NAIF_MROSPICE_pds_subdir,'pck');
+        subdir_local  = joinPath(NAIF_MROSPICE_pds_subdir,'pck');
+        subdir_remote = joinPath(NAIF_MROSPICE_pds_subdir,'pck');
         dirpath = joinPath(localrootDir,url_local_root,subdir_local);
     otherwise
         error('Undefined dirpath_opt %s',dirpath_opt);
