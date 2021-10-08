@@ -373,7 +373,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxFree(crismPxl_smpls);
     mxFree(crismPxl_lofst);
     mxFree(crismPxl_lines);
-    mxFree(msldemc_mastcam_hdr);
+    free(msldemc_mastcam_hdr);
     mxFree(crismFOV_sofst_onmstimg);
     mxFree(crismFOV_lofst_onmstimg);
     mxFree(crismFOV_smpls_onmstimg);
