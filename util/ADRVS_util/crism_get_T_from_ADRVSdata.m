@@ -47,7 +47,7 @@ switch lower(mode_artifact)
     case 'none'
         T = imgvs(1,:,:);
     otherwise
-        error('Undefined mode %s.',mode_subtract);
+        error('Undefined mode %s.',mode_artifact);
 end
 
 end
