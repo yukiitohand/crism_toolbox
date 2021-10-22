@@ -44,7 +44,7 @@ envi_toolbox_dir = joinPath(toolbox_root_dir, envi_toolbox_dirname);
 
 if exist(envi_toolbox_dir,'dir')
     if ~check_path_exist(envi_toolbox_dir, pathCell)
-        run(joinPath(envi_toolbox_dir,'envi_startup_path'));
+        run(joinPath(envi_toolbox_dir,'envi_startup_addpath'));
     end
 else
     warning([ ...
@@ -58,7 +58,7 @@ pds3_toolbox_dir = joinPath(toolbox_root_dir, pds3_toolbox_dirname);
 
 if exist(pds3_toolbox_dir,'dir')
     if ~check_path_exist(pds3_toolbox_dir, pathCell)
-        run(joinPath(pds3_toolbox_dir,'pds3_startup_path'));
+        run(joinPath(pds3_toolbox_dir,'pds3_startup_addpath'));
     end
 else
     warning([ ...
