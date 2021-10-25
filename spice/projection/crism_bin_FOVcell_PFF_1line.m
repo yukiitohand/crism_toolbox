@@ -48,7 +48,7 @@ validateattributes(crismPxl_lofst_l,{'int32'},{'size',[1 640]});
 validateattributes(crismPxl_lines_l,{'int32'},{'size',[1 640]});
 
 %%
-% [binx] = crism_get_binning(binning_id);
+% [binx] = crism_get_binx(binning_id);
 switch binx
     case 1 % No binning
         % with binx==1 no need to further bin the image...
