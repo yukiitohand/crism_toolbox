@@ -1,5 +1,5 @@
-function [binx] = crism_get_binning(binning_id)
-% [binx] = crism_get_binning(binning_id)
+function [binx] = crism_get_binx(binning_id)
+% [binx] = crism_get_binx(binning_id)
 % 
 if isnumeric(binning_id)
    binning_id = num2str(binning_id);
