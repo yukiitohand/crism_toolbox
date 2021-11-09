@@ -85,14 +85,14 @@ hdr_cat.cat_crism_detector_temp = TRRdata.lbl.MRO_DETECTOR_TEMPERATURE;
 hdr_cat.cat_crism_bench_temp = TRRdata.lbl.MRO_OPTICAL_BENCH_TEMPERATURE;
 hdr_cat.cat_crism_housing_temp = TRRdata.lbl.MRO_SPECTROMETER_HOUSING_TEMP;
 hdr_cat.cat_solar_longitude = round(TRRdata.lbl.SOLAR_LONGITUDE,3);
-hdr_cat.cat_pds_label_file = joinPath(TRRdata.dirpath,[TRRdata.basename,'.LBL']);
+hdr_cat.cat_pds_label_file = TRRdata.lblpath;
 if strcmpi(TRRdata.lbl.MRO_SPECTRAL_RESAMPLING_FLAG,'ON')
     hdr_cat.cat_spectrum_resampled = 1;
 elseif strcmpi(TRRdata.lbl.MRO_SPECTRAL_RESAMPLING_FLAG,'OFF')
     hdr_cat.cat_spectrum_resampled = 0;
 end
-hdr_cat.cat_sweetspot_wave_file = joinPath(SWdata.dirpath,[SWdata.basename '.TAB']);
-hdr_cat.cat_wa_wave_file = joinPath(WAdata.dirpath,[WAdata.basename '.IMG']);
+hdr_cat.cat_sweetspot_wave_file = SWdata.tabpath;
+hdr_cat.cat_wa_wave_file = WAdata.imgpath;
 if band_inverse
     hdr_cat.cat_ir_waves_reversed = 'YES';
 else
@@ -104,7 +104,7 @@ hdr_cat.cat_ratio_shift_correction_flag = -1;
 hdr_cat.cat_empirical_geometric_normalization_flag = -1;
 hdr_cat.cat_empirical_smile_correction_flag = -1;
 hdr_cat.cat_sensor_space_transform_flag = -1;
-hdr_cat.cat_history = 'CAT';
+hdr_cat.cat_history = '';
 hdr_cat.cat_input_files = [TRRdata.basename '.IMG'];
 
 end
