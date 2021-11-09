@@ -30,8 +30,8 @@ end
 dirfullpath_local = dir_info.dirfullpath_local;
 if ischar(basenameADRVS),basenameADRVS = {basenameADRVs}; end
 % read ADRVSdata
-ADRVSdataList = CRISMdata.empty(1,0);
+ADRVSdataList = CRISMADRVSdata.empty(1,0);
 for i=1:length(basenameADRVS)
-    adrvs_data_i = CRISMdata(basenameADRVS{i},dirfullpath_local);
-     ADRVSdataList = [ADRVSdataList;adrvs_data_i];
+    adrvs_data_i = CRISMADRVSdata(basenameADRVS{i},dirfullpath_local);
+    ADRVSdataList = [ADRVSdataList;adrvs_data_i];
 end

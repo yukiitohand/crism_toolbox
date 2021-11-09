@@ -25,7 +25,7 @@ identifiers = cellfun(@(obs_id,binning,wvfil,sensor_id) sprintf('%s%d%d%s',obs_i
 
 identifiers_unique = unique(identifiers);
 
-ADRVSdataList_s = CRISMdata.empty(1,0);
+ADRVSdataList_s = CRISMADRVSdata.empty(1,0);
 idxes_selected = [];
 for i=1:length(identifiers_unique)
     idx_mtch = find(strcmpi(identifiers_unique{i},identifiers));
