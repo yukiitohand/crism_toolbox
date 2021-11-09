@@ -21,32 +21,50 @@ else
     end
 end
 
-if ismac || ispc
-    tabPath = joinPath(dirPath,[basename '.tab']);
-    if ~exist(tabPath,'file') 
-        if iswarning
-            warning('TAB file cannot be found.');
-        end
-        tabPath = '';
+tabname = [basename '.tab'];
+[tabname] = findfilei(tabname,dirPath);
+if isempty(tabname) 
+    if iswarning
+        warning('TAB file cannot be found');
     end
-elseif isunix
-    tabname = [basename '.tab'];
-    [tabname] = findfilei(tabname,dirPath);
-    if isempty(tabname) 
-        if iswarning
-            warning('TAB file cannot be found');
+    tabPath = '';
+else
+    if iscell(tabname)
+        if all(strcmpi(tabname{1},tabname))
+            tabname = tabname{1};
+        else
+            error('Ambiguity error. Multiple TAB files are detected.');
         end
-        tabPath = '';
-    else
-        if iscell(tabname)
-            if all(strcmpi(tabname{1},tabname))
-                tabname = tabname{1};
-            else
-                error('Ambiguity error. Multiple TAB files are detected.');
-            end
-        end
-        tabPath = joinPath(dirPath,tabname);
     end
+    tabPath = joinPath(dirPath,tabname);
 end
+
+% if ismac || ispc
+%     tabPath = joinPath(dirPath,[basename '.tab']);
+%     if ~exist(tabPath,'file') 
+%         if iswarning
+%             warning('TAB file cannot be found.');
+%         end
+%         tabPath = '';
+%     end
+% elseif isunix
+%     tabname = [basename '.tab'];
+%     [tabname] = findfilei(tabname,dirPath);
+%     if isempty(tabname) 
+%         if iswarning
+%             warning('TAB file cannot be found');
+%         end
+%         tabPath = '';
+%     else
+%         if iscell(tabname)
+%             if all(strcmpi(tabname{1},tabname))
+%                 tabname = tabname{1};
+%             else
+%                 error('Ambiguity error. Multiple TAB files are detected.');
+%             end
+%         end
+%         tabPath = joinPath(dirPath,tabname);
+%     end
+% end
 
 end

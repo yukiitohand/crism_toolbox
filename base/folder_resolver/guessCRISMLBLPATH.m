@@ -20,32 +20,51 @@ else
         end
     end
 end
-if ismac || ispc
-    lblPath = joinPath(dirPath,[basename '.lbl']);
-    if ~exist(lblPath,'file') 
-        if iswarning
-            warning('LBL file cannot be found.');
-        end
-        lblPath = '';
+
+lblname = [basename '.lbl'];
+[lblname] = findfilei(lblname,dirPath);
+if isempty(lblname)
+    if iswarning
+        warning('LBL file cannot be found');
     end
-elseif isunix
-    lblname = [basename '.lbl'];
-    [lblname] = findfilei(lblname,dirPath);
-    if isempty(lblname)
-        if iswarning
-            warning('LBL file cannot be found');
+    lblPath = '';
+else
+    if iscell(lblname)
+        if all(strcmpi(lblname{1},lblname))
+            lblname = lblname{1};
+        else
+            error('Ambiguity error. Multiple LBL files are detected.');
         end
-        lblPath = '';
-    else
-        if iscell(lblname)
-            if all(strcmpi(lblname{1},lblname))
-                lblname = lblname{1};
-            else
-                error('Ambiguity error. Multiple LBL files are detected.');
-            end
-        end
-        lblPath = joinPath(dirPath,lblname);
     end
+    lblPath = joinPath(dirPath,lblname);
 end
+
+% if ismac || ispc
+%     lblPath = joinPath(dirPath,[basename '.lbl']);
+%     if ~exist(lblPath,'file') 
+%         if iswarning
+%             warning('LBL file cannot be found.');
+%         end
+%         lblPath = '';
+%     end
+% elseif isunix
+%     lblname = [basename '.lbl'];
+%     [lblname] = findfilei(lblname,dirPath);
+%     if isempty(lblname)
+%         if iswarning
+%             warning('LBL file cannot be found');
+%         end
+%         lblPath = '';
+%     else
+%         if iscell(lblname)
+%             if all(strcmpi(lblname{1},lblname))
+%                 lblname = lblname{1};
+%             else
+%                 error('Ambiguity error. Multiple LBL files are detected.');
+%             end
+%         end
+%         lblPath = joinPath(dirPath,lblname);
+%     end
+% end
 
 end
