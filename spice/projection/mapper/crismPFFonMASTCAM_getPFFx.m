@@ -63,8 +63,8 @@ if ~isempty(pff)
         pffclx = pff{1};
         clx_sofst = crismPxl_sofst_in;
         clx_lofst = crismPxl_lofst_in;
-        clx_smpls = crismPxl_smpls;
-        clx_lines = crismPxl_lines;
+        clx_smpls = crismPxl_smpls_in;
+        clx_lines = crismPxl_lines_in;
     else
 
         [pffclx,clx_sofst,clx_smpls, clx_lofst, clx_lines] ...

@@ -203,7 +203,7 @@ if save_file
     end
     
     fprintf('suffix will be \n"%s"\n',suffix);
-    basename_cr = [crism_data_obj.basename suffix];
+    basename_cr = [crism_data_obj.basename '_' suffix];
 
     imgpath_cr = joinPath(save_dir,[basename_cr,'.img']);
     hdrpath_cr = joinPath(save_dir,[basename_cr,'.hdr']);

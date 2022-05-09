@@ -23,7 +23,7 @@ classdef CRISMdataCAT < CRISMdata
                 fprintf('perform readCRISMdata_parent...\n');
                 obj.readCRISMdata_parent('','');
             end
-            obj.load_basenamesCDR(obj.CRISMdata_parent,varargin{:});
+            obj.CRISMdata_parent.load_basenamesCDR(varargin{:});
         end
         
         function [wa] = readWA_fromCRISMdata_parent(obj,varargin)

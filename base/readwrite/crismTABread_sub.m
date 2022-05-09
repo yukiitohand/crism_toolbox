@@ -120,24 +120,24 @@ switch lower(readmode)
                     [data.(nameList{c})] = datac{:};
                 case 'ASCII_REAL'
                     datac = cellstr(tabc);
-                    datac_isnan = cellfun(@(x) strcmpi(strtrim(x),'"N/A"'),datac);
+                    % datac_isnan = cellfun(@(x) strcmpi(strtrim(x),'"N/A"'),datac);
         %             if any(datac_isnan)
         %                 fprintf('%d\n',c);
         %             end
-                    [datac{datac_isnan}] = deal('NaN');
-                    datac = cellfun(@(x) str2double(x),datac);
-                    datac = num2cell(datac);
+                    % [datac{datac_isnan}] = deal('NaN');
+                    datac = cellfun(@str2double,datac,'UniformOutput',false);
+                    % datac = num2cell(datac);
                     [data.(nameList{c})] = datac{:};
                 case 'ASCII_INTEGER'
                     datac = cellstr(tabc);
-                    datac_isnan = cellfun(@(x) strcmpi(strtrim(x),'"N/A"'),datac);
-                    for l=1:length(datac)
-                        datac{l} = rmdq(datac{l},'both');
-                    end
-                    [datac{datac_isnan}] = deal('NaN');
+                    % datac_isnan = cellfun(@(x) strcmpi(strtrim(x),'"N/A"'),datac);
+                    % for l=1:length(datac)
+                    %     datac{l} = rmdq(datac{l},'both');
+                    % end
+                    % [datac{datac_isnan}] = deal('NaN');
                     try
-                        datac = cellfun(@(x) str2num(x),datac);
-                        datac = num2cell(datac);
+                        datac = cellfun(@str2double,datac,'UniformOutput',false);
+                        % datac = num2cell(datac);
                     catch
                         fprintf('c:%d - Integer conversion error, string output\n',c);
                     end
@@ -187,7 +187,11 @@ end
 if length(colinfo)==1
     colinfo2 = colinfo;
 else
-    colinfo2 = merge_struct(colinfo{:});
+    try
+        colinfo2 = [colinfo{:}];
+    catch
+        colinfo2 = merge_struct(colinfo{:});
+    end
 end
 
 colinfo_names = [];

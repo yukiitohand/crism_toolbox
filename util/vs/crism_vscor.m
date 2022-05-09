@@ -318,7 +318,16 @@ end
 % Create Header file for the output
 % =========================================================================
 dt = datetime('now','TimeZone','local','Format','eee MMM dd hh:mm:ss yyyy');
-[hdr_cat] = crism_const_cathdr(crism_data_obj,0,'date_time',dt);
+switch class(crism_data_obj)
+    case 'CRISMdata'
+        [hdr_cat] = crism_const_cathdr(crism_data_obj,0,'date_time',dt);
+    case 'CRISMdataCAT'
+        [hdr_cat] = crism_data_obj.hdr;
+        hdr_cat.description = sprintf('{CRISM DATA [%s] header editted timestamp}',dt);
+    otherwise
+        error('Invalid crism_data_obj (class %s)',class(crism_data_obj));
+end
+
 hdr_cat.samples = size(out.img_corr,2);
 hdr_cat.lines   = size(out.img_corr,1);
 hdr_cat.bands   = size(out.img_corr,3);

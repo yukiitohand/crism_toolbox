@@ -32,6 +32,8 @@ switch bandset_id
         atmt2007 = hsi_slice_bandBycolumn(atmt,bi2007);
         atmt1980 = hsi_slice_bandBycolumn(atmt,bi1980);
         arg4  = atmt2007 ./ atmt1980;
+        arg3(arg3<0) = nan;
+        arg4(arg4<0) = nan;
         scale_factor = log(arg3) ./ log(arg4);
         
     case {'pel',1}
