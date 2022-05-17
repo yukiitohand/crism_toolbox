@@ -1,6 +1,15 @@
-function crism_init()
+function crism_init(varargin)
     global crism_env_vars
-    str = fileread('crismToolbox.json');
+
+    if isempty(varargin)
+        crism_toolbox_json_fname = 'crismToolbox.json';
+    elseif length(varargin)==1
+        crism_toolbox_json_fname = varargin{1};
+    else
+        error('Too many input parameters.');
+    end
+
+    str = fileread(crism_toolbox_json_fname);
     crism_env_vars = jsondecode(str);
     
     [yesno,doyoucreate] = check_mkdir(crism_env_vars.localCRISM_PDSrootDir);
