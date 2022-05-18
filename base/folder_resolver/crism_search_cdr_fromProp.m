@@ -41,8 +41,9 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(
 
 global crism_env_vars
 localCATrootDir = crism_env_vars.localCATrootDir;
-localrootDir = crism_env_vars.localCRISM_PDSrootDir;
-url_local_root = crism_env_vars.url_local_root;
+localrootDir    = crism_env_vars.localCRISM_PDSrootDir;
+url_local_root  = crism_env_vars.url_local_root;
+no_remote       = crism_env_vars.no_remote;
 
 ext  = '';
 dwld = 0;
@@ -76,7 +77,7 @@ else
             case 'CAPITALIZE_FILENAME'
                 cap_filename = varargin{i+1};
             otherwise
-                error(['Unrecognized option: ''' varargin{i} '''']);
+                error('Unrecognized option: %s', varargin{i});
         end
     end
 end
@@ -103,15 +104,26 @@ switch folder_type
         while (~exist_flg && (j<5))
             shift_day = j*(-1)^(j)*init_move_coef;
             yyyy_doy_shifted = shift_yyyy_doy(yyyy_doy_shifted,shift_day);
-            subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+            
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
             [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
-            [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,subdir_remote,dwld,'Force',force, ...
-                'Out_File',outfile,'overwrite',overwrite,...
-                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-                'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+            
+            if no_remote
+                [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+                    subdir_local,dwld,'Force',force, ...
+                    'Out_File',outfile,'overwrite',overwrite,...
+                    'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
+                    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+                subdir_remote = [];
+            else
+                subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+                [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+                    subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force, ...
+                    'Out_File',outfile,'overwrite',overwrite,...
+                    'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
+                    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+            end
             if ~isempty(basenameCDR)
                 exist_flg = 1;
             else
@@ -123,14 +135,25 @@ switch folder_type
             warning('%s cannot be found in the local directory',basenameCDRPtrn);
         end
     case 2
-        subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+        
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
         [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
-        [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
-            subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile, ...
-            'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-            'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+        if no_remote
+            [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+                subdir_local,dwld, ...
+                'Force',force,'Out_File',outfile, ...
+                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
+                'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+            subdir_remote = [];
+        else
+            subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+            [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
+                subdir_local,dwld,'subdir_remote',subdir_remote, ...
+                'Force',force,'Out_File',outfile, ...
+                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
+                'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+        end
     case 3
         subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
         dirfullpath_local = joinPath(localCATrootDir,subdir_local);

@@ -50,7 +50,7 @@ end
 acro = propADRVS.acro_calibration_type;
 subdir_local = joinPath('CAT_ENVI/aux_files/ADR/',acro);
 dirfullpath_local = joinPath(localCATrootDir,subdir_local);
-subdir_remote = '';
+subdir_remote = [];
 
 [basenameADRVSPtrn] = crism_get_basenameADRVS_fromProp(propADRVS);
 fnamelist = dir(dirfullpath_local);
