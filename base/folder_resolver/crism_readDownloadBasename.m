@@ -1,4 +1,4 @@
-function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,subdir_remote,dwld,varargin)
+function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,dwld,varargin)
 % [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,local_dir,remote_subdir,dwld,varargin)
 %    search basenames that match 'basenamePtr' in 'subdir_local' and return
 %    the actual name. If nothing can be found, then download any files that
@@ -12,6 +12,9 @@ function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(b
 %          -1: show the list of file that match the input pattern present
 %          in the local directory.
 %  Optional input parameters
+%      'Subdir_Remote'  : char, string, subdirectory path for the remote
+%                         repository
+%                         
 %      'Force'          : binary, whether or not to force performing
 %                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
@@ -40,8 +43,9 @@ function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(b
 
 
 global crism_env_vars
-localrootDir = crism_env_vars.localCRISM_PDSrootDir;
+localrootDir   = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
+no_remote      = crism_env_vars.no_remote;
 
 ext = '';
 force = 0;
@@ -57,6 +61,8 @@ if (rem(length(varargin),2)==1)
 else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
+            case 'SUBDIR_REMOTE'
+                subdir_remote = varargin{i+1};
             case {'EXT','EXTENSION'}
                 ext = varargin{i+1};
             case 'MATCH_EXACT'
@@ -77,6 +83,14 @@ else
                 error('Unrecognized option: %s',varargin{i});
         end
     end
+end
+
+% If you are not connecting remote network, you do not need to download
+% anything.
+if no_remote && dwld>0
+    error(['No remote server is defined in crism_env_vars.\n' ...
+           ['dwld=%d >0 is invalid. dwld can be either 0 or -1 for no_remote=1.'] ...
+          ], dwld);
 end
 
 dir_local = joinPath(localrootDir,url_local_root,subdir_local); 

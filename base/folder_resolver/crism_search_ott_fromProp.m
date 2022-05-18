@@ -36,8 +36,9 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(
 %        (default) false
 
 global crism_env_vars
-localrootDir = crism_env_vars.localCRISM_PDSrootDir;
+localrootDir   = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
+no_remote      = crism_env_vars.no_remote;
 
 ext = '';
 dwld = 0;
@@ -77,16 +78,29 @@ else
 end
 
 [subdir_local]  = crism_get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
-[subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
+
 
 dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 
 [basenamePtrn] = crism_get_basenameOTT_fromProp(propOTT);
-[basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
-    subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile,...
-    'overwrite',overwrite,'EXTENSION',ext, ...
-    'INDEX_CACHE_UPDATE',index_cache_update, ...
-    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+
+if no_remote
+    [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
+        subdir_local,dwld, ...
+        'Force',force,'Out_File',outfile,...
+        'overwrite',overwrite,'EXTENSION',ext, ...
+        'INDEX_CACHE_UPDATE',index_cache_update, ...
+        'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+    subdir_remote = [];
+else
+    [subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
+    [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
+        subdir_local,dwld,'subdir_remote',subdir_remote, ...
+        'Force',force,'Out_File',outfile,...
+        'overwrite',overwrite,'EXTENSION',ext, ...
+        'INDEX_CACHE_UPDATE',index_cache_update, ...
+        'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+end
                 
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;
