@@ -10,8 +10,9 @@ classdef CRISMDDRdata < CRISMdata
         function [obj] = CRISMDDRdata(basename,dirpath)
             obj@CRISMdata(basename,dirpath);
         end
-        function [ddr] = readimg(obj)
-            img1 = envidataread_v2(obj.imgpath,obj.hdr);
+        function [ddr] = readimg(obj,varargin)
+            img1 = readimg@CRISMdata(obj,varargin{:});
+            % img1 = envidataread_v2(obj.imgpath,obj.hdr);
             img1(img1==obj.missing_constant_img) = nan;
             
             bandnames = obj.hdr.band_names;
