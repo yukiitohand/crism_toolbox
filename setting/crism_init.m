@@ -11,6 +11,30 @@ function crism_init(varargin)
 
     str = fileread(crism_toolbox_json_fname);
     crism_env_vars = jsondecode(str);
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Backward compatibility
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % remote_protocol is set to 'http' if not defined in the json file.
+    if ~isfield(crism_env_vars,'remote_protocol')
+        crism_env_vars.remote_protocol = 'http';
+    end
+    %---------------------------------------------------------------------%
+    % no_remote is determined based on the presence of the field 
+    % 'remote_fldsys', if it is not defined in the json file.
+    if ~isfield(crism_env_vars,'no_remote')
+        if isfield(crism_env_vars,'remote_fldsys')
+            crism_env_vars.no_remote = false;
+        else
+            crism_env_vars.no_remote = true;
+        end
+    end
+    %---------------------------------------------------------------------%
+    % "remoteCRISM_PDSrootDir" is set to empty char if not defined
+    if ~isfield(crism_env_vars,'remoteCRISM_PDSrootDir')
+        crism_env_vars.remoteCRISM_PDSrootDir = '';
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     [yesno,doyoucreate] = check_mkdir(crism_env_vars.localCRISM_PDSrootDir);
     switch lower(doyoucreate)
@@ -43,21 +67,12 @@ function crism_init(varargin)
     
     crism_env_vars.url_local_root = crism_env_vars.([crism_env_vars.local_fldsys '_URL']);
 
-    if ~isfield(crism_env_vars,'no_remote')
-        if isfield(crism_env_vars,'remte_fldsys')
-            crism_env_vars.no_remote = false;
-        else
-            crism_env_vars.no_remote = true;
-        end
-    end
-
-
     if crism_env_vars.no_remote
-        if isfield(crism_env_vars,'remte_fldsys')
-            fprintf('remote_fldsys is defined, but not used because no_remote=1\n');
+        if isfield(crism_env_vars,'remote_fldsys')
+            fprintf('remote_fldsys is defined, but will not be used because no_remote=1\n');
         end
     else
-        if isfield(crism_env_vars,'remte_fldsys')
+        if isfield(crism_env_vars,'remote_fldsys')
             crism_env_vars.url_remote_root = crism_env_vars.([crism_env_vars.remote_fldsys '_URL']);
         else
             error('Define remote_fldsys is the json file, since no_remote=0\n');
