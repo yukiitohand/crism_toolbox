@@ -67,7 +67,7 @@ switch folder_type
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+                subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
             % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
             [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
             [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);
@@ -88,7 +88,7 @@ switch folder_type
         subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
+                subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
         % [basenameCDRList] = readDownloadBasename_v3(basenameCDRPtrn,dirpath_cdr,remote_subdir,varargin{:});
         [propCDRcandidates] = crism_getProp_basenameCDRList(basenameCDRList,propCDRref.level);
         [propCDRmrb,idx_mrb,psclk_mrb] = crism_find_psclk_mrb_fromCDRpropList(propCDRcandidates,propCDRref);

@@ -1,5 +1,5 @@
 function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,dwld,varargin)
-% [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,local_dir,remote_subdir,dwld,varargin)
+% [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,local_dir,dwld,varargin)
 %    search basenames that match 'basenamePtr' in 'subdir_local' and return
 %    the actual name. If nothing can be found, then download any files that
 %    matches 'baenamePtr' from 'remote_subdir' depending on 'dwld' option.
