@@ -47,9 +47,21 @@ local_fldsys    = crism_env_vars.local_fldsys;
 remote_fldsys   = crism_env_vars.remote_fldsys;
 url_local_root  = crism_env_vars.url_local_root;
 url_remote_root = crism_env_vars.url_remote_root;
+protocol = crism_env_vars.remote_protocol;
 
 
-basenamePtrn = '.*';
+basenamePtrn  = '.*';
+ext           = '';
+subdir_remote = '';
+overwrite     = 0;
+dirskip       = 1;
+dwld          = 0;
+html_file     = '';
+outfile       = '';
+cap_filename  = true;
+index_cache_update = false;
+verbose = true;
+
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -66,8 +78,6 @@ else
                 ext = varargin{i+1};
             case 'DIRSKIP'
                 dirskip = varargin{i+1};
-            case 'PROTOCOL'
-                protocol = varargin{i+1};
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
             case 'HTML_FILE'
@@ -76,12 +86,10 @@ else
                 dwld = varargin{i+1};
             case 'OUT_FILE'
                 outfile = varargin{i+1};
-            case 'VERBOSE'
-                verbose = varargin{i+1};
-            case 'CAPITALIZE_FILENAME'
-                cap_filename = varargin{i+1};
             case 'INDEX_CACHE_UPDATE'
                 index_cache_update = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s',varargin{i});
         end
@@ -127,15 +135,24 @@ switch protocol
         % All the parameters are passed to pds_universal_downloader.m
         [dirs,files] = pds_universal_downloader(subdir_local, ...
             localrootDir, url_local_root, url_remote_root, @crism_get_links_remoteHTML, ...
-            'CAPITALIZE_FILENAME', true,'VERBOSE',true,);
+            'BASENAMEPTRN',basenamePtrn, ...
+            'CAPITALIZE_FILENAME', true,'VERBOSE',true,'EXT',ext,'DIRSKIP',dirskip, ...
+            'protocol',protocol,'overwrite',overwrite,'dwld',dwld, ...
+            'OUT_FILE',outfile, 'HTML_FILE', html_file, ...
+            'INDEX_CACHE_UPDATE',index_cache_update);
 
     case {'smb'}
         % All the parameters are passed to smb_downloader.m
         [dirs,files] = smb_downloader(subdir_local, ...
             localrootDir, remoterootDir, url_local_root, url_remote_root, ...
-            'CAPITALIZE_FILENAME', true,'VERBOSE',true,varargin{:});
+            'BASENAMEPTRN',basenamePtrn, ...
+            'CAPITALIZE_FILENAME', true,'VERBOSE',true,'EXT',ext,'DIRSKIP',dirskip, ...
+            'overwrite',overwrite,'dwld',dwld,'OUT_FILE',outfile, ...
+            'INDEX_CACHE_UPDATE',index_cache_update);
     otherwise
         error('Undefined protocol %s.',protocol);
+end
+
 end
 
 

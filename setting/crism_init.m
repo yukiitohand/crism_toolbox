@@ -1,4 +1,11 @@
 function crism_init(varargin)
+% Load environmental variables for using crism_toolbox
+% The variables stored in a global variable crism_env_vars
+% USAGE
+% >> crism_init
+% >> crism_init crismToolbox.json
+%
+% 
     global crism_env_vars
 
     if isempty(varargin)
