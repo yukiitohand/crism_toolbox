@@ -20,7 +20,11 @@ function [ddr_rootsubpath] = get_crism_pds_mro_path_ddr(yyyy_doy)
 % MROCR_1007	Aug. 9, 2014 - Nov. 8, 2015
 % MROCR_1008	Nov. 9, 2015 - Nov. 8, 2016
 % MROCR_1009	Nov. 9, 2016 - Nov. 8, 2017
-% MROCR_1010	Nov. 9, 2017 - Aug. 8, 2018
+% MROCR_1010	Nov. 9, 2017 - Nov. 8, 2018
+% MROCR_1011	Nov. 9, 2018 - Nov. 8, 2019
+% MROCR_1012	Nov. 9, 2019 - Nov. 8, 2020
+% MROCR_1013	Nov. 9, 2020 - Nov. 8, 2021
+% MROCR_1014	Nov. 9, 2021 - Feb. 8, 2022
 
 
 range_mat = [
@@ -33,7 +37,12 @@ range_mat = [
     [datetime('Aug 9, 2014')  datetime('Nov 8, 2015')];
     [datetime('Nov 9, 2015')  datetime('Nov 8, 2016')];
     [datetime('Nov 9, 2016')  datetime('Nov 8, 2017')];
-    [datetime('Nov 9, 2017')  datetime('Aug 8, 2018')];
+    [datetime('Nov 9, 2017')  datetime('Nov 8, 2018')];
+    [datetime('Nov 9, 2018')  datetime('Nov 8, 2019')];
+    [datetime('Nov 9, 2019')  datetime('Nov 8, 2020')];
+    [datetime('Nov 9, 2020')  datetime('Nov 8, 2021')];
+    [datetime('Nov 9, 2021')  datetime('Feb 8, 2022')];
+    
 ];
 
 root_subfolder = 'mro-m-crism-6-ddr-v1/';
