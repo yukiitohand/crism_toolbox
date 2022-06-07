@@ -24,6 +24,7 @@ function [ fmt ] = crismHKFMTread( product_type,varargin )
 
 clearcache = false;
 global crism_env_vars
+no_remote = crism_env_vars.no_remote;
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
 
@@ -31,13 +32,17 @@ switch upper(product_type)
     case 'TARGETED_RDR'
         product_type_acro = 'TRDR';
         subdir_local  = crism_get_subdir_OBS_local('','LABEL/','trr_misc');
-        subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','trr_misc');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        if ~no_remote
+            subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','trr_misc');
+        end
     case 'EDR'
         product_type_acro = 'EDR';
         subdir_local  = crism_get_subdir_OBS_local('','LABEL/','edr_misc');
-        subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','edr_misc');
         dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        if ~no_remote
+            subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','edr_misc');
+        end
     otherwise
         error('product_type %s is not valid.',product_type);
 end
@@ -69,17 +74,24 @@ else
         end
     end
 end
-
-[basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(fmtfname, subdir_local,...
-    subdir_remote,dwld,'Force',force,'Out_File',outfile);
-
-if isempty(fname_wext_local)
-    yesno = doyouwantto('download it',sprintf('%s does not exist.',fmtfname));
-    if yesno
-        [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(fmtfname, subdir_local,...
-            subdir_remote,2,'Force',force,'Out_File',outfile);
+if no_remote
+    [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
+        fmtfname, subdir_local, dwld,'Force',force,'Out_File',outfile);
+else
+    [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
+        fmtfname, subdir_local,...
+        dwld,'Subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
+    if isempty(fname_wext_local)
+        yesno = doyouwantto('download it',sprintf('%s does not exist.',fmtfname));
+        if yesno
+            [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
+                fmtfname, subdir_local,...
+                'Subdir_remote',subdir_remote,2,'Force',force,'Out_File',outfile);
+        end
     end
 end
+
+
 
 cachefilepath = joinPath(dirfullpath_local,[fmtfname '.mat']);
 if exist(cachefilepath,'file') && ~clearcache
