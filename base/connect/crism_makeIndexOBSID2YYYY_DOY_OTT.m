@@ -13,10 +13,12 @@ function [] = crism_makeIndexOBSID2YYYY_DOY_OTT(varargin)
 %   Inputs:
 %   Optional Parameters
 
+global crism_env_vars
+no_remote = crism_env_vars.no_remote;
+
 dwld = 0;
 overwrite = 0;
 outfile = '';
-
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -41,7 +43,9 @@ end
 
 function_path = mfilename('fullpath');
 
-fpath = joinPath(function_path,'LUT_OBSID2YYYY_DOY.mat');
+[dirpath_self,~,~] = fileparts(function_path);
+
+fpath = joinPath(dirpath_self,'LUT_OBSID2YYYY_DOY.mat');
 
 if exist(fpath,'file') && ~overwrite
     load(fpath,'LUT_OBSID2YYYY_DOY');
@@ -49,16 +53,11 @@ else
 
     LUT_OBSID2YYYY_DOY = [];  
     prop = crism_create_propOTTbasename();
-    ptrn = crism_get_basenameOTT_fromProp(prop); 
+    % ptrn = crism_get_basenameOTT_fromProp(prop); 
     % basenames = readDownloadBasename_v3(ptrn,dirpath_OTT,remote_subdir,varargin{:});
-    
-    if no_remote
-        [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,dwld,'Force',force,'Out_File',outfile);
-    else
-        [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...
-                subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
-    end
+    [dir_info,basenames,fnameOTT_wext_local] = crism_search_ott_fromProp(prop,'dwld',2);
+
+    dirpath_OTT = dir_info.dirfullpath_local;
 
     for i=1:length(basenames)
         bname = basenames{i};

@@ -6,7 +6,7 @@ L = length(flds);
 flds_char = cat(1,flds{:});
 CRISM_INDEX_OBS_CLASS_TYPE = flds_char(:,1:3);
 a = flds_char(:,4:11);
-CRISM_INDEX_OBS_ID = hex2dec(flds_char(:,4:11));
+CRISM_INDEX_OBS_ID = int32(hex2dec(flds_char(:,4:11)));
 
 CRISM_INDEX_YYYY_DOY = cellfun(@(x) LUT_OBSID2YYYY_DOY.(x),flds,'UniformOutput',false);
 CRISM_INDEX_YYYY_DOY = cat(1,CRISM_INDEX_YYYY_DOY{:});

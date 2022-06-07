@@ -21,7 +21,7 @@ function [prop]= crism_create_propOTTbasename(varargin)
 
 yyyy             = '(?<yyyy>[\d]{4})';
 mm               = '(?<mm>[\d]{2})';
-dd               = '00';
+dd               = '(?<dd>00)';
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');

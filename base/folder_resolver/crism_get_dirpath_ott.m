@@ -22,6 +22,6 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_get_dirpath_ott(base
 %                         pds_downloader. (default) false
 
 propOTT = crism_getProp_basenameOTT(basenameOTT);
-[dir_info,basenameOTT,fnameOTT_wext_local] = get_dirpath_ott_fromProp(propOTT,varargin{:});
+[dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(propOTT,varargin{:});
 
 end
