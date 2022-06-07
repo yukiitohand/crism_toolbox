@@ -91,7 +91,6 @@ if no_remote
         'overwrite',overwrite,'EXTENSION',ext, ...
         'INDEX_CACHE_UPDATE',index_cache_update, ...
         'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-    subdir_remote = [];
 else
     [subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
     [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
@@ -105,7 +104,9 @@ end
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;
 dir_info.subdir_local      = subdir_local;
-dir_info.subdir_remote     = subdir_remote;
+if ~no_remote
+    dir_info.subdir_remote     = subdir_remote;
+end
 
 
 end

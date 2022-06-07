@@ -108,8 +108,6 @@ if no_remote
         'Force',force,'Out_File',outfile,'overwrite',overwrite, ...
         'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
         'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-    subdir_remote = [];
-
 else
     subdir_remote = crism_get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
     [basenameOBS,fnameOBS_wext_local,files_dwlded]  = crism_readDownloadBasename( ...
@@ -126,7 +124,9 @@ dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;
 dir_info.subdir_local      = subdir_local;
-dir_info.subdir_remote     = subdir_remote;
+if ~no_remote
+    dir_info.subdir_remote     = subdir_remote;
+end
 dir_info.yyyy_doy          = yyyy_doy;
 dir_info.dirname           = dirname;
 

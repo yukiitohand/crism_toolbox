@@ -35,7 +35,9 @@ else
 end
 
 [subdir_local]  = crism_get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
-[subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
+if ~no_remote
+    [subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
+end
 
 function_path = mfilename('fullpath');
 
@@ -50,9 +52,14 @@ else
     ptrn = crism_get_basenameOTT_fromProp(prop); 
     % basenames = readDownloadBasename_v3(ptrn,dirpath_OTT,remote_subdir,varargin{:});
     
-    [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...
-            subdir_local,subdir_remote,dwld,'Force',force,'Out_File',outfile);
-    
+    if no_remote
+        [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...
+                subdir_local,dwld,'Force',force,'Out_File',outfile);
+    else
+        [basenames] = crism_readDownloadBasename(basenameCDRPtrn,...
+                subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
+    end
+
     for i=1:length(basenames)
         bname = basenames{i};
         fprintf('Entering %s...\n',bname);

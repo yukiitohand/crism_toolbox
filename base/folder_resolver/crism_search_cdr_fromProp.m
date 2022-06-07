@@ -115,7 +115,6 @@ switch folder_type
                     'Out_File',outfile,'overwrite',overwrite,...
                     'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
                     'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-                subdir_remote = [];
             else
                 subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
                 [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
@@ -145,7 +144,6 @@ switch folder_type
                 'Force',force,'Out_File',outfile, ...
                 'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
                 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-            subdir_remote = [];
         else
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
@@ -189,7 +187,9 @@ end
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;
 dir_info.subdir_local      = subdir_local;
-dir_info.subdir_remote     = subdir_remote;
+if ~no_remote
+    dir_info.subdir_remote     = subdir_remote;
+end
 dir_info.acro              = acro;
 dir_info.folder_type       = folder_type;
 dir_info.yyyy_doy          = yyyy_doy;
