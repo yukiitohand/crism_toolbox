@@ -51,11 +51,12 @@ classdef CRISMTRRdataset < dynamicprops
             
             % Stock different kinds of processed images
             % RA and RA_IF
+            dir_trrx = joinPath(pdirpath_trrx, TRR3IFdata.yyyy_doy, TRR3IFdata.dirname);
             prop_ra = TRR3IFdata.prop;
             prop_ra.activity_id = 'RA';
             basename_ra = crism_get_basenameOBS_fromProp(prop_ra);
             obj.append('trr3ra',basename_ra,TRR3IFdata.dirpath);
-            obj.appendCAT('trr3raif',basename_ra,TRR3IFdata.dirpath,'IF');
+            obj.appendCAT('trr3raif',basename_ra,dir_trrx,'IF');
             
             % trrb trrc trrd I/F
             dir_trrx = joinPath(pdirpath_trrx, TRR3IFdata.yyyy_doy, TRR3IFdata.dirname);
@@ -69,8 +70,8 @@ classdef CRISMTRRdataset < dynamicprops
             % CAT corrected images
             phot = 0; atmt_src = 'trial'; bandset_id = 'mcg'; enable_artifact = 1;
             acro_catatp = sprintf('corr_phot%d_%s_%s_a%d',phot,atmt_src,bandset_id,enable_artifact);
-            obj.appendCAT('catif',TRR3IFdata.basename,TRR3IFdata.dirpath,acro_catatp);
-            obj.appendCAT('catraif',[basename_ra '_IF'],TRR3IFdata.dirpath,acro_catatp);
+            obj.appendCAT('catif',TRR3IFdata.basename,dir_trrx,acro_catatp);
+            obj.appendCAT('catraif',[basename_ra '_IF'],dir_trrx,acro_catatp);
 
         end
         

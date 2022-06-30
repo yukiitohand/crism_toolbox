@@ -44,7 +44,7 @@ search_product_DDR = @(y_oc,w_dwld) crism_search_observation_fromProp(...
     'OUT_FILE',outfile,'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
     'overwrite',dwld_overwrite,'VERBOSE',verbose);
 
-[dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,1);
+[dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,0);
 
 if isempty(basenameDDR)
     error('Cannot find the associated DDR.');

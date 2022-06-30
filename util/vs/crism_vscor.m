@@ -249,11 +249,11 @@ if save_file
         [status777] = chmod777(save_dir,verbose);
     else
         if save_dir_yyyy_doy
-            dirpath_yyyy_doy = joinPath(save_pdir,crism_obs.info.yyyy_doy);
+            dirpath_yyyy_doy = joinPath(save_pdir,crism_data_obj.yyyy_doy);
             [status,status777] = mkdir777(dirpath_yyyy_doy,verbose);
-            save_dir = joinPath(dirpath_yyyy_doy,crism_obs.info.dirname);
+            save_dir = joinPath(dirpath_yyyy_doy,crism_data_obj.dirname);
         else
-            save_dir = joinPath(save_pdir,crism_obs.info.dirname);
+            save_dir = joinPath(save_pdir,crism_data_obj.dirname);
         end
         [status,status777] = mkdir777(save_dir,verbose);
     end

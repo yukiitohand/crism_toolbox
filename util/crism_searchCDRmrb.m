@@ -19,6 +19,7 @@ function [basenameCDRmrb,propCDRmrb] = crism_searchCDRmrb(propCDRref,varargin)
 
 global crism_env_vars
 localCATrootDir = crism_env_vars.localCATrootDir;
+no_remote = crism_env_vars.no_remote;
 
 dwld = 0;
 force = false;
@@ -65,6 +66,7 @@ switch folder_type
             % start looking from the one day ahead, just in case.
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
             if no_remote
+                if dwld>0, dwld = 0; end
                 [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                     subdir_local,dwld,'Force',force,'Out_File',outfile);
             else
@@ -93,6 +95,7 @@ switch folder_type
         
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
         if no_remote
+            if dwld>0, dwld = 0; end
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                     subdir_local,dwld,'Force',force,'Out_File',outfile);
         else

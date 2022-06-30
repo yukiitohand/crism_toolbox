@@ -1,8 +1,25 @@
-function [] = crism_script_compile_all()
+function [] = crism_script_compile_all(varargin)
 % crism_script_compile_all.m
 % Script for compiling all the necessary C/MEX codes
 %
 % Automatically find the path to crism_toolbox, msl_toolbox, and pds3_toolbox
+
+mexCompileOpt = {};
+if (rem(length(varargin),2)==1)
+    error('Optional parameters should always go by pairs');
+else
+    for i=1:2:(length(varargin)-1)
+        switch upper(varargin{i})
+            case 'MEXCOMPILEOPT'
+                mexCompileOpt = varargin{i+1};
+                if ~iscell(mexCompileOpt)
+                    mexCompileOpt = {mexCompileOpt};
+                end
+            otherwise
+                error('Unrecognized option: %s',varargin{i});
+        end
+    end
+end
 
 fpath_self = mfilename('fullpath');
 [dirpath_self,filename] = fileparts(fpath_self);
@@ -105,6 +122,7 @@ for i=1:length(source_filepaths_crism_proj)
     mex(filepath, '-R2018a', ['-I' pds3_toolbox_mex_include_path], ...
         ['-I' msl_toolbox_mex_include_path], ...
         ['-I' crism_toolbox_mex_include_path], ...
+        mexCompileOpt{:}, ...
         '-outdir',out_dir);
 end
 
@@ -114,6 +132,7 @@ for i=1:length(source_filepaths_crism_misc)
     mex(filepath, '-R2018a', ['-I' pds3_toolbox_mex_include_path], ...
         ['-I' crism_toolbox_mex_include_path], ...
         ['-I' crism_toolbox_mex_include_path], ...
+        mexCompileOpt{:}, ...
         '-outdir',out_dir);
 end
 
@@ -130,6 +149,7 @@ if msl_toolbox_exist
             ['-I' crism_toolbox_mex_include_path], ...
             ['-I' SpiceUsr_include_path], ...
             joinPath(spice_lib_path,'cspice.a'), ...
+            mexCompileOpt{:}, ...
             '-lm', ...
             '-outdir',out_dir);
     end
@@ -139,6 +159,7 @@ if msl_toolbox_exist
         mex(filepath, '-R2018a', ['-I' pds3_toolbox_mex_include_path], ...
             ['-I' msl_toolbox_mex_include_path], ...
             ['-I' crism_toolbox_mex_include_path], ...
+            mexCompileOpt{:}, ...
             '-outdir',out_dir);
     end
 end

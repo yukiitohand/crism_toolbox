@@ -27,6 +27,7 @@ global crism_env_vars
 no_remote = crism_env_vars.no_remote;
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
+dir_cache = crism_env_vars.dir_cache;
 
 switch upper(product_type)
     case 'TARGETED_RDR'
@@ -93,7 +94,7 @@ end
 
 
 
-cachefilepath = joinPath(dirfullpath_local,[fmtfname '.mat']);
+cachefilepath = joinPath(dir_cache,[fmtfname '.mat']);
 if exist(cachefilepath,'file') && ~clearcache
     load(cachefilepath,'fmt');
 else
