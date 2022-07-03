@@ -23,8 +23,13 @@ if ischar(obs_id)
     if length(obs_id)==11, obs_id = obs_id(4:11); end
     obs_id_num = int32(hex2dec(obs_id));
     [idx_row] = find(CRISM_INDEX_OBS_ID==obs_id_num);
-    obs_classType = CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:);
-    yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx_row),CRISM_INDEX_DOY(idx_row));
+    if isempty(idx_row)
+        yyyy_doy = -1;
+        obs_classType = -1;
+    else
+        obs_classType = CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:);
+        yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx_row),CRISM_INDEX_DOY(idx_row));
+    end
 
 elseif iscell(obs_id)
     N = length(obs_id);

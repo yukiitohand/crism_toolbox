@@ -45,16 +45,37 @@ for i=1:length(fieldnms_source_obs)
         for k=1:length(basenames_SOURCE_OBS.(actID))
             basename = basenames_SOURCE_OBS.(actID){k};
             [dir_info,~,files_localk] = crism_get_dirpath_observation(basename,varargin{:});
-            dir_source = dir_info.dirfullpath_local;
-            dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source); 
-            files_local = addField(files_local,actID,files_localk);
+            if ~isempty(dir_info)
+                dir_source = dir_info.dirfullpath_local;
+                dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);
+                if k==1 && iscell(files_local)
+                    files_local = addField({files_local},actID,files_localk);
+                else
+                    files_local = addField(files_local,actID,files_localk);
+                end
+            else
+                if k==1
+                    dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,{''});
+                    files_local = addField(files_local,actID,{''});
+                else
+                    dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,'');
+                    files_local = addField(files_local,actID,'');
+                end
+                fprintf('SOURCE OBSERVATION: %s does not exist.\n',basename);
+            end
         end
     elseif ischar(basenames_SOURCE_OBS.(actID))
         basename = basenames_SOURCE_OBS.(actID);
         [dir_info,~,files_localk] = crism_get_dirpath_observation(basename,varargin{:});
-        dir_source = dir_info.dirfullpath_local;
-        dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);
-        files_local.(actID)=files_localk;
+        if ~isempty(dir_info)
+            dir_source = dir_info.dirfullpath_local;
+            dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);
+            files_local.(actID)=files_localk;
+        else
+            dir_SOURCE_OBS = addField(dir_SOURCE_OBS,actID,dir_source);
+            files_local.(actID)=files_localk;
+            fprintf('SOURCE OBSERVATION: %s does not exist.\n',basename);
+        end
     else
         error('Value of the basenames_SOURCE_OBS.(%s) is not valid',actID);
     end

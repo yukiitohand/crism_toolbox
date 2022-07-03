@@ -82,6 +82,10 @@ end
 yyyy_doy = crism_searchOBSID2YYYY_DOY_v2(propOBS.obs_id);
 dirname  = crism_get_dirname_fromPropOBS(propOBS);
 
+if yyyy_doy == -1
+    dir_info = []; basenameOBS = ''; fnameOBS_wext_local = [];
+    return;
+end
 
 switch lower(propOBS.product_type)
     case {'edr','trr','ddr','ter','mtr','glt'}
