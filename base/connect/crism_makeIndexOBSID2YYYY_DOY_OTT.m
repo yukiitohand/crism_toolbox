@@ -55,10 +55,14 @@ else
     prop = crism_create_propOTTbasename();
     % ptrn = crism_get_basenameOTT_fromProp(prop); 
     % basenames = readDownloadBasename_v3(ptrn,dirpath_OTT,remote_subdir,varargin{:});
-    [dir_info,basenames,fnameOTT_wext_local] = crism_search_ott_fromProp(prop,'dwld',2);
+    if no_remote
+        [dir_info,basenames,fnameOTT_wext_local] = crism_search_ott_fromProp(prop,'dwld',0);
+    else
+        [dir_info,basenames,fnameOTT_wext_local] = crism_search_ott_fromProp(prop,'dwld',2);
+    end
 
     dirpath_OTT = dir_info.dirfullpath_local;
-
+    invalid_list = [];
     for i=1:length(basenames)
         bname = basenames{i};
         fprintf('Entering %s...\n',bname);
@@ -68,19 +72,21 @@ else
         % EDR/2009_001/ICL000104A3/ICL000104A3_07_SP199L_EDR0.IMG
         for j=1:length(OBSIDdata.tab.data)
             record = OBSIDdata.tab.data(j);
-            obs_id = record.OBSERVATION_ID;
-            if ~strcmpi(obs_id,'N/A')
-                obs_id = hex2dec(obs_id);
+            product_id = record.PRODUCT_ID;
+            prop = crism_getProp_basenameOBSERVATION(product_id);
+            if ~isempty(prop)
+                obs_id = hex2dec(prop.obs_id);
                 if obs_id>length(LUT_OBSID2YYYY_DOY) || isempty(LUT_OBSID2YYYY_DOY{obs_id})
-                    ptrn2 = ['[^/]+/(?<yyyy_doy>[\d]{4}_[\d]{3})/(?<folder_name>[a-zA-Z]{3}[0-9a=zA-Z]{8})/' record.PRODUCT_ID];
+                    ptrn2 = ['[^/]+/(?<yyyy_doy>[\d]{4}_[\d]{3})/(?<folder_name>[a-zA-Z]{3}[0-9a-zA-Z]{8})/' product_id];
                     matching = regexpi(record.FILE_SPECIFICATION_NAME,ptrn2,'names');
-
                     if ~isempty(matching)
                         yyyy_doy = matching.yyyy_doy;
                         folder_name = matching.folder_name;
                         LUT_OBSID2YYYY_DOY.(folder_name) = yyyy_doy;
                     end
                 end
+            else
+                invalid_list = [invalid_list record];
             end
         end
     end
