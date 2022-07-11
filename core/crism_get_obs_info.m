@@ -439,6 +439,39 @@ switch upper(obs_classType)
                 fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
                 fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
         end
+
+        basenameBI = []; basenameBIHKP = [];
+        fnameBIwext_local = []; fnameBIHKPwext_local = [];
+        basenameSP = []; basenameSPHKP = [];
+        fnameSPwext_local = []; fnameSPHKPwext_local = [];
+    
+   case 'CAL'
+        % BI
+        [dir_info,basenameBI,fnameBIwext_local] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameBIHKP,fnameBIHKPwext_local] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        dir_edr = dir_info.dirfullpath_local;
+
+        basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
+        basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
+        fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+        fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
+        basenameSP = []; basenameSPHKP = [];
+        fnameSPwext_local = []; fnameSPHKPwext_local = [];
+    
+    case 'ICL'
+        % SP
+        [dir_info,basenameSP,fnameSPwext_local] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameSPHKP,fnameSPHKPwext_local] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        dir_edr = dir_info.dirfullpath_local;
+
+        basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
+        basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
+        fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+        fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
+        basenameBI = []; basenameBIHKP = [];
+        fnameBIwext_local = []; fnameBIHKPwext_local = [];
         
     otherwise
         basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
@@ -446,27 +479,10 @@ switch upper(obs_classType)
         fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
         fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
         fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
-end
+        dir_edr = '';
 
-% Additional EDRs
-% for CAL only
-switch upper(obs_classType)
-    case 'CAL'
-        % BI
-        [~,basenameBI,fnameBIwext_local] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,basenameBIHKP,fnameBIHKPwext_local] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
-    otherwise
         basenameBI = []; basenameBIHKP = [];
         fnameBIwext_local = []; fnameBIHKPwext_local = [];
-end
-
-% for ICL only
-switch upper(obs_classType)
-    case 'ICL'
-        % SP
-        [~,basenameSP,fnameSPwext_local] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,basenameSPHKP,fnameSPHKPwext_local] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
-    otherwise
         basenameSP = []; basenameSPHKP = [];
         fnameSPwext_local = []; fnameSPHKPwext_local = [];
 end

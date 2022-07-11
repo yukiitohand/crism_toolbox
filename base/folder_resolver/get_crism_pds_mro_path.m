@@ -27,7 +27,7 @@ if isempty(grp)
     subpath = '';
 else
     folder_name = folder_func(grp);
-    subpath = joinPath(root_subpath,folder_name);
+    subpath = fullfile(root_subpath,folder_name);
 end
 
 

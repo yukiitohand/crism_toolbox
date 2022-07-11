@@ -73,6 +73,7 @@ function crism_init(varargin)
     end
     
     crism_env_vars.url_local_root = crism_env_vars.([crism_env_vars.local_fldsys '_URL']);
+    crism_env_vars.url_local_root = fullfile(crism_env_vars.url_local_root);
 
     if crism_env_vars.no_remote
         if isfield(crism_env_vars,'remote_fldsys')
@@ -81,6 +82,7 @@ function crism_init(varargin)
     else
         if isfield(crism_env_vars,'remote_fldsys')
             crism_env_vars.url_remote_root = crism_env_vars.([crism_env_vars.remote_fldsys '_URL']);
+            crism_env_vars.url_remote_root = crism_swap_to_remote_path(crism_env_vars.url_remote_root);
         else
             error('Define remote_fldsys is the json file, since no_remote=0\n');
         end
@@ -97,7 +99,7 @@ function crism_init(varargin)
         CRISM_INDEX_YYYY = lut_val.CRISM_INDEX_YYYY;
         CRISM_INDEX_DOY = lut_val.CRISM_INDEX_DOY;
     else
-        fprintf('%s is missing\n',joinPath(localCRISM_PDSrootDir,crism_pds_archiveURL,'edr/EDR/LUT_OBSID2YYYY_DOY.mat'));
+        fprintf('%s is missing\n',fullfile(localCRISM_PDSrootDir,crism_pds_archiveURL,'edr','EDR','LUT_OBSID2YYYY_DOY.mat'));
     end
 
 end

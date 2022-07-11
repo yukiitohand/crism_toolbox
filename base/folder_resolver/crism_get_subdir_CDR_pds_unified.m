@@ -12,9 +12,9 @@ function [subdir] = crism_get_subdir_CDR_pds_unified(acro,cdr_folder_type,yyyy_d
 
 switch cdr_folder_type
     case 1
-        subdir = joinPath('edr/CDR/',yyyy_doy,acro);
+        subdir = fullfile('edr','CDR',yyyy_doy,acro);
     case 2
-        subdir = joinPath('edr/CDR/',acro);
+        subdir = fullfile('edr','CDR',acro);
     case 3
         error('folder_type==3 is not defined in utopia system.');
     otherwise

@@ -48,8 +48,8 @@ if isempty(propADRVS)
 end
 
 acro = propADRVS.acro_calibration_type;
-subdir_local = joinPath('CAT_ENVI/aux_files/ADR/',acro);
-dirfullpath_local = joinPath(localCATrootDir,subdir_local);
+subdir_local = fullfile('CAT_ENVI','aux_files','ADR',acro);
+dirfullpath_local = fullfile(localCATrootDir,subdir_local);
 subdir_remote = [];
 
 [basenameADRVSPtrn] = crism_get_basenameADRVS_fromProp(propADRVS);
@@ -62,7 +62,7 @@ if dwld == -1
     end
     if ~isempty(basesnameCDR)
         for j=1:length(basenameADRVS)
-            subpath = joinPath(subdir_local,basenameADRVS{j});
+            subpath = fullfile(subdir_local,basenameADRVS{j});
             if ~isempty(outfile)
                 fprintf(fp,'%s\n',subpath);
             end

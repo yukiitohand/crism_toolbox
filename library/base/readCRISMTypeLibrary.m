@@ -35,7 +35,7 @@ else
 end
 
 
-dir_crismTypeLib_data = joinPath(dir_crismTypeLib,'mrocr_8001/data/');
+dir_crismTypeLib_data = fullfile(dir_crismTypeLib,'mrocr_8001','data');
 
 if ~exist(dir_crismTypeLib_data,'dir')
     error('"%s" does not exist.',dir_crismTypeLib_data);

@@ -93,7 +93,7 @@ if no_remote && dwld>0
           ], dwld);
 end
 
-dir_local = joinPath(localrootDir,url_local_root,subdir_local); 
+dir_local = fullfile(localrootDir,url_local_root,subdir_local); 
 
 fnamelist = dir(dir_local);
 [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
@@ -120,7 +120,7 @@ elseif dwld == -1
     for j=1:length(fnamelist)
         fname = fnamelist(j).name;
         if ~isempty(regexpi(fname,basenamePtr,'ONCE'))
-            subpath = joinPath(subdir_local,fname);
+            subpath = fullfile(subdir_local,fname);
             fprintf('%s\n',subpath);
             if ~isempty(outfile)
                 fprintf(fp,'%s\n',subpath);

@@ -28,10 +28,10 @@ if ~exist(cachefpath,'file')
 
     localCATrootDir = crism_env_vars.localCATrootDir;
     % dirpath_cataux = joinPath(localCATrootDir,'aux_files');
-    dirpath_cataux_obs_info = joinPath(localCATrootDir,'CAT_ENVI/aux_files/obs_info');
+    dirpath_cataux_obs_info = fullfile(localCATrootDir,'CAT_ENVI','aux_files','obs_info');
 
     fname_cataux_obsinfo = 'crism_obs_info.txt';
-    fpath_cataux_crism_obsinfo = joinPath(dirpath_cataux_obs_info,fname_cataux_obsinfo);
+    fpath_cataux_crism_obsinfo = fullfile(dirpath_cataux_obs_info,fname_cataux_obsinfo);
     fid = fopen(fpath_cataux_crism_obsinfo,'r');
     data = fread(fid,'char*1');
     data = convertCharsToStrings(char(data));

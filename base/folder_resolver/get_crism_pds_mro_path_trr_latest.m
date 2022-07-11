@@ -10,6 +10,6 @@ function [trr_rootsubpath] = get_crism_pds_mro_path_trr_latest()
 % the detail information is at
 % pds-geosciences.wustl.edu/missions/mro/crism.htm
 
-trr_rootsubpath = 'mro-m-crism-3-rdr-targeted-v1/mrocr_2116/';
+trr_rootsubpath = fullfile('mro-m-crism-3-rdr-targeted-v1','mrocr_2116');
 
 end

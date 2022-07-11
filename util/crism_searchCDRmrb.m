@@ -71,6 +71,7 @@ switch folder_type
                     subdir_local,dwld,'Force',force,'Out_File',outfile);
             else
                 subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+                subdir_remote = crism_swap_to_remote_path(subdir_remote);
                 [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                     subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
             end
@@ -100,6 +101,7 @@ switch folder_type
                     subdir_local,dwld,'Force',force,'Out_File',outfile);
         else
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+            subdir_remote = crism_swap_to_remote_path(subdir_remote);
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
                     subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
         end
@@ -113,7 +115,7 @@ switch folder_type
             error('Something wrong...');
         end
     case 3
-        subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
+        subdir_local = fullffile('CAT_ENVI','aux_files','CDRs',acro);
         dirfullpath_local = joinPath(localCATrootDir,subdir_local);
         fnamelist = dir(dirfullpath_local);
         [basenameCDRList] = extractMatchedBasename_v2(basenameCDRPtrn,[{fnamelist.name}]);

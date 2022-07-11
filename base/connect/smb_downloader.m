@@ -120,12 +120,12 @@ end
 
 no_local_directory = false;
 
-url_local      = joinPath(url_local_root,subdir_local);
-localTargetDir = joinPath(localrootDir,url_local);
+url_local      = fullfile(url_local_root,subdir_local);
+localTargetDir = fullfile(localrootDir,url_local);
 if isempty(subdir_remote)
    subdir_remote = subdir_local;
 end
-url_remote = joinPath(remoterootDir, url_remote_root, subdir_remote);
+url_remote = fullfile(remoterootDir, url_remote_root, subdir_remote);
 
 if ~exist(localrootDir,'dir')
     fprintf('localrootdir "%s" does not exist.',localrootDir);
@@ -182,7 +182,7 @@ end
 dirs = []; files = [];
 errflg=0;
 % dirnameList is the cell array of the directory/file names in 
-dir_cachefilepath = joinPath(localTargetDir,'dir_struct.mat');
+dir_cachefilepath = fullfile(localTargetDir,'dir_struct.mat');
 if ~exist(url_remote,'dir')
     errflg = 1;
 end
@@ -199,7 +199,7 @@ else
         dcur = localrootDir;
         if ~exist(localTargetDir,'dir') % if the directory doesn't exist,
             for i=1:length(url_local_splt)
-                dcur = joinPath(dcur,url_local_splt{i});
+                dcur = fullfile(dcur,url_local_splt{i});
                 if ~exist(dcur,'dir')
                     [status] = mkdir(dcur);
                     if status
@@ -239,27 +239,27 @@ if ~errflg
             else
                 % recursively access the directory
                 if verbose
-                    fprintf('Going to %s\n',joinPath(subdir_local,dirname));
+                    fprintf('Going to %s\n',fullfile(subdir_local,dirname));
                 end
                 [dirs_ch,files_ch] = smb_downloader(...
-                    joinPath(subdir_local,lnks(i).hyperlink),...
-                    'SUBDIR_REMOTE',joinPath(subdir_remote,dirname),...
+                    fullfile(subdir_local,lnks(i).hyperlink),...
+                    'SUBDIR_REMOTE',fullfile(subdir_remote,dirname),...
                     'Basenameptrn',basenamePtrn,'EXT',ext,'dirskip',dirskip,...
                     'overwrite',overwrite,...
                     'dwld',dwld,'out_file',outfile,'CAPITALIZE_FILENAME',cap_filename, ...
                     'INDEX_CACHE_UPDATE',index_cache_update);
                 for ii=1:length(dirs_ch)
-                    dirs_ch{ii} = joinPath(dirname,dirs_ch{ii});
+                    dirs_ch{ii} = fullfile(dirname,dirs_ch{ii});
                 end
                 dirs = [dirs dirs_ch];
                 for ii=1:length(files_ch)
-                    files_ch{ii} = joinPath(dirname,files);
+                    files_ch{ii} = fullfile(dirname,files);
                 end
                 files = [files files_ch];
             end
         else
             filename = dir_struct(i).name;
-            remoteFile = joinPath(url_remote,filename);
+            remoteFile = fullfile(url_remote,filename);
             if cap_filename
                 filename_local = upper(filename);
             else
@@ -271,7 +271,7 @@ if ~errflg
             if ~isempty(regexpi(filename,basenamePtrn,'ONCE')) ...
                 && ( isempty(ext) || ( ~isempty(ext) && any(strcmpi(ext_filename,ext)) ) )
                 match_flg = 1;
-                localTarget = joinPath(localTargetDir,filename_local);
+                localTarget = fullfile(localTargetDir,filename_local);
                 
                 exist_idx = find(strcmpi(filename_local,fnamelist_local));
                 exist_flg = ~isempty(exist_idx);
@@ -291,7 +291,7 @@ if ~errflg
                                     fprintf('Overwriting..');
                                     for ii=1:length(exist_idx)
                                         exist_idx_ii = exist_idx(ii);
-                                        localExistFilePath = joinPath(localTargetDir,fnamelist_local{exist_idx_ii});
+                                        localExistFilePath = fullfile(localTargetDir,fnamelist_local{exist_idx_ii});
                                         fprintf('Deleting %s ...\n',localExistFilePath);
                                         delete(localExistFilePath);
                                     end

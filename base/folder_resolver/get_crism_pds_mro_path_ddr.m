@@ -45,7 +45,7 @@ range_mat = [
     
 ];
 
-root_subfolder = 'mro-m-crism-6-ddr-v1/';
+root_subfolder = 'mro-m-crism-6-ddr-v1';
 folder_func = @(x) sprintf('mrocr_10%02d',x);
 
 [ddr_rootsubpath] = get_crism_pds_mro_path(...

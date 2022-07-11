@@ -43,7 +43,7 @@ else
     end
 end
 
-pdir = joinPath(localCRISM_PDSrootDir,'utopia.jhuapl.edu/flight/crism_pds_archive/edr/CDR/',acro);
+pdir = fullfile(localCRISM_PDSrootDir,'utopia.jhuapl.edu','flight','crism_pds_archive','edr','CDR',acro);
 
 if ~exist(pdir,'dir')
     error('Path\n%s\n does not exist. Maybe wrong acro=%s',pdir,acro);

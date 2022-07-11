@@ -114,6 +114,7 @@ if no_remote
         'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
 else
     subdir_remote = crism_get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
+    subdir_remote = crism_swap_to_remote_path(subdir_remote);
     [basenameOBS,fnameOBS_wext_local,files_dwlded]  = crism_readDownloadBasename( ...
         basenamePtrn,subdir_local,dwld, ...
         'Subdir_remote',subdir_remote,'Match_Exact',mtch_exact,...
@@ -123,7 +124,7 @@ else
 end
 
 
-dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
 
 dir_info = [];
 dir_info.dirfullpath_local = dirfullpath_local;

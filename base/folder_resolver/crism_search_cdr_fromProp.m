@@ -106,7 +106,7 @@ switch folder_type
             yyyy_doy_shifted = shift_yyyy_doy(yyyy_doy_shifted,shift_day);
             
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
-            dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+            dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
             [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
             
             if no_remote
@@ -117,6 +117,7 @@ switch folder_type
                     'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
             else
                 subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+                subdir_remote = crism_swap_to_remote_path(subdir_remote);
                 [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
                     subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force, ...
                     'Out_File',outfile,'overwrite',overwrite,...
@@ -136,7 +137,7 @@ switch folder_type
     case 2
         
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
-        dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        dirfullpath_local = fllfile(localrootDir,url_local_root,subdir_local);
         [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         if no_remote
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
@@ -146,6 +147,7 @@ switch folder_type
                 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
         else
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+            subdir_remote = crism_swap_to_remote_path(subdir_remote);
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,dwld,'subdir_remote',subdir_remote, ...
                 'Force',force,'Out_File',outfile, ...
@@ -153,8 +155,8 @@ switch folder_type
                 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
         end
     case 3
-        subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
-        dirfullpath_local = joinPath(localCATrootDir,subdir_local);
+        subdir_local = fullfile('CAT_ENVI','aux_files','CDRs',acro);
+        dirfullpath_local = fullfile(localCATrootDir,subdir_local);
         subdir_remote = '';
         [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         fnamelist = dir(dirfullpath_local);
@@ -166,7 +168,7 @@ switch folder_type
             end
             if ~isempty(basesnameCDR)
                 for j=1:length(basenameCDR)
-                    subpath = joinPath(subdir_local,basenameCDR{j});
+                    subpath = fullfile(subdir_local,basenameCDR{j});
                     if ~isempty(outfile)
                         fprintf(fp,'%s\n',subpath);
                     end

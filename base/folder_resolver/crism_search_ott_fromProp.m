@@ -77,10 +77,10 @@ else
     end
 end
 
-[subdir_local]  = crism_get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
+[subdir_local]  = crism_get_subdir_OBS_local('',fullfile('EXTRAS','OTT'),'edr_misc');
 
 
-dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
 
 [basenamePtrn] = crism_get_basenameOTT_fromProp(propOTT);
 
@@ -92,7 +92,8 @@ if no_remote
         'INDEX_CACHE_UPDATE',index_cache_update, ...
         'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
 else
-    [subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
+    [subdir_remote] = crism_get_subdir_OBS_remote('',fullfile('extras','ott'),'edr_misc');
+    subdir_remote = crism_swap_to_remote_path(subdir_remote);
     [basenameOTT,fnameOTT_wext_local] = crism_readDownloadBasename(basenamePtrn,...
         subdir_local,dwld,'subdir_remote',subdir_remote, ...
         'Force',force,'Out_File',outfile,...

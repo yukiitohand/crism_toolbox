@@ -45,7 +45,7 @@ function_path = mfilename('fullpath');
 
 [dirpath_self,~,~] = fileparts(function_path);
 
-fpath = joinPath(dirpath_self,'LUT_OBSID2YYYY_DOY.mat');
+fpath = fullfile(dirpath_self,'LUT_OBSID2YYYY_DOY.mat');
 
 if exist(fpath,'file') && ~overwrite
     load(fpath,'LUT_OBSID2YYYY_DOY');

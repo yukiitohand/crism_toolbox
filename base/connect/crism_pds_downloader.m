@@ -97,42 +97,46 @@ else
 end
 
 % First always test if the file system is consistent.
-url_local = joinPath(url_local_root,subdir_local);
+url_local = fullfile(url_local_root,subdir_local);
 if ~isempty(subdir_local)
-    if ~(is_subdir_pds_crism_pub(url_local) == strcmpi(local_fldsys,'pds_mro'))
+    if ~(is_subdir_pds_crism_pub(url_local,filesep) == strcmpi(local_fldsys,'pds_mro'))
         error('subdir_local (%s) and local_fldsys (%s) are not consistent',url_local,local_fldsys);
     end
 end
 
 if isempty(subdir_remote)
-   if strcmpi(local_fldsys,remote_fldsys)
-       subdir_remote = subdir_local;
-       url_remote = joinPath(url_remote_root, subdir_remote);
-   else
-       error('specified file systems for the local and remote computers are different."subdir_remote" cannot be empty.');
-   end
-else
-    if strcmpi(protocol,'http') && isHTTP_fullpath(subdir_remote)
-        url_remote = getURLfrom_HTTP_fullpath(subdir_remote);
+    if strcmpi(local_fldsys,remote_fldsys)
+        subdir_remote = subdir_local;
+        subdir_remote = crism_swap_to_remote_path(subdir_remote);
+        % url_remote = fullfile(url_remote_root, subdir_remote);
+        % url_remote = crism_swap_to_remote_path(url_remote);
     else
-        url_remote = joinPath(url_remote_root,subdir_remote);
+        error('specified file systems for the local and remote computers are different."subdir_remote" cannot be empty.');
     end
+else
+    % if strcmpi(protocol,'http') && isHTTP_fullpath(subdir_remote)
+    %     url_remote = getURLfrom_HTTP_fullpath(subdir_remote);
+    % else
+    %     url_remote = fullfile(url_remote_root,subdir_remote);
+    %     url_remote = crism_swap_to_remote_path(url_remote);
+    % end
 end
 
-if ~isempty(subdir_remote)
-    if ~(is_subdir_pds_crism_pub(url_remote) == strcmpi(remote_fldsys,'pds_mro'))
-        fprintf(2,'subdir_remote (%s) and remote_fldsys (%s) are not consistent.\n',...
-            url_remote,remote_fldsys);
-        fprintf(1,'cannot download file matches %s\n', basenamePtrn);
-        fprintf(1,'check functions crism_toolbox/base/folder_resolverget_crism_pds_mro_path_xxx\n');
-        dirs = []; files = [];
-        return;
-    end
-end
+% if ~isempty(subdir_remote)
+%     if ~(is_subdir_pds_crism_pub(url_remote,'/') == strcmpi(remote_fldsys,'pds_mro'))
+%         fprintf(2,'subdir_remote (%s) and remote_fldsys (%s) are not consistent.\n',...
+%             url_remote,remote_fldsys);
+%         fprintf(1,'cannot download file matches %s\n', basenamePtrn);
+%         fprintf(1,'check functions crism_toolbox/base/folder_resolver/get_crism_pds_mro_path_xxx\n');
+%         dirs = []; files = [];
+%         return;
+%     end
+% end
 
 switch protocol
     case {'http'}
         % All the parameters are passed to pds_universal_downloader.m
+        url_remote_root = crism_swap_to_remote_path(url_remote_root);
         [dirs,files] = pds_universal_downloader(subdir_local, ...
             localrootDir, url_local_root, url_remote_root, @crism_get_links_remoteHTML, ...
             'BASENAMEPTRN',basenamePtrn,'SUBDIR_REMOTE',subdir_remote, ...
@@ -156,7 +160,7 @@ end
 end
 
 
-function [flg] = is_subdir_pds_crism_pub(subdir)
-ptrn = 'mro/mro-m-crism-.*/mrocr_.*/';
+function [flg] = is_subdir_pds_crism_pub(subdir,fsp)
+ptrn = ['mro' fsp 'mro-m-crism-.*' fsp 'mrocr_.*'];
 flg = ~isempty(regexpi(subdir,ptrn,'once'));
 end

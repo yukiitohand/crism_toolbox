@@ -48,7 +48,7 @@ range_mat = [
     [datetime('Nov 9, 2021')  datetime('Feb 8, 2022')];
 ];
 
-root_subfolder = 'mro-m-crism-3-rdr-targeted-v1/';
+root_subfolder = 'mro-m-crism-3-rdr-targeted-v1';
 folder_func = @(x) sprintf('mrocr_21%02d',x);
 
 [trr3_rootsubpath] = get_crism_pds_mro_path(...
