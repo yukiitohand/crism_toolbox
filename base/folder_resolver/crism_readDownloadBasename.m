@@ -1,4 +1,4 @@
-function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,subdir_local,dwld,varargin)
+function [basename,fname_wext_local,files_remote] = crism_readDownloadBasename(basenamePtr,subdir_local,dwld,varargin)
 % [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(basenamePtr,local_dir,dwld,varargin)
 %    search basenames that match 'basenamePtr' in 'subdir_local' and return
 %    the actual name. If nothing can be found, then download any files that
@@ -15,8 +15,6 @@ function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(b
 %      'Subdir_Remote'  : char, string, subdirectory path for the remote
 %                         repository
 %                         
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
 %                         it is empty, then files with any extension will
 %                         be downloaded.
@@ -26,35 +24,29 @@ function [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename(b
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'VERBOSE'        : boolean, whether or not to show the downloading
-%                         operations.
-%                         (default) true
-%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or
-%      not
-%        (default) true
 %      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
 %        (default) false
 %  Output parameters
 %    basename: basename matched.
 %    fname_wext_local : file name with extensions that exist localy.
-%    files_dwlded : relative path from subdir_local to the downloaded files.
+%    files_remote : relative path from subdir_local to the remote files.
 
 
 global crism_env_vars
 localrootDir   = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
 no_remote      = crism_env_vars.no_remote;
+if isfield(crism_env_vars,'dir_tmp')
+    dir_tmp = crism_env_vars.dir_tmp;
+else
+    dir_tmp = [];
+end
 
 ext = '';
-force = 0;
-outfile = '';
 mtch_exact = false;
 overwrite = 0;
-cap_filename  = true;
 index_cache_update = false;
-verbose = true;
+celloutput = false;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -67,18 +59,12 @@ else
                 ext = varargin{i+1};
             case 'MATCH_EXACT'
                 mtch_exact = varargin{i+1};
-            case 'FORCE'
-                force = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
-            case 'VERBOSE'
-                verbose = varargin{i+1};
             case 'INDEX_CACHE_UPDATE'
                 index_cache_update = varargin{i+1};
-            case 'CAPITALIZE_FILENAME'
-                cap_filename = varargin{i+1};
+            case 'CELLOUTPUT'
+                celloutput = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s',varargin{i});
         end
@@ -93,42 +79,57 @@ if no_remote && dwld>0
           ], dwld);
 end
 
-dir_local = joinPath(localrootDir,url_local_root,subdir_local); 
+dir_local = fullfile(localrootDir,url_local_root,subdir_local);
 
-fnamelist = dir(dir_local);
-[basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
-files_dwlded = [];
-if dwld>0
-    if isempty(basename) || dwld>0 || force
-        [dirs,files_dwlded] = crism_pds_downloader(subdir_local,...
-            'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr,...
-            'DWLD',dwld,'OUT_FILE',outfile,'overwrite',overwrite,...
-            'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update);
-            % 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
-        % basename is searched from the remote database.
-        [basename,~] = extractMatchedBasename_v2(basenamePtr,files_dwlded,'exact',mtch_exact);
-        % Get the list of files in the local database after download is
-        % performed.
-        fnamelist = dir(dir_local);
-        [~,fname_wext_local] = extractMatchedBasename_v2(basenamePtr,[{fnamelist.name}],'exact',mtch_exact);
-        
-    end
-elseif dwld == -1
-    if ~isempty(outfile)
-        fp = fopen(outfile,'a');
-    end
-    for j=1:length(fnamelist)
-        fname = fnamelist(j).name;
-        if ~isempty(regexpi(fname,basenamePtr,'ONCE'))
-            subpath = joinPath(subdir_local,fname);
-            fprintf('%s\n',subpath);
-            if ~isempty(outfile)
-                fprintf(fp,'%s\n',subpath);
+if dwld <= 0
+    if no_remote && ~isempty(dir_tmp)
+        cache_dir = fullfile(dir_tmp,url_local_root,subdir_local);
+        index_cache_fname = 'index.txt';
+        index_cache_fpath = fullfile(cache_dir,index_cache_fname);
+        if exist(index_cache_fpath,'file') && ~index_cache_update
+            fid = fopen(index_cache_fpath,'r');
+            fnamelist = textscan(fid,'%s');
+            fclose(fid);
+            fnamelist = fnamelist{1};
+        else
+            if exist(dir_local,'dir')
+                filelist = dir(dir_local);
+                fnamelist = {filelist.name};
+                if ~exist(cache_dir,'dir'), mkdir(cache_dir); end
+                fid = fopen(index_cache_fpath,'w');
+                fprintf(fid,'%s\r\n',fnamelist{:});
+                fclose(fid);
+            else
+                fnamelist = {};
             end
         end
+    else
+        filelist = dir(dir_local);
+        fnamelist = {filelist.name};
     end
-    if ~isempty(outfile)
-        fclose(fp);
+    if ~isempty(fnamelist)
+        [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr, ...
+            fnamelist,'exact',mtch_exact,'CellOutput',celloutput);
+        files_remote = {};
+    else
+        basename = {}; fname_wext_local = {}; files_remote = {};
+    end
+elseif dwld>0
+    [dirs,files_remote] = crism_pds_downloader(subdir_local,      ...
+        'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr, ...
+        'DWLD',dwld,'overwrite',overwrite, 'EXTENSION',ext, ...
+        'INDEX_CACHE_UPDATE',index_cache_update);
+        % 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+    % basename is searched from the remote database.
+    [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr, ...
+        files_remote,'exact',mtch_exact,'CellOutput',celloutput);
+        
+    % Get the list of files in the local database after download is
+    % performed.
+    if dwld==1
+        fnamelist = dir(dir_local);
+        [~,fname_wext_local] = extractMatchedBasename_v2(basenamePtr, ...
+            {fnamelist.name},'exact',mtch_exact,'CellOutput',celloutput);
     end
 end
 

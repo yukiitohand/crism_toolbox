@@ -314,8 +314,8 @@ if any(strcmpi(obs_classType,{'FRT','ATO','FRS','HRL','HRS'}))
          crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
         'SENSOR_ID','J','product_type','TER'),...
-        'Dwld',dwld_ter,'Match_Exact',true,'Force',force_dwld, ...
-        'OUT_FILE',outfile,'EXT',ext_ter,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
+        'Dwld',dwld_ter,'Match_Exact',true, ...
+        'EXT',ext_ter,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
         'overwrite',dwld_overwrite,'VERBOSE',verbose);
     
     % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
@@ -345,8 +345,8 @@ switch upper(obs_classType)
              crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',obs_counter,...
             'SENSOR_ID',y_si,'product_type','MTR'),...
-            'Dwld',dwld_mtrdr,'Match_Exact',true,'Force',force_dwld, ...
-            'OUT_FILE',outfile,'EXT', ext_mtrdr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
+            'Dwld',dwld_mtrdr,'Match_Exact',true, ...
+            'EXT', ext_mtrdr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
             'overwrite',dwld_overwrite,'VERBOSE',verbose);
 
         % [dirfullpath_local,subdir_local,subdir_remote,yyyy_doy,dirname,basenameOBS]
@@ -379,7 +379,7 @@ switch upper(obs_classType)
              crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
-            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld,'OUT_FILE',outfile, ...
+            'Dwld',w_dwld,'Match_Exact',true, ...
             'EXTENSION',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
             'overwrite',dwld_overwrite,'VERBOSE',verbose);
 
@@ -417,8 +417,8 @@ search_product_EDR = @(x_ai,y_oc,z_pd,w_dwld,v,xx_ext) crism_search_observation_
          crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID',x_ai,'OBS_COUNTER',y_oc,...
         'SENSOR_ID',sensor_id,'product_type',z_pd,'Version',v),...
-        'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
-        'OUT_FILE',outfile,'EXT',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
+        'Dwld',w_dwld,'Match_Exact',true, ...
+        'EXT',xx_ext,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
         'overwrite',dwld_overwrite,'VERBOSE',verbose);
 
 switch upper(obs_classType)
@@ -439,6 +439,39 @@ switch upper(obs_classType)
                 fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
                 fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
         end
+
+        basenameBI = []; basenameBIHKP = [];
+        fnameBIwext_local = []; fnameBIHKPwext_local = [];
+        basenameSP = []; basenameSPHKP = [];
+        fnameSPwext_local = []; fnameSPHKPwext_local = [];
+    
+   case 'CAL'
+        % BI
+        [dir_info,basenameBI,fnameBIwext_local] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameBIHKP,fnameBIHKPwext_local] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        dir_edr = dir_info.dirfullpath_local;
+
+        basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
+        basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
+        fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+        fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
+        basenameSP = []; basenameSPHKP = [];
+        fnameSPwext_local = []; fnameSPHKPwext_local = [];
+    
+    case 'ICL'
+        % SP
+        [dir_info,basenameSP,fnameSPwext_local] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
+        [~,basenameSPHKP,fnameSPHKPwext_local] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
+        dir_edr = dir_info.dirfullpath_local;
+
+        basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
+        basenameEPFDF = []; basenameEPFSCHKP = []; basenameEPFDFHKP = [];
+        fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
+        fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
+        fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
+        basenameBI = []; basenameBIHKP = [];
+        fnameBIwext_local = []; fnameBIHKPwext_local = [];
         
     otherwise
         basenameSC = ''; basenameSCHKP = []; basenameEPFSC = []; 
@@ -446,27 +479,10 @@ switch upper(obs_classType)
         fnameEDRSCwext_local = []; fnameEDRSCHKPwext_local = [];
         fnameEPFSCwext_local = []; fnameEPFSCHKPwext_local = [];
         fnameEPFDFwext_local = []; fnameEPFDFHKPwext_local = [];
-end
+        dir_edr = '';
 
-% Additional EDRs
-% for CAL only
-switch upper(obs_classType)
-    case 'CAL'
-        % BI
-        [~,basenameBI,fnameBIwext_local] = search_product_EDR('BI',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,basenameBIHKP,fnameBIHKPwext_local] = search_product_EDR('BI',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
-    otherwise
         basenameBI = []; basenameBIHKP = [];
         fnameBIwext_local = []; fnameBIHKPwext_local = [];
-end
-
-% for ICL only
-switch upper(obs_classType)
-    case 'ICL'
-        % SP
-        [~,basenameSP,fnameSPwext_local] = search_product_EDR('SP',obs_counter,'EDR',dwld_edrscdf,0,ext_edrscdf);
-        [~,basenameSPHKP,fnameSPHKPwext_local] = search_product_EDR('SP',obs_counter,'HKP',dwld_edrscdf,0,ext_edrscdf);
-    otherwise
         basenameSP = []; basenameSPHKP = [];
         fnameSPwext_local = []; fnameSPHKPwext_local = [];
 end
@@ -498,8 +514,8 @@ switch upper(obs_classType)
              crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
             'OBS_ID',obs_id,'ACTIVITY_ID','DE','OBS_COUNTER',y_oc,...
             'SENSOR_ID',sensor_id,'product_type','DDR'),...
-            'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
-            'OUT_FILE',outfile,'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
+            'Dwld',w_dwld,'Match_Exact',true, ...
+            'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
             'overwrite',dwld_overwrite,'VERBOSE',verbose);
         [dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,dwld_ddr);
         dir_ddr = dir_info.dirfullpath_local;

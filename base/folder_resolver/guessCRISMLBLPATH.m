@@ -36,7 +36,7 @@ else
             error('Ambiguity error. Multiple LBL files are detected.');
         end
     end
-    lblPath = joinPath(dirPath,lblname);
+    lblPath = fullfile(dirPath,lblname);
 end
 
 % if ismac || ispc

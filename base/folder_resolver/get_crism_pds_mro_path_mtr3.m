@@ -18,7 +18,7 @@ range_mat = [
     [datetime('Sep 30, 2006') datetime('May 21, 2012')];
 ];
 
-root_subfolder = 'mro-m-crism-5-rdr-mptargeted-v1/';
+root_subfolder = 'mro-m-crism-5-rdr-mptargeted-v1';
 folder_func = @(x) sprintf('mrocr_40%02d',x);
 
 [mtr3_rootsubpath] = get_crism_pds_mro_path(...

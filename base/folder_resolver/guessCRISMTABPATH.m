@@ -36,7 +36,7 @@ else
             error('Ambiguity error. Multiple TAB files are detected.');
         end
     end
-    tabPath = joinPath(dirPath,tabname);
+    tabPath = fullfile(dirPath,tabname);
 end
 
 % if ismac || ispc

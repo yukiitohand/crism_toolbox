@@ -20,7 +20,7 @@ else
     end
 end
     
-local_dir = joinPath(localrootDir,crism_pds_archiveURL);
+local_dir = fullfile(localrootDir,crism_pds_archiveURL);
 
 
 switch upper(sensor_id)
@@ -34,14 +34,14 @@ end
 
 
 basenamePtr = ['(ATF_' sensor_acro '_' yyyy_doy '_11)'];
-remote_subdir = joinPath('edr/CDR/', yyyy_doy, 'ATF');
-dirpath = joinPath(local_dir,remote_subdir);
+remote_subdir = fullfile('edr','CDR', yyyy_doy, 'ATF');
+dirpath = fullfile(local_dir,remote_subdir);
 
 [basename] = readDownloadBasename_v2(basenamePtr,dirpath,remote_subdir,varargin{:});
 
 if ~isempty(basename)
-    lblfpath = joinPath(dirpath,[basename '.LBL']);
-    tabfpath = joinPath(dirpath,[basename '.TAB']);
+    lblfpath = fullfile(dirpath,[basename '.LBL']);
+    tabfpath = fullfile(dirpath,[basename '.TAB']);
     lbl = crismlblread(lblfpath);
     tab = crismTABread(tabfpath,lbl);
     atf = [];

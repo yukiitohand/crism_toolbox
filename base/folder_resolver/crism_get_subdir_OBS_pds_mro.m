@@ -18,28 +18,28 @@ end
 switch lower(data_type)
     case 'ter'
         [subdir] = get_crism_pds_mro_path_ter3(yyyy_doy);
-        subdir = joinPath(subdir,'ter',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'ter',yyyy_str,yyyy_doy,lower(base_dir));
     case 'mtr'
         [subdir] = get_crism_pds_mro_path_mtr3(yyyy_doy);
-        subdir = joinPath(subdir,'mtrdr',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'mtrdr',yyyy_str,yyyy_doy,lower(base_dir));
     case 'trr'
         [subdir] = get_crism_pds_mro_path_trr3(yyyy_doy);
-        subdir = joinPath(subdir,'trdr',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'trdr',yyyy_str,yyyy_doy,lower(base_dir));
     case 'ddr'
         [subdir] = get_crism_pds_mro_path_ddr(yyyy_doy);
-        subdir = joinPath(subdir,'ddr',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'ddr',yyyy_str,yyyy_doy,lower(base_dir));
     case 'edr'
         [subdir] = get_crism_pds_mro_path_edr(yyyy_doy);
-        subdir = joinPath(subdir,'edr',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'edr',yyyy_str,yyyy_doy,lower(base_dir));
     case 'glt'
         [subdir] = get_crism_pds_mro_path_ddr(yyyy_doy);
-        subdir = joinPath(subdir,'glt',yyyy_str,yyyy_doy,lower(base_dir));
+        subdir = fullfile(subdir,'glt',yyyy_str,yyyy_doy,lower(base_dir));
     case 'edr_misc'
         [subdir] = get_crism_pds_mro_path_edr_latest();
-        subdir = joinPath(subdir,lower(base_dir));
+        subdir = fullfile(subdir,lower(base_dir));
     case 'trr_misc'
         [subdir] = get_crism_pds_mro_path_trr_latest();
-        subdir = joinPath(subdir,lower(base_dir));
+        subdir = fullfile(subdir,lower(base_dir));
     otherwise
         error('Undefined data type %s.',data_type);
 end

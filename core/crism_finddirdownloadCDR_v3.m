@@ -12,8 +12,6 @@ function [dir_cdr,files_local] = crism_finddirdownloadCDR_v3(basenamesCDR,vararg
 %    files_local:  same structure as basenamesCDR. all filenames with
 %             extensions present locally are listed.
 %   OPTIONAL PARAMETERS (passed onto crism_get_dirpath_cdr)
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
 %                         it is empty, then files with any extension will
 %                         be downloaded.
@@ -29,11 +27,6 @@ function [dir_cdr,files_local] = crism_finddirdownloadCDR_v3(basenamesCDR,vararg
 %                         (default) 0
 %      'HTMLFILE'       : path to the html file to be read
 %                         (default) ''
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'VERBOSE'        : boolean, whether or not to show the downloading
-%                         operations.
-%                         (default) true
 
 dir_cdr = [];
 files_local = [];

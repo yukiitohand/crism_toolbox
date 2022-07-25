@@ -16,10 +16,6 @@ function [dir_info,basenameOTT,fnameOTT_wext_local] = crism_get_dirpath_ott(base
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 
 propOTT = crism_getProp_basenameOTT(basenameOTT);
 [dir_info,basenameOTT,fnameOTT_wext_local] = crism_search_ott_fromProp(propOTT,varargin{:});

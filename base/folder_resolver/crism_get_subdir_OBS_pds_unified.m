@@ -12,17 +12,17 @@ function [subdir] = crism_get_subdir_OBS_pds_unified(yyyy_doy,base_dir,data_type
 
 switch lower(data_type)
     case 'ter'
-        [ subdir ] = joinPath('ter/TER',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('ter','TER',yyyy_doy,base_dir);
     case 'mtr'
-        [ subdir ] = joinPath('mtrdr/MTRDR',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('mtrdr','MTRDR',yyyy_doy,base_dir);
     case 'trr'
-        [ subdir ] = joinPath('trdr/TRDR',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('trdr','TRDR',yyyy_doy,base_dir);
     case 'ddr'
-        [ subdir ] = joinPath('ddr/DDR',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('ddr','DDR',yyyy_doy,base_dir);
     case 'edr'
-        [ subdir ] = joinPath('edr/EDR',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('edr','EDR',yyyy_doy,base_dir);
     case 'glt'
-        [ subdir ] = joinPath('ddr/GLT',yyyy_doy,base_dir);
+        [ subdir ] = fullfile('ddr','GLT',yyyy_doy,base_dir);
     otherwise
         error('Undefined data type %s.',data_type);
 end

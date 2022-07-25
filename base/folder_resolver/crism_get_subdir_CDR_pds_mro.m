@@ -19,10 +19,10 @@ end
 switch cdr_folder_type
     case 1
         [subdir] = get_crism_pds_mro_path_cdr_type1(yyyy_doy);
-        subdir = joinPath(subdir,'cdr',yyyy_str,yyyy_doy,acro);
+        subdir = fullfile(subdir,'cdr',yyyy_str,yyyy_doy,acro);
     case 2
         [subdir] = get_crism_pds_mro_path_cdr_type2();
-        subdir = joinPath(subdir,'cdr',acro);
+        subdir = fullfile(subdir,'cdr',acro);
     case 3
         error('folder_type==3 is not defined in pds_mro system.');
     otherwise

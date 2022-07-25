@@ -10,6 +10,6 @@ function [cdr_rootsubpath] = get_crism_pds_mro_path_cdr_type2()
 % the detail information is at
 % pds-geosciences.wustl.edu/missions/mro/crism.htm
 
-cdr_rootsubpath = 'mro-m-crism-2-edr-v1/mrocr_0001/';
+cdr_rootsubpath = fullfile('mro-m-crism-2-edr-v1','mrocr_0001');
 
 end

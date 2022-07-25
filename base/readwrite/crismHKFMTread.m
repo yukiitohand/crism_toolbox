@@ -27,21 +27,24 @@ global crism_env_vars
 no_remote = crism_env_vars.no_remote;
 localrootDir = crism_env_vars.localCRISM_PDSrootDir;
 url_local_root = crism_env_vars.url_local_root;
+dir_cache = crism_env_vars.dir_CACHE;
 
 switch upper(product_type)
     case 'TARGETED_RDR'
         product_type_acro = 'TRDR';
-        subdir_local  = crism_get_subdir_OBS_local('','LABEL/','trr_misc');
-        dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        subdir_local  = crism_get_subdir_OBS_local('','LABEL','trr_misc');
+        dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
         if ~no_remote
-            subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','trr_misc');
+            subdir_remote = crism_get_subdir_OBS_remote('','LABEL','trr_misc');
+            subdir_remote = crism_swap_to_remote_path(subdir_remote);
         end
     case 'EDR'
         product_type_acro = 'EDR';
-        subdir_local  = crism_get_subdir_OBS_local('','LABEL/','edr_misc');
-        dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        subdir_local  = crism_get_subdir_OBS_local('','LABEL','edr_misc');
+        dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
         if ~no_remote
-            subdir_remote = crism_get_subdir_OBS_remote('','LABEL/','edr_misc');
+            subdir_remote = crism_get_subdir_OBS_remote('','LABEL','edr_misc');
+            subdir_remote = crism_swap_to_remote_path(subdir_remote);
         end
     otherwise
         error('product_type %s is not valid.',product_type);
@@ -93,11 +96,11 @@ end
 
 
 
-cachefilepath = joinPath(dirfullpath_local,[fmtfname '.mat']);
+cachefilepath = fullfile(dir_cache,[fmtfname '.mat']);
 if exist(cachefilepath,'file') && ~clearcache
     load(cachefilepath,'fmt');
 else
-    fmtfpath = joinPath(dirfullpath_local, fmtfname);
+    fmtfpath = fullfile(dirfullpath_local, fmtfname);
     fmt = pds3lblread(fmtfpath);
     save(cachefilepath,'fmt');
 end

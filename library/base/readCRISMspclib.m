@@ -9,7 +9,7 @@ function [CRISMspclib] = readCRISMspclib(varargin)
 global crism_env_vars
 localCATrootDir = crism_env_vars.localCATrootDir;
 
-pdir = joinPath(localCATrootDir, 'CAT_ENVI/spec_lib/crism_resamp/');
+pdir = fullfile(localCATrootDir, 'CAT_ENVI','spec_lib','crism_resamp');
 
 if length(varargin)>2
     error('Inputs must be length of 0 or 1.');

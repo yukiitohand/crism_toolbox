@@ -51,7 +51,7 @@ else
     end
 end
 
-dir_CRISMspclibTABColle_data = joinPath(dir_CRISMspclibTABColle,'mrocr_90xx/data/');
+dir_CRISMspclibTABColle_data = fullfile(dir_CRISMspclibTABColle,'mrocr_90xx','data');
 
 if ~exist(dir_CRISMspclibTABColle_data,'dir')
     error('"%s" does not exist.',dir_CRISMspclibTABColle_data);

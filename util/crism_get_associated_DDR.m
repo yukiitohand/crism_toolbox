@@ -10,13 +10,9 @@ function [DEdata] = crism_get_associated_DDR(crismdata_obj,varargin)
 %                  (default) 1
 %
 
-force_dwld = 1;
-outfile    = '';
 ext_ddr    = '';
 dwld_index_cache_update = false;
 dwld_overwrite          = false;
-verbose = false;
-
 vr = 1;
 
 if (rem(length(varargin),2)==1)
@@ -40,11 +36,11 @@ search_product_DDR = @(y_oc,w_dwld) crism_search_observation_fromProp(...
     crism_create_propOBSbasename('OBS_CLASS_TYPE',obs_classType,...
         'OBS_ID',obs_id,'ACTIVITY_ID','DE', 'OBS_COUNTER',y_oc,...
         'SENSOR_ID',sensor_id,'product_type','DDR','VERSION',vr),...
-    'Dwld',w_dwld,'Match_Exact',true,'Force',force_dwld, ...
-    'OUT_FILE',outfile,'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
-    'overwrite',dwld_overwrite,'VERBOSE',verbose);
+    'Dwld',w_dwld,'Match_Exact',true,...
+    'Ext',ext_ddr,'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
+    'overwrite',dwld_overwrite);
 
-[dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,1);
+[dir_info,basenameDDR,fnameDDRwext_local] = search_product_DDR(obs_counter,0);
 
 if isempty(basenameDDR)
     error('Cannot find the associated DDR.');

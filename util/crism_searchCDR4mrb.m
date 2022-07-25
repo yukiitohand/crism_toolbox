@@ -13,10 +13,6 @@ function [CDR4data] = crism_searchCDR4mrb(acro,sclk,varargin)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 
 partition = '(?<partition>[\d]{1})';
 sensor_id = '(?<sensor_id>[sljSLJ]{1})';
@@ -27,8 +23,6 @@ exposure              = '(?<exposure>[0-9]{3})';
 wavelength_filter     = '(?<wavelength_filter>[0-3]{1})';
 side                  = '(?<side>[0-2]{1})';
 dwld = 0;
-force = false;
-outfile = '';
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -52,10 +46,6 @@ else
                 side = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case {'FORCE','FORCE_DWLD'}
-                force = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             otherwise
                 error('Undefined keyword %s',varargin{i});
         end
@@ -66,8 +56,7 @@ propCDR4ref = crism_create_propCDR4basename('acro',acro,'sclk',sclk,'version',vr
     'partition',partition','sensor_id',sensor_id,...
     'frame_rate',frame_rate,'binning',binning,'exposure',exposure,...
     'wavelength_filter',wavelength_filter,'side',side);
-[basenameCDR4mrb] = crism_searchCDRmrb(propCDR4ref,'dwld',dwld,...
-    'force',force,'out_file',outfile);
+[basenameCDR4mrb] = crism_searchCDRmrb(propCDR4ref,'dwld',dwld);
 if ~isempty(basenameCDR4mrb)
     if ischar(basenameCDR4mrb)
         CDR4data = CRISMdata(basenameCDR4mrb,'');

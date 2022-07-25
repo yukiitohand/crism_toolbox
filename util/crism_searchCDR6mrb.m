@@ -13,17 +13,11 @@ function [CDR6data] = crism_searchCDR6mrb(acro,sclk,varargin)
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 
 partition = '(?<partition>[\d]{1})';
 sensor_id = '(?<sensor_id>[sljSLJ]{1})';
 vr = '(?<version>[0-9]{1})';
 dwld = 0;
-force = false;
-outfile = '';
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -37,10 +31,6 @@ else
                 vr = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case {'FORCE','FORCE_DWLD'}
-                force = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             otherwise
                 error('Undefined keyword %s',varargin{i});
         end
@@ -49,8 +39,7 @@ end
 
 propCDR6ref = crism_create_propCDR6basename('acro',acro,'sclk',sclk,'version',vr,...
     'partition',partition','sensor_id',sensor_id);
-[basenameCDR6mrb] = crism_searchCDRmrb(propCDR6ref,'dwld',dwld,...
-    'force',force,'out_file',outfile);
+[basenameCDR6mrb] = crism_searchCDRmrb(propCDR6ref,'dwld',dwld);
 if ~isempty(basenameCDR6mrb)
     if ischar(basenameCDR6mrb)
         CDR6data = CRISMdata(basenameCDR6mrb,'');

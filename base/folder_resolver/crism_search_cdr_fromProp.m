@@ -17,8 +17,6 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(
 %   fnameCDR_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
 %                         it is empty, then files with any extension will
 %                         be downloaded.
@@ -28,8 +26,6 @@ function [dir_info,basenameCDR,fnameCDR_wext_local] = crism_search_cdr_fromProp(
 %      'DWLD','DOWNLOAD' : if download the data or not, 2: download, 1:
 %                         access an only show the path, 0: nothing
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
 %      'VERBOSE'        : boolean, whether or not to show the downloading
 %                         operations.
 %                         (default) true
@@ -47,13 +43,8 @@ no_remote       = crism_env_vars.no_remote;
 
 ext  = '';
 dwld = 0;
-force = 0;
-outfile = '';
-
 overwrite = 0;
-cap_filename  = true;
 index_cache_update = false;
-verbose = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -64,18 +55,10 @@ else
                 ext = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'FORCE'
-                force = varargin{i+1};
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
-            case 'VERBOSE'
-                verbose = varargin{i+1};
             case 'INDEX_CACHE_UPDATE'
                 index_cache_update = varargin{i+1};
-            case 'CAPITALIZE_FILENAME'
-                cap_filename = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
@@ -106,22 +89,20 @@ switch folder_type
             yyyy_doy_shifted = shift_yyyy_doy(yyyy_doy_shifted,shift_day);
             
             subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,yyyy_doy_shifted);
-            dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+            dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
             [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
             
             if no_remote
                 [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
-                    subdir_local,dwld,'Force',force, ...
-                    'Out_File',outfile,'overwrite',overwrite,...
-                    'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-                    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+                    subdir_local,dwld,'overwrite',overwrite,...
+                    'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update);
             else
                 subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
+                subdir_remote = crism_swap_to_remote_path(subdir_remote);
                 [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
-                    subdir_local,dwld,'subdir_remote',subdir_remote,'Force',force, ...
-                    'Out_File',outfile,'overwrite',overwrite,...
-                    'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-                    'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+                    subdir_local,dwld,'subdir_remote',subdir_remote, ...
+                    'overwrite',overwrite,'EXTENSION',ext, ...
+                    'INDEX_CACHE_UPDATE',index_cache_update);
             end
             if ~isempty(basenameCDR)
                 exist_flg = 1;
@@ -136,25 +117,22 @@ switch folder_type
     case 2
         
         subdir_local  = crism_get_subdir_CDR_local(acro,folder_type,'');
-        dirfullpath_local = joinPath(localrootDir,url_local_root,subdir_local);
+        dirfullpath_local = fullfile(localrootDir,url_local_root,subdir_local);
         [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         if no_remote
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,dwld, ...
-                'Force',force,'Out_File',outfile, ...
-                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-                'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update);
         else
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
+            subdir_remote = crism_swap_to_remote_path(subdir_remote);
             [basenameCDR,fnameCDR_wext_local] = crism_readDownloadBasename(basenameCDRPtrn,...
                 subdir_local,dwld,'subdir_remote',subdir_remote, ...
-                'Force',force,'Out_File',outfile, ...
-                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update,...
-                'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+                'EXTENSION',ext,'INDEX_CACHE_UPDATE',index_cache_update);
         end
     case 3
-        subdir_local = joinPath('CAT_ENVI/aux_files/CDRs/',acro);
-        dirfullpath_local = joinPath(localCATrootDir,subdir_local);
+        subdir_local = fullfile('CAT_ENVI','aux_files','CDRs',acro);
+        dirfullpath_local = fullfile(localCATrootDir,subdir_local);
         subdir_remote = '';
         [basenameCDRPtrn] = crism_get_basenameCDR_fromProp(propCDR);
         fnamelist = dir(dirfullpath_local);
@@ -166,7 +144,7 @@ switch folder_type
             end
             if ~isempty(basesnameCDR)
                 for j=1:length(basenameCDR)
-                    subpath = joinPath(subdir_local,basenameCDR{j});
+                    subpath = fullfile(subdir_local,basenameCDR{j});
                     if ~isempty(outfile)
                         fprintf(fp,'%s\n',subpath);
                     end

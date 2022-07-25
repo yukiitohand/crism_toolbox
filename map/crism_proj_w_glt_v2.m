@@ -76,8 +76,8 @@ if save_file
     if ~exist(save_dir,'dir'), mkdir(save_dir); end
     basename_proj = [in_crismdata.basename suffix];
 
-    fpath_hdr_proj = joinPath(save_dir, [basename_proj '.hdr']);
-    fpath_img_proj = joinPath(save_dir, [basename_proj '.img']);
+    fpath_hdr_proj = fullfile(save_dir, [basename_proj '.hdr']);
+    fpath_img_proj = fullfile(save_dir, [basename_proj '.img']);
 
     outputs_fpath = {fpath_hdr_proj,fpath_img_proj};
 

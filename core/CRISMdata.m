@@ -39,6 +39,7 @@ classdef CRISMdata < ENVIRasterMultBand
     methods
         function obj = CRISMdata(basename,dirpath,varargin)
             % load property and find out the type of data from "basename"
+            exist_flg = 0;
             if ~isempty(crism_getProp_basenameOBSERVATION(basename))
                 prop = crism_getProp_basenameOBSERVATION(basename);
                 data_type = 'OBSERVATION';
@@ -54,55 +55,73 @@ classdef CRISMdata < ENVIRasterMultBand
             elseif ~isempty(crism_getProp_basenameADRVS(basename))
                 prop = crism_getProp_basenameADRVS(basename);
                 data_type = 'ADR_VS';
+            else
+                fprintf('Name %s is not supported.\n', basename);
+                data_type = '';
             end
             % find out yyyy_doy and dirname
-            switch upper(data_type)
-                case 'OBSERVATION'
-                    [dir_info] = crism_get_dirpath_observation(basename);
-                    dirpath_guess = dir_info.dirfullpath_local;
-                    yyyy_doy = dir_info.yyyy_doy;
-                    dirname  = dir_info.dirname;
-                    prop.yyyy_doy = yyyy_doy;
-                case {'CDR4','CDR6'}
-                    [dir_info] = crism_get_dirpath_cdr(basename);
-                    dirpath_guess = dir_info.dirfullpath_local;
-                    yyyy_doy = dir_info.yyyy_doy;
-                    dirname  = dir_info.dirname;
-                case {'OTT'}
-                    [dir_info] = crism_get_dirpath_ott(basename);
-                    dirpath_guess = dir_info.dirfullpath_local;
-                    yyyy_doy = '';
-                    dirname = '';
-                case {'ADR_VS'}
-                    [dir_info] = crism_get_dirpath_adrvs(basename);
-                    dirpath_guess = dir_info.dirfullpath_local;
-                    dirname  = dir_info.dirname;
-                    yyyy_doy = '';
-                otherwise
-                    error('Undefined data_type %s',data_type);
+            if ~isempty(data_type)
+                switch upper(data_type)
+                    case 'OBSERVATION'
+                        [dir_info] = crism_get_dirpath_observation(basename);
+                    case {'CDR4','CDR6'}
+                        [dir_info] = crism_get_dirpath_cdr(basename);
+                    case {'OTT'}
+                        [dir_info] = crism_get_dirpath_ott(basename);
+                    case {'ADR_VS'}
+                        [dir_info] = crism_get_dirpath_adrvs(basename);
+                    otherwise
+                        fprintf('Undefined data_type %s',data_type);
+                        dir_info = [];
+                end
+                if ~isempty(dir_info)
+                    switch upper(data_type)
+                        case {'OBSERVATION','CDR4','CDR6'}
+                            dirpath_guess = dir_info.dirfullpath_local;
+                            yyyy_doy = dir_info.yyyy_doy;
+                            dirname  = dir_info.dirname;
+                            prop.yyyy_doy = yyyy_doy;
+                        case {'OTT'}
+                            dirpath_guess = dir_info.dirfullpath_local;
+                            yyyy_doy = '';
+                            dirname = '';
+                        case {'ADR_VS'}
+                            [dir_info] = crism_get_dirpath_adrvs(basename);
+                            dirpath_guess = dir_info.dirfullpath_local;
+                            dirname  = dir_info.dirname;
+                            yyyy_doy = '';
+                        otherwise
+                    end
+                    % get dirpath if not specified
+                    if isempty(dirpath)
+                        dirpath = dirpath_guess;
+                    end
+                    exist_flg = 1;
+                else
+                    dirpath = ''; yyyy_doy = ''; dirname = ''; 
+                end
+            else
+                dirpath = ''; yyyy_doy = ''; dirname = '';
             end
-            % get dirpath if not specified
-            if isempty(dirpath)
-                dirpath = dirpath_guess;
-            end
-            
             obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
-            [obj.lblpath] = guessCRISMLBLPATH(basename,dirpath,varargin{:});
-            [obj.tabpath] = guessCRISMTABPATH(basename,dirpath,varargin{:});
-            obj.readlblhdr();
+
+            if exist_flg
+                [obj.lblpath] = guessCRISMLBLPATH(basename,dirpath,varargin{:});
+                [obj.tabpath] = guessCRISMTABPATH(basename,dirpath,varargin{:});
+                obj.readlblhdr();
             
-            obj.prop = prop;
-            obj.data_type = data_type;
-            obj.yyyy_doy = yyyy_doy;
-            obj.dirname = dirname;
-            
-            % switch upper(data_type)
-            %     case 'OBSERVATION'
-                    % obj.readSW();
-                    % obj.readBW();
-            % end
-            
-            
+                obj.prop = prop;
+                obj.data_type = data_type;
+                obj.yyyy_doy = yyyy_doy;
+                obj.dirname = dirname;
+                
+                % switch upper(data_type)
+                %     case 'OBSERVATION'
+                        % obj.readSW();
+                        % obj.readBW();
+                % end
+            end
+
         end
         
         function [img_flip] = img_flip_band(obj)

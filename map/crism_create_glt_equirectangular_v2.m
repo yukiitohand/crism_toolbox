@@ -247,11 +247,11 @@ if save_file
         dir_glt_info = crism_get_dirpath_observation(basenameGLT);
         save_dir = dir_glt_info.dirfullpath_local;
         url_local_root = crism_env_vars.url_local_root;
-        subdir_local_split = split(joinPath(url_local_root,dir_glt_info.subdir_local),'/');
+        subdir_local_split = split(fullfile(url_local_root,dir_glt_info.subdir_local),filesep);
         cur_dir = crism_env_vars.localCRISM_PDSrootDir;
         if exist(cur_dir,'dir')
             for i=1:length(subdir_local_split)
-                cur_dir = joinPath(cur_dir,subdir_local_split{i});
+                cur_dir = fullfile(cur_dir,subdir_local_split{i});
                 if ~exist(cur_dir,'dir')
                     [status] = mkdir(save_dir); 
                     if status
@@ -268,7 +268,7 @@ if save_file
     else
         yyyy_doy = RAdata.yyyy_doy; dirname = RAdata.dirname;
         if save_dir_yyyy_doy
-            dirpath_yyyy_doy = joinPath(save_pdir,yyyy_doy);
+            dirpath_yyyy_doy = fullfile(save_pdir,yyyy_doy);
             if ~exist(dirpath_yyyy_doy,'dir')
                 status = mkdir(dirpath_yyyy_doy);
                 if status
@@ -278,7 +278,7 @@ if save_file
                     error('Failed to create %s',dirpath_yyyy_doy);
                 end
             end
-            save_dir = joinPath(dirpath_yyyy_doy,dirname);
+            save_dir = fullfile(dirpath_yyyy_doy,dirname);
             if ~exist(save_dir,'dir')
                 status = mkdir(save_dir);
                 if status
@@ -289,7 +289,7 @@ if save_file
                 end
             end
         else
-            save_dir = joinPath(save_pdir,dirname);
+            save_dir = fullfile(save_pdir,dirname);
             if ~exist(save_dir,'dir')
                 status = mkdir(save_dir);
                 if status
@@ -303,13 +303,13 @@ if save_file
     end
 
 
-    fpath_GLT_img = joinPath(save_dir,[basenameGLT '.IMG']);
-    fpath_GLT_hdr = joinPath(save_dir,[basenameGLT '.HDR']);
+    fpath_GLT_img = fullfile(save_dir,[basenameGLT '.IMG']);
+    fpath_GLT_hdr = fullfile(save_dir,[basenameGLT '.HDR']);
     propGRD = propGLT;
     propGRD.product_type = 'GRD';
     basenameGRD = crism_get_basenameOBS_fromProp(propGRD);
     basenameGRD = [basenameGRD suffix];
-    fpath_GRD_mat = joinPath(save_dir,[basenameGRD '.mat']);
+    fpath_GRD_mat = fullfile(save_dir,[basenameGRD '.mat']);
 
     outputs_fpath = {fpath_GLT_img,fpath_GLT_hdr,fpath_GRD_mat};
 
