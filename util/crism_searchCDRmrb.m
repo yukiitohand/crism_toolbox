@@ -19,6 +19,7 @@ function [basenameCDRmrb,propCDRmrb] = crism_searchCDRmrb(propCDRref,varargin)
 
 global crism_env_vars
 localCATrootDir = crism_env_vars.localCATrootDir;
+no_remote = crism_env_vars.no_remote;
 
 dwld = 0;
 force = false;
