@@ -12,13 +12,13 @@ vr             = '(?<version>[0-9a-zA-Z]{1})';
 
 obs_counter_ptrn_struct = '';
 
-ext_if  = '';
-ext_ra  = '';
-ext_hkp = '';
+ext_if_cs  = '';
+ext_ra_cs  = '';
+ext_hkp_cs = '';
 ext_epf = '';
-dwld_if  = 0;
-dwld_ra  = 0;
-dwld_hkp = 0;
+dwld_if_cs  = 0;
+dwld_ra_cs  = 0;
+dwld_hkp_cs = 0;
 dwld_epf = 0;
 overwrite  = false;
 index_cache_update = false;
@@ -44,20 +44,20 @@ else
                 vr = varargin{i+1};
             case 'OBS_COUNTER_PTRN_STRUCT'
                 obs_counter_ptrn_struct = varargin{i+1};
-            case {'DOWNLOAD_IF'}
-                dwld_if = varargin{i+1};
-            case {'DOWNLOAD_RA'}
-                dwld_ra = varargin{i+1};
-            case {'DOWNLOAD_HKP'}
-                dwld_hkp = varargin{i+1};
+            case {'DOWNLOAD_IF_CS','DOWNLOAD_IF'}
+                dwld_if_cs = varargin{i+1};
+            case {'DOWNLOAD_RA_CS','DOWNLOAD_RA'}
+                dwld_ra_cs = varargin{i+1};
+            case {'DOWNLOAD_HKP_CS','DOWNLOAD_HKP'}
+                dwld_hkp_cs = varargin{i+1};
             case {'DOWNLOAD_EPF'}
                 dwld_epf = varargin{i+1};
-            case 'EXT_IF'
-                ext_if = varargin{i+1};
-            case 'EXT_RA'
-                ext_ra = varargin{i+1};
-            case 'EXT_HKP'
-                ext_hkp = varargin{i+1};
+            case {'EXT_IF_CS','EXT_IF'}
+                ext_if_cs = varargin{i+1};
+            case {'EXT_RA_CS','EXT_RA'}
+                ext_ra_cs = varargin{i+1};
+            case {'EXT_HKP_CS','EXT_HKP'}
+                ext_hkp_cs = varargin{i+1};
             case 'EXT_EPF'
                 ext_epf = varargin{i+1};
             case 'OVERWRITE'
@@ -78,9 +78,9 @@ if isempty(obs_counter_ptrn_struct)
     obs_counter_ptrn_struct = crism_get_obs_counter_ptrn_struct(obs_class_type);
 end
 
-dwld_list = min(max([dwld_if,dwld_ra,dwld_hkp,dwld_epf]),1);
+dwld_list = min(max([dwld_if_cs,dwld_ra_cs,dwld_hkp_cs,dwld_epf]),1);
 
-[search_result] = crism_search_products(obs_id, product_type, ...
+[search_result] = crism_search_products_OBS(obs_id, product_type, ...
     'OBS_CLASS_TYPE', obs_class_type, 'OBS_COUNTER', obs_counter, ...
     'ACTIVITY_ID', activity_id,'ACTIVITY_MACRO_NUM',activity_macro_num, ...
     'OBS_COUNTER',obs_counter,'SENSOR_ID',sensor_id,'VERSION',vr, ...
@@ -109,7 +109,7 @@ if ~isempty(search_result.basenames)
 
 
     % Download
-    if dwld_if>1
+    if dwld_if_cs>1
         cs_sgmnt_info = search_result.sgmnt_info(cs_indx);
         basenameIFptrncell = [];
         for i_sg=1:length(cs_sgmnt_info)
@@ -124,14 +124,14 @@ if ~isempty(search_result.basenames)
         end
         basenameIFptrn = ['(', strjoin(basenameIFptrncell, '|'), ')'];
         [basenameOBS,fnameOBS_wext_local,files_remote] = crism_readDownloadBasename( ...
-            basenameIFptrn,search_result.dir_info.subdir_local,dwld_if, ...
+            basenameIFptrn,search_result.dir_info.subdir_local,dwld_if_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
-            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_if);
+            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_if_cs);
     
         search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
     end
     
-    if dwld_ra>1
+    if dwld_ra_cs>1
         cs_sgmnt_info = search_result.sgmnt_info(cs_indx);
         basenameRAptrncell = [];
         for i_sg=1:length(cs_sgmnt_info)
@@ -146,13 +146,13 @@ if ~isempty(search_result.basenames)
         end
         basenameRAptrn = ['(', strjoin(basenameRAptrncell, '|'), ')'];
         [basenameOBS,fnameOBS_wext_local,files_remote] = crism_readDownloadBasename( ...
-            basenameRAptrn,search_result.dir_info.subdir_local,dwld_ra, ...
+            basenameRAptrn,search_result.dir_info.subdir_local,dwld_ra_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
-            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_ra);
+            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_ra_cs);
         search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
     end
     
-    if dwld_hkp>1
+    if dwld_hkp_cs>1
         cs_sgmnt_info = search_result.sgmnt_info(cs_indx);
         basenameRAHKPptrncell = [];
         for i_sg=1:length(cs_sgmnt_info)
@@ -167,9 +167,9 @@ if ~isempty(search_result.basenames)
         end
         basenameRAHKPptrn = ['(', strjoin(basenameRAHKPptrncell, '|'), ')'];
         [basenameOBS,fnameOBS_wext_local,files_remote] = crism_readDownloadBasename( ...
-            basenameRAHKPptrn,search_result.dir_info.subdir_local,dwld_hkp, ...
+            basenameRAHKPptrn,search_result.dir_info.subdir_local,dwld_hkp_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
-            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_hkp);
+            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_hkp_cs);
         search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
     end
     

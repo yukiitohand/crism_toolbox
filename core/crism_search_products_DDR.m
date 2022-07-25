@@ -12,9 +12,9 @@ vr             = '(?<version>[0-9a-zA-Z]{1})';
 
 obs_counter_ptrn_struct = '';
 
-ext_ddr  = '';
+ext_cs   = '';
 ext_epf  = '';
-dwld_ddr = 0;
+dwld_cs  = 0;
 dwld_epf = 0;
 overwrite  = false;
 index_cache_update = false;
@@ -40,14 +40,12 @@ else
                 vr = varargin{i+1};
             case 'OBS_COUNTER_PTRN_STRUCT'
                 obs_counter_ptrn_struct = varargin{i+1};
-            case {'EXT','EXTENSION'}
-                ext = varargin{i+1};
-            case {'DOWNLOAD_DDR'}
-                dwld_ddr = varargin{i+1};
+            case {'DOWNLOAD_CS','DOWNLOAD_DDR'}
+                dwld_cs = varargin{i+1};
             case {'DOWNLOAD_EPF'}
                 dwld_epf = varargin{i+1};
-            case {'EXT_DDR'}
-                ext_ddr = varargin{i+1};
+            case {'EXT_CS','EXT_DDR'}
+                ext_cs = varargin{i+1};
             case {'EXT_EPF'}
                 ext_epf = varargin{i+1};
             case 'OVERWRITE'
@@ -68,8 +66,8 @@ if isempty(obs_counter_ptrn_struct)
     obs_counter_ptrn_struct = crism_get_obs_counter_ptrn_struct(obs_class_type);
 end
 
-dwld_list = min(max([dwld_ddr,dwld_epf]),1);
-[search_result] = crism_search_products(obs_id, product_type, ...
+dwld_list = min(max([dwld_cs,dwld_epf]),1);
+[search_result] = crism_search_products_OBS(obs_id, product_type, ...
     'OBS_CLASS_TYPE', obs_class_type, 'OBS_COUNTER', obs_counter, ...
     'ACTIVITY_ID', activity_id,'ACTIVITY_MACRO_NUM',activity_macro_num, ...
     'OBS_COUNTER',obs_counter,'SENSOR_ID',sensor_id,'VERSION',vr, ...
@@ -98,7 +96,7 @@ if ~isempty(search_result.basenames)
 
     
     % Download
-    if dwld_ddr>1
+    if dwld_cs>1
         cs_sgmnt_info = search_result.sgmnt_info(cs_indx);
         basenameDDRptrncell = [];
         for i_sg=1:length(cs_sgmnt_info)
@@ -114,9 +112,9 @@ if ~isempty(search_result.basenames)
         end
         basenameDDRptrn = ['(', strjoin(basenameDDRptrncell, '|'), ')'];
         [basenameOBS,fnameOBS_wext_local,files_remote] = crism_readDownloadBasename( ...
-            basenameDDRptrn,search_result.dir_info.subdir_local,dwld_ddr, ...
+            basenameDDRptrn,search_result.dir_info.subdir_local,dwld_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
-            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_ddr);
+            'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_cs);
         search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
     end
     

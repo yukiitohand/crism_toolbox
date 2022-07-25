@@ -1,166 +1,169 @@
 function [ obs_info ] = crism_get_obs_info_v2(obs_id,varargin)
-% [ obs_info ] = get_crism_obs_info(obs_id,varargin)
+% [ obs_info ] = get_crism_obs_info_v2(obs_id,varargin)
 %   get an information struct of the give observation id
-%  Inputs:
+%  INPUTS
 %   obs_id: (up to 8 character string) "000094F6" or "94F6"
 %
-%   Outputs
+%   OUTPUTS
 %       obs_info: struct
-%             fields
-%                 obs_info.obs_id           = obs_id;
-%                 obs_info.obs_classType    = obs_classType;
-%                 obs_info.dirname          = dirname;
-%                 obs_info.yyyy_doy         = yyyy_doy;
-%                 obs_info.sensor_id        = sensor_id;
-%                 obs_info.dir_trdr         = dir_trdr;
-%                 obs_info.dir_edr          = dir_edr;
-%                 obs_info.dir_ddr          = dir_ddr;
-%                 obs_info.dir_ter          = dir_ter;
-%                 obs_info.dir_mtrdr        = dir_mtrdr;
-%                 % trdr
-%                 obs_info.basenameRA       = basenameRA;
-%                 obs_info.basenameRAHKP    = basenameRAHKP;
-%                 obs_info.basenameIF       = basenameIF;
-%                 obs_info.basenameEPFIF    = basenameEPFIF;
-%                 obs_info.basenameEPFRA    = basenameEPFRA;
-%                 obs_info.basenameEPFRAHKP = basenameEPFRAHKP;
-%                 % edr
-%                 obs_info.basenameSC       = basenameSC;
-%                 obs_info.basenameSCHKP    = basenameSCHKP;
-%                 obs_info.basenameBI       = basenameBI;
-%                 obs_info.basenameBIHKP    = basenameBIHKP;
-%                 obs_info.basenameSP       = basenameSP;
-%                 obs_info.basenameSPHKP    = basenameSPHKP;
-%                 obs_info.basenameDF       = basenameDF;
-%                 obs_info.basenameDFHKP    = basenameDFHKP;
-%                 obs_info.basenameEPFSC    = basenameEPFSC;
-%                 obs_info.basenameEPFSCHKP = basenameEPFSCHKP;
-%                 obs_info.basenameEPFDF    = basenameEPFDF;
-%                 obs_info.basenameEPFDFHKP = basenameEPFDFHKP;
-%                 obs_info.basenameUN       = basenameUN;
-%                 %ddr
-%                 obs_info.basenameDDR      = basenameDDR;
-%                 obs_info.basenameEPFDDR   = basenameEPFDDR;
-%                 %ter
-%                 obs_info.basenameTERIF    = basenameTERIF;
-%                 obs_info.basenameTERIN    = basenameTERIN;
-%                 obs_info.basenameTERSR    = basenameTERSR;
-%                 obs_info.basenameTERSU    = basenameTERSU;
-%                 obs_info.basenameTERWV    = basenameTERWV;
-%                 %mtrdr
-%                 obs_info.basenameMTRIF    = basenameMTRIF;
-%                 obs_info.basenameMTRIN    = basenameTERIN;
-%                 obs_info.basenameMTRSR    = basenameTERSR;
-%                 obs_info.basenameMTRSU    = basenameTERSU;
-%                 obs_info.basenameMTRWV    = basenameMTRWV;
-%                 obs_info.basenameMTRDE    = basenameMTRDE;
-%                 
-%   Optional Parameters
-%      'yyyy_doy'       : 'yyyy_doy' (yyyy): the year 
-%                         (ddd): the date counted from Jan. 1st of the year
-%                         e.x.) '2008_009'
-%                       * always specify this parameter 
-%                         (searching has not been implemented yet)
+%        o - obs_id
+%        o - obs_class_type
+%        o - dirname
+%        o - yyyy_doy
+%        o - dir_info: Each field points to dir_info struct array for each
+%        |    |        product types
+%        |    o - edr
+%        |    o - trr
+%        |    o - ddr
+%        |    o - ter
+%        |    o - mtr
+%        |
+%        o - basenames: Each field points to cell array that contains all
+%        |    |         the matched unique basenames without extensions
+%        |    o - edr
+%        |    o - trr
+%        |    o - ddr
+%        |    o - ter
+%        |    o - mtr
+%        o - central_scan_info: struct about the info on central scan
+%        |     o - indx: index of the central scan in sgmnt_info
+%        |     o - sgid: segment id of the central scan
+%        |     o - df_indx: index of the dark franme measurements associated to central scan in sgmnt_info
+%        |     o - df_sgid: segment id of the dark franme measurements associated to central scan
+%        |
+%        o - epf_info: struct about the info on epf
+%        |     o - indx: index of EPF in sgmnt_info
+%        |     o - sgid: segment id of the EPF
+%        |     o - df_indx: index of the dark franme measurements associated to EPF in sgmnt_info
+%        |     o - df_sgid: segment id of the dark franme measurements associated to EPF
+%        |
+%        o - sgmnt_info (struct array sorted by observation counters/segment ids)
+%               Each Element has following fields:
+%                   obs_counter        : char, hex format of the counter
+%                   sensor_id          : cell, including all the sensor ids associated with this segment.
+%                   activity_id        : cell, including all the activity ids associated with this segment.
+%                   is_central_scan    : Boolean
+%                   is_central_scan_df : Boolean
+%                   is_epf             : Boolean
+%                   is_epfdf           : Boolean
+%                   L,S,J: struct
+%                     edr, trr, ddr, ter, mtr
+%                       o - activity_id: cell, including all the activity ids associated with the product type(s) of this segment.
+%                       o - (self.activity_id{i}): cell of the associated product basenames for i=1:length(self.activity_id)
+%                       o - HKP: cell of the associated HKP product basenames if applicable
+%   
+% OPTIONAL PARAMETERS
+%       'yyyy_doy'
+%           (yyyy): the year (ddd): the date counted from Jan. 1st of the year
+%           e.x.) '2008_009'
+%           (defualt) Obtained by crism_searchOBSID2YYYY_DOY_v2
 %
-%      'OBS_CLASSTYPE' : (3 charater string) 'FRT', 'HRS',..., etc
+%       'OBS_CLASSTYPE' : (3 charater string) 'FRT', 'HRS',..., etc
+%           (defualt) Obtained by crism_searchOBSID2YYYY_DOY_v2
 %
-%      'SENSOR_ID : "L" or "S"
+%       'SENSOR_ID:
+%           (defualt) '(S|L|J)'
 %
-%      'VERBOSE'        : boolean, whether or not to display detail
-%                         (default) true
-%      'DWLD_INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
-%        (default) false
-%      'DOWNLOAD_TER': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_MTRDR': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_TRRIF': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_TRRRA': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_EDRSCDF': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_DDR': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'DOWNLOAD_EPF': integer, {0,1,2}
-%                  0: do not use any internet connection, offline mode
-%                  1: online mode, connect to the internet
-%                  2: 
-%                  (default) 0
-%      'VERBOSE' : print some property values such as obs_id. {0,1}
-%                  (default) 1
-%      'FORCE_DWLD': {0,1}, whether or not to forcefully download the
-%                    files specified.
-%      'DWLD_OVERWRITE': {0,1}, whether or not to overwrite the images
-%      'OUT_FILE'  : file path to the output file of the list of relative
-%                    path to be downloaded
-%                    (default) ''
-%      'OBS_COUNTER_SCENE' : regular expression, observation counter for 
-%                            the scene image, different for different
-%                            observation mode
-%                            (default) '07' for FRT and HRL
-%                                      '01' for FRS
-%                                      '0[13]{1}' for FFC
-%      'OBS_COUNTER_DF'    : regular expression, observation counter for 
-%                            the dark reference, different for different
-%                            observation mode
-%                            (default) '0[68]{1}' for FRT and HRL
-%                                      '0[02]{1}' for FRS
-%                                      '0[02]{1}' for FFC
+%       'VERBOSE': boolean, whether or not to display detail
+%           (default) true
+%
+%       'DWLD_INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
+%           (default) false
+%
+%       'DOWNLOAD_*': integer, {0,1,2}
+%           0: do not use any internet connection, offline mode
+%           1: online mode, just scan the remote repository
+%           2: online mode, scan the remote repository and download data
+%           (default) 0
+%           List of '*'
+%               TRRIF_CS    : TRR, IF, Central Scan
+%               TRRRA_CS    : TRR, RA, Central Scan
+%               TRRHKP_CS   : TRR, HKP, Central Scan
+%               DDR_CS      : DDR, Central Scan
+%               EDR_CS_CSDF : EDR, SC, Central Scan and EDR, DF for Central Scan
+%               EPF         : TRR, {IF,RA,HKP} of EPF, DDR of EPF, EDR of EPF (including SC and DF)
+%               TER         : TER products
+%               MTR         : MTR/MTRDR products
+%               EDR_UN      : EDR, UN (Undefined)
+%               EDR_DF      : EDR, DF (Dark Frames)
+%               EDR_BI      : EDR, BI (Bias)
+%               EDR_SP      : EDR, SP (Sphere)
+%
+%      'EXT_*': integer, {0,1,2}
+%           Extension of the file you want to collect
+%           (default) ''
+%           List of '*'
+%               TRRIF_CS    : TRR, IF, Central Scan
+%               TRRRA_CS    : TRR, RA, Central Scan
+%               TRRHKP_CS   : TRR, HKP, Central Scan
+%               DDR_CS      : DDR, Central Scan
+%               EDR_CS_CSDF : EDR, SC, Central Scan and EDR, DF for Central Scan
+%               EPF         : TRR, {IF,RA,HKP} of EPF, DDR of EPF, EDR of EPF (including SC and DF)
+%               TER         : TER products
+%               MTR         : MTR/MTRDR products
+%               EDR_UN      : EDR, UN (Undefined)
+%               EDR_DF      : EDR, DF (Dark Frames)
+%               EDR_BI      : EDR, BI (Bias)
+%               EDR_SP      : EDR, SP (Sphere)
+%
+%       'VERBOSE' : print some property values such as obs_id. {0,1}
+%           (default) 1
+%
+%       'DWLD_OVERWRITE': {0,1}, whether or not to overwrite the images
+%           (default) 0
+%
+%       {'OBS_COUNTER_CS','OBS_COUNTER_SCENE'}
+%           regular expression, observation counter for the scene image, 
+%           different for different observation mode
+%           (default) '07' for FRT and HRL
+%                     '01' for FRS
+%                     '0[13]{1}' for FFC
+%       {'OBS_COUNTER_CSDF'',OBS_COUNTER_DF'}
+%           regular expression, observation counter for the dark reference, 
+%           different for different observation mode
+%           (default) '0[68]{1}' for FRT and HRL
+%                     '0[02]{1}' for FRS
+%                     '0[02]{1}' for FFC
 %                            
 %
 %
 
 yyyy_doy = '';
 obs_class_type = '';
-sensor_id = '(S|L)';
+sensor_id = '(S|L|J)';
 
 dwld_index_cache_update = false;
 
-dwld_ter      = 0;
-dwld_mtrdr    = 0;
-dwld_trrif    = 0;
-dwld_trrra    = 0;
-dwld_trrrahkp = 0;
-dwld_edrscdf  = 0;
-dwld_ddr      = 0;
-dwld_epf      = 0;
-dwld_un       = 0;
-dwld_df       = 0;
+dwld_ter         = 0;
+dwld_mtr         = 0;
+dwld_trrif_cs    = 0;
+dwld_trrra_cs    = 0;
+dwld_trrrahkp_cs = 0;
+dwld_edr_cs_csdf = 0;
+dwld_ddr_cs      = 0;
+dwld_epf         = 0;
+dwld_edr_un      = 0;
+dwld_edr_df      = 0;
+dwld_edr_bi      = 0;
+dwld_edr_sp      = 0;
 
-ext_ter      = '';
-ext_mtrdr    = '';
-ext_trrif    = '';
-ext_trrra    = '';
-ext_trrrahkp = '';
-ext_edrscdf  = '';
-ext_ddr      = '';
-ext_epf      = '';
-ext_un       = '';
-ext_df       = '';
+ext_ter         = '';
+ext_mtr         = '';
+ext_trrif_cs    = '';
+ext_trrra_cs    = '';
+ext_trrrahkp_cs = '';
+ext_edr_cs_csdf = '';
+ext_ddr_cs      = '';
+ext_epf         = '';
+ext_edr_un      = '';
+ext_edr_df      = '';
+ext_edr_bi      = '';
+ext_edr_sp      = '';
 
 dwld_overwrite = 0;
 verbose=1;
 
-OBS_COUNTER_CS_custom = 0;
+OBS_COUNTER_CS_custom   = 0;
 OBS_COUNTER_CSDF_custom = 0;
 
 if (rem(length(varargin),2)==1)
@@ -177,57 +180,65 @@ else
             % Download options --------------------------------------------
             case 'DWLD_INDEX_CACHE_UPDATE'
                 dwld_index_cache_update = varargin{i+1};
-            case 'DOWNLOAD_TRRIF'
-                dwld_trrif = varargin{i+1};
-            case 'DOWNLOAD_TRRRA'
-                dwld_trrra = varargin{i+1};
-            case 'DOWNLOAD_TRRRAHKP'
-                dwld_trrrahkp = varargin{i+1};
-            case 'DOWNLOAD_EDRSCDF'
-                dwld_edrscdf = varargin{i+1};
+            case {'DOWNLOAD_TRRIF_CS','DOWNLOAD_TRRIF'}
+                dwld_trrif_cs = varargin{i+1};
+            case {'DOWNLOAD_TRRRA_CS','DOWNLOAD_TRRRA'}
+                dwld_trrra_cs = varargin{i+1};
+            case {'DOWNLOAD_TRRHKP_CS','DOWNLOAD_TRRRAHKP'}
+                dwld_trrrahkp_cs = varargin{i+1};
+            case {'DOWNLOAD_EDR_CS_CSDF','DOWNLOAD_EDRSCDF'}
+                dwld_edr_cs_csdf = varargin{i+1};
             case 'DOWNLOAD_TER'
                 dwld_ter = varargin{i+1};
-            case 'DOWNLOAD_MTRDR'
-                dwld_mtrdr = varargin{i+1};
+            case {'DOWNLOAD_MTR','DOWNLOAD_MTRDR'}
+                dwld_mtr = varargin{i+1};
             case 'DOWNLOAD_EPF'
                 dwld_epf = varargin{i+1};
-            case 'DOWNLOAD_DDR'
-                dwld_ddr = varargin{i+1};
-            case 'DOWNLOAD_UN'
-                dwld_un = varargin{i+1};
-            case 'DOWNLOAD_DF'
-                dwld_df = varargin{i+1};
+            case {'DOWNLOAD_DDR_CS','DOWNLOAD_DDR'}
+                dwld_ddr_cs = varargin{i+1};
+            case {'DOWNLOAD_EDR_UN','DOWNLOAD_UN'}
+                dwld_edr_un = varargin{i+1};
+            case {'DOWNLOAD_EDR_DF','DOWNLOAD_DF'}
+                dwld_edr_df = varargin{i+1};
+            case {'DOWNLOAD_EDR_SP'}
+                dwld_edr_sp = varargin{i+1};
+            case {'DOWNLOAD_EDR_BI'}
+                dwld_edr_bi = varargin{i+1};
                 
             % Extentions --------------------------------------------------
-            case 'EXT_TRRIF'
-                ext_trrif = varargin{i+1};
-            case 'EXT_TRRRA'
-                ext_trrra = varargin{i+1};
-            case 'EXT_TRRRAHKP'
-                ext_trrrahkp = varargin{i+1};
-            case 'EXT_EDRSCDF'
-                ext_edrscdf = varargin{i+1};
+            case {'EXT_TRRIF_CS','EXT_TRRIF'}
+                ext_trrif_cs = varargin{i+1};
+            case {'EXT_TRRRA_CS','EXT_TRRRA'}
+                ext_trrra_cs = varargin{i+1};
+            case {'EXT_TRRRAHKP_CS','EXT_TRRRAHKP'}
+                ext_trrrahkp_cs = varargin{i+1};
+            case {'EXT_EDR_CS_CSDF','EXT_EDRSCDF'}
+                ext_edr_cs_csdf = varargin{i+1};
             case 'EXT_TER'
                 ext_ter = varargin{i+1};
-            case 'EXT_MTRDR'
-                ext_mtrdr = varargin{i+1};
+            case {'EXT_MTR','EXT_MTRDR'}
+                ext_mtr = varargin{i+1};
             case 'EXT_EPF'
                 ext_epf = varargin{i+1};
-            case 'EXT_DDR'
-                ext_ddr = varargin{i+1};
-            case 'EXT_UN'
-                ext_un = varargin{i+1};
-            case 'EXT_DF'
-                ext_df = varargin{i+1};
+            case {'EXT_DDR_CS','EXT_DDR'}
+                ext_ddr_cs = varargin{i+1};
+            case {'EXT_EDR_UN','EXT_UN'}
+                ext_edr_un = varargin{i+1};
+            case {'EXT_EDR_DF','EXT_DF'}
+                ext_edr_df = varargin{i+1};
+            case {'EXT_EDR_SP'}
+                ext_edr_sp = varargin{i+1};
+            case {'EXT_EDR_BI'}
+                ext_edr_bi = varargin{i+1};
 
             case 'VERBOSE'
                 verbose = varargin{i+1};
             case 'DWLD_OVERWRITE'
                 dwld_overwrite = varargin{i+1};
-            case {'OBS_COUNTER_SCENE','OBS_COUNTER_CS'}
+            case {'OBS_COUNTER_CS','OBS_COUNTER_SCENE'}
                 obs_counter_cs_tmp = varargin{i+1};
                 OBS_COUNTER_CS_custom = 1;
-            case {'OBS_COUNTER_DF','OBS_COUNTER_CSDF'}
+            case {'OBS_COUNTER_CSDF','OBS_COUNTER_DF'}
                 obs_counter_csdf_tmp = varargin{i+1};
                 OBS_COUNTER_CSDF_custom = 1;
             otherwise
@@ -271,9 +282,9 @@ end
 % # TRR
 [search_result_TRR] = crism_search_products_TRR(obs_id, ...
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID',sensor_id, ...
-    'Download_IF',dwld_trrif,'EXT_IF',ext_trrif,...
-    'Download_RA',dwld_trrra,'EXT_RA',ext_trrra,...
-    'Download_HKP',dwld_trrrahkp,'EXT_HKP',ext_trrrahkp,...
+    'Download_IF_CS',dwld_trrif_cs,'EXT_IF_CS',ext_trrif_cs,...
+    'Download_RA_CS',dwld_trrra_cs,'EXT_RA_CS',ext_trrra_cs,...
+    'Download_HKP_CS',dwld_trrrahkp_cs,'EXT_HKP_CS',ext_trrrahkp_cs,...
     'Download_EPF',dwld_epf,'EXT_EPF',ext_epf,...
     'overwrite',dwld_overwrite, ...
     'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
@@ -282,10 +293,12 @@ end
 % # EDR
 [search_result_EDR] = crism_search_products_EDR(obs_id, ...
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID',sensor_id, ...
-    'Download_edrscdf',dwld_edrscdf,'EXT_edrscdf',ext_edrscdf,...
+    'Download_CS_CSDF',dwld_edr_cs_csdf,'EXT_CS_CSDF',ext_edr_cs_csdf,...
     'Download_EPF',dwld_epf,'EXT_EPF',ext_epf,...
-    'Download_UN',dwld_un,'EXT_EPF',ext_un,...
-    'Download_UN',dwld_df,'EXT_EPF',ext_df,...
+    'Download_UN',dwld_edr_un,'EXT_UN',ext_edr_un,...
+    'Download_DF',dwld_edr_df,'EXT_DF',ext_edr_df,...
+    'Download_BI',dwld_edr_bi,'EXT_BI',ext_edr_bi,...
+    'Download_SP',dwld_edr_sp,'EXT_SP',ext_edr_sp,...
     'overwrite',dwld_overwrite, ...
     'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
     'OBS_COUNTER_PTRN_STRUCT',obs_counter_ptrn_struct);
@@ -293,7 +306,7 @@ end
 % # DDR
 [search_result_DDR] = crism_search_products_DDR(obs_id, ...
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID',sensor_id, ...
-    'Download_ddr',dwld_ddr,'EXT_ddr',ext_ddr,...
+    'Download_CS',dwld_ddr_cs,'EXT_CS',ext_ddr_cs,...
     'Download_EPF',dwld_epf,'EXT_EPF',ext_epf,...
     'overwrite',dwld_overwrite, ...
     'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
@@ -304,7 +317,7 @@ end
 [search_result_MTR] = crism_search_products_MTRTER(obs_id, ...
     'PRODUCT_TYPE', 'MTR', ...
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID','(S|L|J)', ...
-    'Download',dwld_mtrdr,'EXT',ext_mtrdr,...
+    'Download',dwld_mtr,'EXT',ext_mtr,...
     'overwrite',dwld_overwrite, ...
     'INDEX_CACHE_UPDATE',dwld_index_cache_update);
 
@@ -345,6 +358,12 @@ if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'})
     [sgmnt_info.is_central_scan_df] = is_csdf_cell{:};
     csdf_indx = find(is_csdf);
     csdf_sgid = obscntrscell(csdf_indx);
+
+    cs_info = [];
+    cs_info.indx = cs_indx;
+    cs_info.sgid = cs_sgid;
+    cs_info.df_indx = csdf_indx;
+    cs_info.df_sgid = csdf_sgid;
 end
 
 % ----------------------------------------------------------------------- %
@@ -364,12 +383,18 @@ if any(strcmpi(obs_class_type,{'FRT','HRL','HRS'}))
     [sgmnt_info.is_epfdf] = is_epfdf_cell{:};
     epfdf_indx = find(is_epfdf);
     epfdf_sgid = obscntrscell(epfdf_indx);
+
+    epf_info = [];
+    epf_info.indx = epf_indx;
+    epf_info.sgid = epf_sgid;
+    epf_info.df_indx = epfdf_indx;
+    epf_info.df_sgid = epfdf_sgid;
 end
 
 %% SUMMARY
 obs_info = [];
 obs_info.obs_id = obs_id;
-obs_info.obs_classType = obs_class_type;
+obs_info.obs_class_type = obs_class_type;
 obs_info.dirname = dirname;
 obs_info.yyyy_doy = yyyy_doy;
 
@@ -390,17 +415,11 @@ obs_info.basenames.mtr = search_result_MTR.basenames;
 obs_info.sgmnt_info = sgmnt_info;
 
 if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'}))
-    obs_info.central_scan_indx = cs_indx;
-    obs_info.central_scan_sgid = cs_sgid;
-    obs_info.central_scan_df_indx = csdf_indx;
-    obs_info.central_scan_df_sgid = csdf_sgid;
+    obs_info.central_scan_info = cs_info;
 end
 
 if any(strcmpi(obs_class_type,{'FRT','HRL','HRS'}))
-    obs_info.epf_indx = epf_indx;
-    obs_info.epf_sgid = epf_sgid;
-    obs_info.epfdf_indx = epfdf_indx;
-    obs_info.epfdf_sgid = epfdf_sgid;
+    obs_info.epf_info = epf_info;
 end
 end
 
@@ -454,8 +473,3 @@ if ~isempty(search_result.basenames)
     end
 end
 end
-
-
-
-
-
