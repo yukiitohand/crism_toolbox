@@ -19,9 +19,6 @@ function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_get_dirpath_adrv
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
 %                         nothing happens
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file. if empty, nothing
-%                         happens.
-%                         (default) ''
 
 propADRVS = crism_getProp_basenameADRVS(basenameADRVS);
 [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fromProp(propADRVS,varargin{:});

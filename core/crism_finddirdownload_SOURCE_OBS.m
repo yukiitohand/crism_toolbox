@@ -12,8 +12,6 @@ function [dir_SOURCE_OBS,files_local] = crism_finddirdownload_SOURCE_OBS(basenam
 %    files_local:  same structure as basenamesOBS. all filenames with
 %             extensions present locally are listed.
 %   OPTIONAL PARAMETERS (passed onto crism_get_dirpath_observation)
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
 %                         it is empty, then files with any extension will
 %                         be downloaded.
@@ -29,11 +27,6 @@ function [dir_SOURCE_OBS,files_local] = crism_finddirdownload_SOURCE_OBS(basenam
 %                         (default) 0
 %      'HTMLFILE'       : path to the html file to be read
 %                         (default) ''
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'VERBOSE'        : boolean, whether or not to show the downloading
-%                         operations.
-%                         (default) true
 
 dir_SOURCE_OBS = [];
 files_local = [];

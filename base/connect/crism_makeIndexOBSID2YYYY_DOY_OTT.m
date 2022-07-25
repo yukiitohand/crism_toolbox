@@ -16,9 +16,7 @@ function [] = crism_makeIndexOBSID2YYYY_DOY_OTT(varargin)
 global crism_env_vars
 no_remote = crism_env_vars.no_remote;
 
-dwld = 0;
 overwrite = 0;
-outfile = '';
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -26,19 +24,10 @@ else
         switch upper(varargin{i})
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
-            case {'DWLD','DOWNLOAD'}
-                dwld = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
     end
-end
-
-[subdir_local]  = crism_get_subdir_OBS_local('','EXTRAS/OTT/','edr_misc');
-if ~no_remote
-    [subdir_remote] = crism_get_subdir_OBS_remote('','extras/ott/','edr_misc');
 end
 
 function_path = mfilename('fullpath');

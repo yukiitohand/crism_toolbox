@@ -18,15 +18,11 @@ function [dir_info,basenameADRVS,fnameADRVS_wext_local] = crism_search_adrvs_fro
 %      'DWLD','DOWNLOAD' : {0,-1}, -1: list all matched filenames. 0:
 %                         nothing happens
 %                         (default) 0
-%      'OUT_FILE'       : path to the output file. if empty, nothing
-%                         happens.
-%                         (default) ''
 
 global crism_env_vars
 localCATrootDir = crism_env_vars.localCATrootDir;
 
 dwld = 0;
-outfile = '';
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -35,8 +31,6 @@ else
         switch upper(varargin{i})
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s', varargin{i});
         end
@@ -57,20 +51,11 @@ fnamelist = dir(dirfullpath_local);
 [basenameADRVS,fnameADRVS_wext_local] = extractMatchedBasename_v2(basenameADRVSPtrn,[{fnamelist.name}]);
 if ischar(basenameADRVS), basenameADRVS = {basenameADRVS}; end
 if dwld == -1
-    if ~isempty(outfile)
-        fp = fopen(outfile,'a');
-    end
     if ~isempty(basesnameCDR)
         for j=1:length(basenameADRVS)
             subpath = fullfile(subdir_local,basenameADRVS{j});
-            if ~isempty(outfile)
-                fprintf(fp,'%s\n',subpath);
-            end
             fprintf('%s\n',subpath);
         end
-    end
-    if ~isempty(outfile)
-        fclose(fp);
     end
 elseif dwld==1
     error('dwld==1 is not supported for folder_type=3');

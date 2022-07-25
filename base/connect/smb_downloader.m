@@ -33,15 +33,13 @@ function [dirs,files] = smb_downloader(subdir_local, ...
 %                         (default) 0
 %      'HTMLFILE'       : path to the html file to be read
 %                         (default) ''
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
 %      'VERBOSE'        : boolean, whether or not to show the downloading
 %                         operations.
 %                         (default) true
-%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or
-%      not
+%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or not
 %        (default) true
-%      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
+%      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index
+%                             matfile
 %        (default) false
 %   Outputs
 %      dirs: cell array, list of dirs in the directory
@@ -60,7 +58,6 @@ subdir_remote = '';
 overwrite     = 0;
 dirskip       = 1;
 dwld          = 0;
-outfile       = '';
 cap_filename  = true;
 index_cache_update = false;
 verbose = true;
@@ -82,8 +79,6 @@ else
                 overwrite = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             case 'VERBOSE'
                 verbose = varargin{i+1};
             case 'CAPITALIZE_FILENAME'
@@ -221,10 +216,6 @@ else
     end
 end
 
-% 
-if ~isempty(outfile)
-    fp = fopen(outfile,'a');
-end
 if ~errflg
     
     fnamelist_local = dir(localTargetDir);
@@ -316,13 +307,6 @@ if ~errflg
                                 fprintf('%s\n',remoteFile);
                             else
                                 fprintf('%s,%s\n',remoteFile,localTarget);
-                            end
-                            if ~isempty(outfile)
-                                if no_local_directory
-                                    fprintf(fp,'%s\n',remoteFile);
-                                else
-                                    fprintf(fp,'%s,%s\n',remoteFile,localTarget);
-                                end
                             end
                         end
                     case 0

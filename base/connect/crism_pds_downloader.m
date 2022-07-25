@@ -25,14 +25,6 @@ function [dirs,files] = crism_pds_downloader(subdir_local,varargin)
 %                         (default) 0
 %      'HTMLFILE'       : path to the html file to be read
 %                         (default) ''
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'VERBOSE'        : boolean, whether or not to show the downloading
-%                         operations.
-%                         (default) true
-%      'CAPITALIZE_FILENAME' : whether or not capitalize the filenames or
-%      not
-%        (default) true
 %      'INDEX_CACHE_UPDATE' : boolean, whether or not to update index.html 
 %        (default) false
 %   Outputs
@@ -57,10 +49,8 @@ overwrite     = 0;
 dirskip       = 1;
 dwld          = 0;
 html_file     = '';
-outfile       = '';
-cap_filename  = true;
 index_cache_update = false;
-verbose = true;
+
 
 
 if (rem(length(varargin),2)==1)
@@ -84,12 +74,8 @@ else
                 html_file = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
             case 'INDEX_CACHE_UPDATE'
                 index_cache_update = varargin{i+1};
-            case 'VERBOSE'
-                verbose = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s',varargin{i});
         end
@@ -142,7 +128,7 @@ switch protocol
             'BASENAMEPTRN',basenamePtrn,'SUBDIR_REMOTE',subdir_remote, ...
             'CAPITALIZE_FILENAME', true,'VERBOSE',true,'EXT',ext,'DIRSKIP',dirskip, ...
             'protocol',protocol,'overwrite',overwrite,'dwld',dwld, ...
-            'OUT_FILE',outfile, 'HTML_FILE', html_file, ...
+            'HTML_FILE', html_file, ...
             'INDEX_CACHE_UPDATE',index_cache_update);
 
     case {'smb'}
@@ -151,7 +137,7 @@ switch protocol
             localrootDir, remoterootDir, url_local_root, url_remote_root, ...
             'BASENAMEPTRN',basenamePtrn, 'SUBDIR_REMOTE', subdir_remote, ...
             'CAPITALIZE_FILENAME', true,'VERBOSE',true,'EXT',ext,'DIRSKIP',dirskip, ...
-            'overwrite',overwrite,'dwld',dwld,'OUT_FILE',outfile, ...
+            'overwrite',overwrite,'dwld',dwld, ...
             'INDEX_CACHE_UPDATE',index_cache_update);
     otherwise
         error('Undefined protocol %s.',protocol);

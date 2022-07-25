@@ -15,8 +15,6 @@ function [dir_info,basenameOBS,fnameOBS_wext_local] = crism_get_dirpath_observat
 %   fnameOBS_wext_local : cell array of the filenames (with extensions) existing 
 %                      locally.
 %  Optional Parameters (passed onto crism_search_observation_fromProp)
-%      'Force'          : binary, whether or not to force performing
-%                         pds_downloader. (default) false
 %      'EXTENSION','EXT': Files with the extention will be downloaded. If
 %                         it is empty, then files with any extension will
 %                         be downloaded.
@@ -32,11 +30,6 @@ function [dir_info,basenameOBS,fnameOBS_wext_local] = crism_get_dirpath_observat
 %                         (default) 0
 %      'HTMLFILE'       : path to the html file to be read
 %                         (default) ''
-%      'OUT_FILE'       : path to the output file
-%                         (default) ''
-%      'VERBOSE'        : boolean, whether or not to show the downloading
-%                         operations.
-%                         (default) true
 
 propOBS = crism_getProp_basenameOBSERVATION(basenameOBS);
 [dir_info,basenameOBS,fnameOBS_wext_local] = crism_search_observation_fromProp(propOBS,varargin{:});
