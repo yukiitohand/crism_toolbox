@@ -79,17 +79,17 @@ else
 end
 if no_remote
     [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
-        fmtfname, subdir_local, dwld,'Force',force,'Out_File',outfile);
+        fmtfname, subdir_local, dwld);
 else
     [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
         fmtfname, subdir_local,...
-        dwld,'Subdir_remote',subdir_remote,'Force',force,'Out_File',outfile);
+        dwld,'Subdir_remote',subdir_remote);
     if isempty(fname_wext_local)
         yesno = doyouwantto('download it',sprintf('%s does not exist.',fmtfname));
         if yesno
             [basename,fname_wext_local,files_dwlded] = crism_readDownloadBasename( ...
                 fmtfname, subdir_local,...
-                'Subdir_remote',subdir_remote,2,'Force',force,'Out_File',outfile);
+                'Subdir_remote',subdir_remote,2);
         end
     end
 end
