@@ -15,7 +15,7 @@ propSWBWgen = crism_create_propCDR6basename('acro',acro);
 [dir_info,basenameSWBW,fnameSWBW_wext_local] = crism_search_cdr_fromProp(propSWBWgen,varargin{:});
 if isempty(fnameSWBW_wext_local)
     [dir_info,basenameSWBW,fnameSWBW_wext_local] = crism_search_cdr_fromProp( ...
-            propSWBWgen,'dwld',2,'Force',1);
+            propSWBWgen,'dwld',2);
 end
 
 if isempty(WAdata.img), WAdata.readimgi(); end

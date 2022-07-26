@@ -68,7 +68,7 @@ switch folder_type
             if no_remote
                 if dwld>0, dwld = 0; end
                 [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
-                    subdir_local,dwld,'Force',force,'Out_File',outfile);
+                    subdir_local,dwld);
             else
                 subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,yyyy_doy_shifted);
                 subdir_remote = crism_swap_to_remote_path(subdir_remote);
@@ -98,7 +98,7 @@ switch folder_type
         if no_remote
             if dwld>0, dwld = 0; end
             [basenameCDRList] = crism_readDownloadBasename(basenameCDRPtrn,...
-                    subdir_local,dwld,'Force',force,'Out_File',outfile);
+                    subdir_local,dwld);
         else
             subdir_remote = crism_get_subdir_CDR_remote(acro,folder_type,'');
             subdir_remote = crism_swap_to_remote_path(subdir_remote);
