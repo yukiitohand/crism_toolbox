@@ -578,7 +578,7 @@ if ~isempty(search_result.basenames)
         i_sgid = find(strcmpi(obscntr,obscntrs_sgmnt_info));
         if ~isempty(i_sgid)
             sensids_mtch = search_result.sgmnt_info(i_mtch).sensor_id;
-            sgmnt_info(i_sgid).sensor_id = union(sgmnt_info(i_sgid).sensor_id,sensids_mtch);
+            sgmnt_info(i_sgid).sensor_id = reshape(union(sgmnt_info(i_sgid).sensor_id,sensids_mtch),1,[]);
             for i_sens=1:length(sensids_mtch)
                 sensid_i = sensids_mtch{i_sens};
                 if ~isfield(sgmnt_info(i_sgid),sensid_i)
