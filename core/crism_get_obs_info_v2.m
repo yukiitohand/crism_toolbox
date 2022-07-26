@@ -557,6 +557,7 @@ function [sgmnt_info] = crism_initialize_sgmnt_info(obscntrs_cell)
             sgmnt_info(i_sgid).obs_counter = obscntrs_cell{i_sgid};
             sgmnt_info(i_sgid).sensor_id   = {};
             sgmnt_info(i_sgid).activity_id = {};
+            sgmnt_info(i_sgid).activity_macro_num = [];
         end
     end
 end
@@ -571,6 +572,9 @@ if ~isempty(search_result.basenames)
         if ~isempty(i_sgid)
             sensids_mtch = search_result.sgmnt_info(i_mtch).sensor_id;
             sgmnt_info(i_sgid).sensor_id = reshape(union(sgmnt_info(i_sgid).sensor_id,sensids_mtch),1,[]);
+            if isempty(sgmnt_info(i_sgid).activity_macro_num)
+                sgmnt_info(i_sgid).activity_macro_num = search_result.sgmnt_info(i_mtch).activity_macro_num;
+            end
             for i_sens=1:length(sensids_mtch)
                 sensid_i = sensids_mtch{i_sens};
                 if ~isfield(sgmnt_info(i_sgid),sensid_i)

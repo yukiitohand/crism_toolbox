@@ -101,6 +101,8 @@ if ~isempty(basenames)
                     idxBool_k  = (kc_pdtype==k);
                     props_ijk  = props_ij(idxBool_k);
                     actids_ijk = {props_ijk.activity_id};
+                    actmns_ijk = [props_ijk.activity_macro_num];
+                    sgmnt_info(i_sgid).activity_macro_num = unique(actmns_ijk);
                     [actids_k_unq,~,lc_actids_k] = unique(actids_ijk);
                     basenames_ijk = basenames_ij(idxBool_k);
                     for l=1:length(actids_k_unq)
