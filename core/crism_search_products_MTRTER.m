@@ -67,7 +67,7 @@ if ~isempty(search_result.basenames)
             basenamePtrn,search_result.dir_info.subdir_local,dwld, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
 end
 

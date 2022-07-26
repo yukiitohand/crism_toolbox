@@ -38,6 +38,7 @@ mtch_exact = false;
 overwrite  = false;
 index_cache_update = false;
 celloutput = false;
+verbose = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -56,6 +57,8 @@ else
                 index_cache_update = varargin{i+1};
             case 'CELLOUTPUT'
                 celloutput = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
         end
     end
 end
@@ -94,14 +97,14 @@ if no_remote
     [basenameOBS,fnameOBS_wext_local,files_dwlded]  = crism_readDownloadBasename( ...
         basenamePtrn,subdir_local,dwld,'Match_Exact',mtch_exact, ...
         'overwrite',overwrite,'EXTENSION',ext, ...
-        'INDEX_CACHE_UPDATE',index_cache_update,'CELLOUTPUT',celloutput);
+        'INDEX_CACHE_UPDATE',index_cache_update,'CELLOUTPUT',celloutput,'VERBOSE',verbose);
 else
     subdir_remote = crism_get_subdir_OBS_remote(yyyy_doy,dirname,product_type);
     subdir_remote = crism_swap_to_remote_path(subdir_remote);
     [basenameOBS,fnameOBS_wext_local,files_dwlded]  = crism_readDownloadBasename( ...
         basenamePtrn,subdir_local,dwld,'Subdir_remote',subdir_remote, ...
         'Match_Exact',mtch_exact,'overwrite',overwrite,'EXTENSION',ext, ...
-        'INDEX_CACHE_UPDATE',index_cache_update,'CELLOUTPUT',celloutput);
+        'INDEX_CACHE_UPDATE',index_cache_update,'CELLOUTPUT',celloutput,'VERBOSE',verbose);
 end
 
 

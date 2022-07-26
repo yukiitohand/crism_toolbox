@@ -115,7 +115,7 @@ if ~isempty(search_result.basenames)
             basenameDDRptrn,search_result.dir_info.subdir_local,dwld_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_cs);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
     
     if dwld_epf>1
@@ -137,7 +137,7 @@ if ~isempty(search_result.basenames)
             basenameEPFDDRptrn,search_result.dir_info.subdir_local,dwld_epf, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_epf);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
 end
 

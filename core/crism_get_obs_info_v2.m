@@ -25,17 +25,37 @@ function [ obs_info ] = crism_get_obs_info_v2(obs_id,varargin)
 %        |    o - ddr
 %        |    o - ter
 %        |    o - mtr
+%        |
 %        o - central_scan_info: struct about the info on central scan
+%        |     |   (Only for 'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP')
 %        |     o - indx: index of the central scan in sgmnt_info
 %        |     o - sgid: segment id of the central scan
 %        |     o - df_indx: index of the dark franme measurements associated to central scan in sgmnt_info
 %        |     o - df_sgid: segment id of the dark franme measurements associated to central scan
 %        |
 %        o - epf_info: struct about the info on epf
+%        |     |   (Only for 'FRT','HRL','HRS')
 %        |     o - indx: index of EPF in sgmnt_info
 %        |     o - sgid: segment id of the EPF
 %        |     o - df_indx: index of the dark franme measurements associated to EPF in sgmnt_info
 %        |     o - df_sgid: segment id of the dark franme measurements associated to EPF
+%        |
+%        o - un_info: struct about the info on UN data
+%        |     |   (Only for 'FRS')
+%        |     o - indx: index of UN in sgmnt_info
+%        |     o - sgid: segment id of the UN data
+%        |
+%        o - bi_info: struct about the info on BI data
+%        |     |   (Only for 'CAL')
+%        |     o - indx: index of BI data in sgmnt_info
+%        |     o - sgid: segment id of the BI data
+%        |
+%        o - sp_info: struct about the info on SP data
+%        |     |   (Only for 'ICL')
+%        |     o - indx: index of SP in sgmnt_info
+%        |     o - sgid: segment id of the SP
+%        |     o - df_indx: index of the dark franme measurements associated to SP in sgmnt_info
+%        |     o - df_sgid: segment id of the dark franme measurements associated to SP
 %        |
 %        o - sgmnt_info (struct array sorted by observation counters/segment ids)
 %               Each Element has following fields:
@@ -138,7 +158,7 @@ dwld_ter         = 0;
 dwld_mtr         = 0;
 dwld_trrif_cs    = 0;
 dwld_trrra_cs    = 0;
-dwld_trrrahkp_cs = 0;
+dwld_trrhkp_cs   = 0;
 dwld_edr_cs_csdf = 0;
 dwld_ddr_cs      = 0;
 dwld_epf         = 0;
@@ -151,7 +171,7 @@ ext_ter         = '';
 ext_mtr         = '';
 ext_trrif_cs    = '';
 ext_trrra_cs    = '';
-ext_trrrahkp_cs = '';
+ext_trrhkp_cs   = '';
 ext_edr_cs_csdf = '';
 ext_ddr_cs      = '';
 ext_epf         = '';
@@ -185,7 +205,7 @@ else
             case {'DOWNLOAD_TRRRA_CS','DOWNLOAD_TRRRA'}
                 dwld_trrra_cs = varargin{i+1};
             case {'DOWNLOAD_TRRHKP_CS','DOWNLOAD_TRRRAHKP'}
-                dwld_trrrahkp_cs = varargin{i+1};
+                dwld_trrhkp_cs = varargin{i+1};
             case {'DOWNLOAD_EDR_CS_CSDF','DOWNLOAD_EDRSCDF'}
                 dwld_edr_cs_csdf = varargin{i+1};
             case 'DOWNLOAD_TER'
@@ -210,8 +230,8 @@ else
                 ext_trrif_cs = varargin{i+1};
             case {'EXT_TRRRA_CS','EXT_TRRRA'}
                 ext_trrra_cs = varargin{i+1};
-            case {'EXT_TRRRAHKP_CS','EXT_TRRRAHKP'}
-                ext_trrrahkp_cs = varargin{i+1};
+            case {'EXT_TRRHKP_CS','EXT_TRRRAHKP'}
+                ext_trrhkp_cs = varargin{i+1};
             case {'EXT_EDR_CS_CSDF','EXT_EDRSCDF'}
                 ext_edr_cs_csdf = varargin{i+1};
             case 'EXT_TER'
@@ -284,7 +304,7 @@ end
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID',sensor_id, ...
     'Download_IF_CS',dwld_trrif_cs,'EXT_IF_CS',ext_trrif_cs,...
     'Download_RA_CS',dwld_trrra_cs,'EXT_RA_CS',ext_trrra_cs,...
-    'Download_HKP_CS',dwld_trrrahkp_cs,'EXT_HKP_CS',ext_trrrahkp_cs,...
+    'Download_HKP_CS',dwld_trrhkp_cs,'EXT_HKP_CS',ext_trrhkp_cs,...
     'Download_EPF',dwld_epf,'EXT_EPF',ext_epf,...
     'overwrite',dwld_overwrite, ...
     'INDEX_CACHE_UPDATE',dwld_index_cache_update, ...
@@ -331,64 +351,163 @@ end
 
 
 %% Combine segment information
-[sgmnt_info] = crism_initialize_sgmnt_info(search_result_EDR,'edr');
-[sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_TRR,'trr');
-[sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_DDR,'ddr');
-[sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_TER,'ter');
-[sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_MTR,'mtr');
-
-%% obs
-
-obscntrscell = {sgmnt_info.obs_counter};
-
-% ----------------------------------------------------------------------- %
-% Central Scan
-% ----------------------------------------------------------------------- %
-if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'}))
-    cscntr  = obs_counter_ptrn_struct.central_scan; % Central Scan CouNTR
-    is_cs = ~cellfun('isempty',regexpi(obscntrscell,cscntr,'ONCE'));
-    is_cs_cell = num2cell(is_cs);
-    [sgmnt_info.is_central_scan] = is_cs_cell{:};
-    cs_indx = find(is_cs);
-    cs_sgid = obscntrscell(cs_indx);
-
-    csdfcntr  = obs_counter_ptrn_struct.central_scan_df; % Central Scan CouNTR
-    is_csdf = ~cellfun('isempty',regexpi(obscntrscell,csdfcntr,'ONCE'));
-    is_csdf_cell = num2cell(is_csdf);
-    [sgmnt_info.is_central_scan_df] = is_csdf_cell{:};
-    csdf_indx = find(is_csdf);
-    csdf_sgid = obscntrscell(csdf_indx);
-
-    cs_info = [];
-    cs_info.indx = cs_indx;
-    cs_info.sgid = cs_sgid;
-    cs_info.df_indx = csdf_indx;
-    cs_info.df_sgid = csdf_sgid;
+if ~isempty(search_result_EDR.basenames)
+    obscntrs_edr_cell = {search_result_EDR.sgmnt_info.obs_counter};
+else
+    obscntrs_edr_cell = {};
 end
+if ~isempty(search_result_TRR.basenames)
+    obscntrs_trr_cell = {search_result_TRR.sgmnt_info.obs_counter};
+else
+    obscntrs_trr_cell = {};
+end
+if ~isempty(search_result_DDR.basenames)
+    obscntrs_ddr_cell = {search_result_DDR.sgmnt_info.obs_counter};
+else
+    obscntrs_ddr_cell = {};
+end
+if ~isempty(search_result_TER.basenames)
+    obscntrs_ter_cell = {search_result_TER.sgmnt_info.obs_counter};
+else
+    obscntrs_ter_cell = {};
+end
+if ~isempty(search_result_MTR.basenames)
+    obscntrs_mtr_cell = {search_result_MTR.sgmnt_info.obs_counter};
+else
+    obscntrs_mtr_cell = {};
+end
+obscntrs_cell = union(union(union(union(obscntrs_edr_cell,obscntrs_trr_cell),obscntrs_ddr_cell),obscntrs_ter_cell),obscntrs_mtr_cell);
+obscntrs_cell = reshape(obscntrs_cell,1,[]);
+if isempty(obscntrs_cell)
+    sgmnt_info = [];
+else
+    obscntrs_cell = sort(obscntrs_cell);
+    [sgmnt_info] = crism_initialize_sgmnt_info(obscntrs_cell);
+    [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_EDR,'edr');
+    [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_TRR,'trr');
+    [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_DDR,'ddr');
+    [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_TER,'ter');
+    [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result_MTR,'mtr');
 
-% ----------------------------------------------------------------------- %
-% EPF
-% ----------------------------------------------------------------------- %
-if any(strcmpi(obs_class_type,{'FRT','HRL','HRS'}))
-    epfcntr  = obs_counter_ptrn_struct.epf; % Central Scan CouNTR
-    is_epf = ~cellfun('isempty',regexpi(obscntrscell,epfcntr,'ONCE'));
-    is_epf_cell = num2cell(is_epf);
-    [sgmnt_info.is_epf] = is_epf_cell{:};
-    epf_indx = find(is_epf);
-    epf_sgid = obscntrscell(epf_indx);
-
-    epfdfcntr  = obs_counter_ptrn_struct.epfdf; % Central Scan CouNTR
-    is_epfdf = ~cellfun('isempty',regexpi(obscntrscell,epfdfcntr,'ONCE'));
-    is_epfdf_cell = num2cell(is_epfdf);
-    [sgmnt_info.is_epfdf] = is_epfdf_cell{:};
-    epfdf_indx = find(is_epfdf);
-    epfdf_sgid = obscntrscell(epfdf_indx);
-
-    epf_info = [];
-    epf_info.indx = epf_indx;
-    epf_info.sgid = epf_sgid;
-    epf_info.df_indx = epfdf_indx;
-    epf_info.df_sgid = epfdf_sgid;
+    %% obs
+    
+    % ----------------------------------------------------------------------- %
+    % Central Scan
+    % ----------------------------------------------------------------------- %
+    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'}))
+        cscntr  = obs_counter_ptrn_struct.central_scan; % Central Scan CouNTR
+        is_cs = ~cellfun('isempty',regexpi(obscntrs_cell,cscntr,'ONCE'));
+        is_cs_cell = num2cell(is_cs);
+        [sgmnt_info.is_central_scan] = is_cs_cell{:};
+        cs_indx = find(is_cs);
+        cs_sgid = obscntrs_cell(cs_indx);
+    
+        csdfcntr  = obs_counter_ptrn_struct.central_scan_df;
+        is_csdf = ~cellfun('isempty',regexpi(obscntrs_cell,csdfcntr,'ONCE'));
+        is_csdf_cell = num2cell(is_csdf);
+        [sgmnt_info.is_central_scan_df] = is_csdf_cell{:};
+        csdf_indx = find(is_csdf);
+        csdf_sgid = obscntrs_cell(csdf_indx);
+    
+        cs_info = [];
+        cs_info.indx = cs_indx;
+        cs_info.sgid = cs_sgid;
+        cs_info.df_indx = csdf_indx;
+        cs_info.df_sgid = csdf_sgid;
+    end
+    
+    % ----------------------------------------------------------------------- %
+    % EPF
+    % ----------------------------------------------------------------------- %
+    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS'}))
+        epfcntr  = obs_counter_ptrn_struct.epf; 
+        is_epf_1 = ~cellfun('isempty',regexpi(obscntrs_cell,epfcntr,'ONCE'));
+        is_epf_2 = cellfun(@(x) any(strcmpi(x,'SC')),{sgmnt_info.activity_id});
+        is_epf = and(is_epf_1,is_epf_2);
+        is_epf_cell = num2cell(is_epf);
+        [sgmnt_info.is_epf] = is_epf_cell{:};
+        epf_indx = find(is_epf);
+        epf_sgid = obscntrs_cell(epf_indx);
+    
+        epfdfcntr  = obs_counter_ptrn_struct.epfdf;
+        is_epfdf_1 = ~cellfun('isempty',regexpi(obscntrs_cell,epfdfcntr,'ONCE'));
+        is_epfdf_2 = cellfun(@(x) any(strcmpi(x,'DF')),{sgmnt_info.activity_id});
+        is_epfdf = and(is_epfdf_1,is_epfdf_2);
+        is_epfdf_cell = num2cell(is_epfdf);
+        [sgmnt_info.is_epfdf] = is_epfdf_cell{:};
+        epfdf_indx = find(is_epfdf);
+        epfdf_sgid = obscntrs_cell(epfdf_indx);
+    
+        epf_info = [];
+        epf_info.indx = epf_indx;
+        epf_info.sgid = epf_sgid;
+        epf_info.df_indx = epfdf_indx;
+        epf_info.df_sgid = epfdf_sgid;
+    end
+    
+    % ----------------------------------------------------------------------- %
+    % CAL
+    % ----------------------------------------------------------------------- %
+    if any(strcmpi(obs_class_type,{'CAL'}))
+        bicntr  = obs_counter_ptrn_struct.bi; 
+        is_bi_1 = ~cellfun('isempty',regexpi(obscntrs_cell,bicntr,'ONCE'));
+        is_bi_2 = cellfun(@(x) any(strcmpi(x,'BI')),{sgmnt_info.activity_id});
+        is_bi = and(is_bi_1,is_bi_2);
+        is_bi_cell = num2cell(is_bi);
+        [sgmnt_info.is_bi] = is_bi_cell{:};
+        bi_indx = find(is_bi);
+        bi_sgid = obscntrs_cell(bi_indx);
+        bi_info = [];
+        bi_info.indx = bi_indx;
+        bi_info.sgid = bi_sgid;
+    end
+    
+    % ----------------------------------------------------------------------- %
+    % ICL
+    % ----------------------------------------------------------------------- %
+    if any(strcmpi(obs_class_type,{'ICL'}))
+        spcntr  = obs_counter_ptrn_struct.sp; 
+        is_sp_1 = ~cellfun('isempty',regexpi(obscntrs_cell,spcntr,'ONCE'));
+        is_sp_2 = cellfun(@(x) any(strcmpi(x,'SP')),{sgmnt_info.activity_id});
+        is_sp = and(is_sp_1,is_sp_2);
+        is_sp_cell = num2cell(is_sp);
+        [sgmnt_info.is_sp] = is_sp_cell{:};
+        sp_indx = find(is_sp);
+        sp_sgid = obscntrs_cell(sp_indx);
+    
+        dfcntr  = obs_counter_ptrn_struct.df; 
+        is_df_1 = ~cellfun('isempty',regexpi(obscntrs_cell,dfcntr,'ONCE'));
+        is_df_2 = cellfun(@(x) any(strcmpi(x,'DF')),{sgmnt_info.activity_id});
+        is_df = and(is_df_1,is_df_2);
+        is_df_cell = num2cell(is_df);
+        [sgmnt_info.is_df] = is_df_cell{:};
+        df_indx = find(is_df);
+        df_sgid = obscntrs_cell(df_indx);
+        
+        sp_info = [];
+        sp_info.indx = sp_indx;
+        sp_info.sgid = sp_sgid;
+        sp_info.df_indx = df_indx;
+        sp_info.df_sgid = df_sgid;
+    end
+    
+    % ----------------------------------------------------------------------- %
+    % FRS & ATO
+    % ----------------------------------------------------------------------- %
+    if any(strcmpi(obs_class_type,{'FRS','ATO'}))
+        uncntr  = obs_counter_ptrn_struct.un; % Central Scan CouNTR
+        is_un_1 = ~cellfun('isempty',regexpi(obscntrs_cell,uncntr,'ONCE'));
+        is_un_2 = cellfun(@(x) any(strcmpi(x,'UN')),{sgmnt_info.activity_id});
+        is_un = and(is_un_1,is_un_2);
+        is_un_cell = num2cell(is_un);
+        [sgmnt_info.is_un] = is_un_cell{:};
+        un_indx = find(is_un);
+        un_sgid = obscntrs_cell(un_indx);
+        
+        un_info = [];
+        un_info.indx = un_indx;
+        un_info.sgid = un_sgid;
+    end
 end
 
 %% SUMMARY
@@ -421,33 +540,33 @@ end
 if any(strcmpi(obs_class_type,{'FRT','HRL','HRS'}))
     obs_info.epf_info = epf_info;
 end
+
+if any(strcmpi(obs_class_type,{'FRS','ATO'}))
+    obs_info.un_info = un_info;
 end
 
-function [sgmnt_info] = crism_initialize_sgmnt_info(search_result,pdtype)
-sgmnt_info = [];
-if ~isempty(search_result.basenames)
-    obscntrs_edr_cell = {search_result.sgmnt_info.obs_counter};
-    if ~issorted(obscntrs_edr_cell)
-        [obscntrs_edr_cell,i_srt] = sort(obscntrs_edr_cell);
-        search_result.sgmnt_info = search_result.sgmnt_info(i_srt);
-    end
-    for i_sgid=1:length(search_result.sgmnt_info)
-        obscntr = search_result.sgmnt_info(i_sgid).obs_counter;
-        sgmnt_info(i_sgid).obs_counter = obscntr;
-        sensids = search_result.sgmnt_info(i_sgid).sensor_id;
-        sgmnt_info(i_sgid).sensor_id = sensids;
-        sgmnt_info(i_sgid).activity_id = {};
-        for i_sens=1:length(sensids)
-            sensid_i = sensids{i_sens};
-            if ~isfield(sgmnt_info(i_sgid),sensid_i)
-                sgmnt_info(i_sgid).(sensid_i) = [];
-            end
-            sgmnt_info(i_sgid).(sensid_i).(pdtype) = search_result.sgmnt_info(i_sgid).(sensid_i);
-            actids = search_result.sgmnt_info(i_sgid).(sensid_i).activity_id;
-            sgmnt_info(i_sgid).activity_id = union(sgmnt_info(i_sgid).activity_id,actids);
+if any(strcmpi(obs_class_type,{'ICL'}))
+    obs_info.sp_info = sp_info;
+end
+
+if any(strcmpi(obs_class_type,{'CAL'}))
+    obs_info.bi_info = bi_info;
+end
+
+end
+
+function [sgmnt_info] = crism_initialize_sgmnt_info(obscntrs_cell)
+    sgmnt_info = [];
+    if ~isempty(obscntrs_cell)
+        if ~issorted(obscntrs_cell)
+            [obscntrs_cell] = sort(obscntrs_cell);
+        end
+        for i_sgid=1:length(obscntrs_cell)
+            sgmnt_info(i_sgid).obs_counter = obscntrs_cell{i_sgid};
+            sgmnt_info(i_sgid).sensor_id   = {};
+            sgmnt_info(i_sgid).activity_id = {};
         end
     end
-end
 end
 
 function [sgmnt_info] = crism_integrate_sgmnt_info(sgmnt_info,search_result,pdtype)

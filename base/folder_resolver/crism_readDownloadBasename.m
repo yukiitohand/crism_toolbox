@@ -47,6 +47,7 @@ mtch_exact = false;
 overwrite = 0;
 index_cache_update = false;
 celloutput = false;
+verbose = true;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -65,6 +66,8 @@ else
                 index_cache_update = varargin{i+1};
             case 'CELLOUTPUT'
                 celloutput = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
             otherwise
                 error('Unrecognized option: %s',varargin{i});
         end
@@ -118,8 +121,8 @@ elseif dwld>0
     [dirs,files_remote] = crism_pds_downloader(subdir_local,      ...
         'Subdir_remote',subdir_remote,'BASENAMEPTRN',basenamePtr, ...
         'DWLD',dwld,'overwrite',overwrite, 'EXTENSION',ext, ...
-        'INDEX_CACHE_UPDATE',index_cache_update);
-        % 'VERBOSE',verbose,'CAPITALIZE_FILENAME',cap_filename);
+        'INDEX_CACHE_UPDATE',index_cache_update, ...
+        'VERBOSE',verbose);%,'CAPITALIZE_FILENAME',cap_filename);
     % basename is searched from the remote database.
     [basename,fname_wext_local] = extractMatchedBasename_v2(basenamePtr, ...
         files_remote,'exact',mtch_exact,'CellOutput',celloutput);

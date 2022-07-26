@@ -128,7 +128,7 @@ if ~isempty(search_result.basenames)
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_if_cs);
     
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
     
     if dwld_ra_cs>1
@@ -149,7 +149,7 @@ if ~isempty(search_result.basenames)
             basenameRAptrn,search_result.dir_info.subdir_local,dwld_ra_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_ra_cs);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
     
     if dwld_hkp_cs>1
@@ -170,7 +170,7 @@ if ~isempty(search_result.basenames)
             basenameRAHKPptrn,search_result.dir_info.subdir_local,dwld_hkp_cs, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_hkp_cs);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
     
     if dwld_epf>1
@@ -193,7 +193,7 @@ if ~isempty(search_result.basenames)
             basenameTRREPFptrn,search_result.dir_info.subdir_local,dwld_epf, ...
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_epf);
-        search_result.fnamewext_local = union(fnamewext_local,fnameOBS_wext_local);
+        search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
     end
 end
 
