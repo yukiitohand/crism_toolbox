@@ -37,7 +37,7 @@ else
     if is_exact
         basenamePtr = ['^' basenamePtr '[[.][a-zA-Z]]*$'];
     end
-    matching = cellfun(@(x) ~isempty(regexpi(x,basenamePtr,'ONCE')),fnamelist);
+    matching = ~cellfun('isempty',regexpi(fnamelist,basenamePtr,'ONCE'));
     if sum(matching)>0
         fname_wext = fnamelist(matching);
         basenameList = cell(1,length(fname_wext));

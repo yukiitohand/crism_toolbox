@@ -12,19 +12,11 @@ function [ obs_info ] = crism_get_obs_info_v2(obs_id,varargin)
 %        o - yyyy_doy
 %        o - dir_info: Each field points to dir_info struct array for each
 %        |    |        product types
-%        |    o - edr
-%        |    o - trr
-%        |    o - ddr
-%        |    o - ter
-%        |    o - mtr
+%        |    o - edr, trr, ddr, ter, mtr
 %        |
 %        o - basenames: Each field points to cell array that contains all
 %        |    |         the matched unique basenames without extensions
-%        |    o - edr
-%        |    o - trr
-%        |    o - ddr
-%        |    o - ter
-%        |    o - mtr
+%        |    o - edr, trr, ddr, ter, mtr
 %        |
 %        o - central_scan_info: struct about the info on central scan
 %        |     |   (Only for 'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP')
