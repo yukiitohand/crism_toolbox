@@ -93,7 +93,7 @@ if dwld <= 0
             fid = fopen(index_cache_fpath,'r');
             fnamelist = textscan(fid,'%s');
             fclose(fid);
-            fnamelist = fnamelist{1};
+            fnamelist = reshape(fnamelist{1},1,[]);
         else
             if exist(dir_local,'dir')
                 filelist = dir(dir_local);
