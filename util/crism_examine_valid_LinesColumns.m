@@ -9,12 +9,12 @@ function [valid_lines,valid_samples] = crism_examine_valid_LinesColumns(RAdata)
 %                   pixel.
 if isempty(RAdata.hkt), RAdata.readHKT(); end
 
-scan_motor_pos = [RAdata.hkt.data.SCAN_MOTOR_ENCPOS2]';
-scan_motor_pos(scan_motor_pos<(-2^21-1)) = scan_motor_pos(scan_motor_pos<(-2^21-1)) + (2^22-1);    
-scan_motor_diff = abs(scan_motor_pos(2:end) - scan_motor_pos(1:end-1));
-valid_lines = false(RAdata.hdr.lines,1);
-valid_lines(2:end) = scan_motor_diff>500;
-valid_lines(1:end-1) = or(valid_lines(1:end-1),scan_motor_diff>500);
+scan_motor_pos3 = [RAdata.hkt.data.SCAN_MOTOR_ENCPOS3]';
+scan_motor_pos1 = [RAdata.hkt.data.SCAN_MOTOR_ENCPOS1]';
+scan_motor_pos3(scan_motor_pos3<(-2^21-1)) = scan_motor_pos3(scan_motor_pos3<(-2^21-1)) + (2^22-1);
+scan_motor_pos1(scan_motor_pos1<(-2^21-1)) = scan_motor_pos1(scan_motor_pos1<(-2^21-1)) + (2^22-1);   
+scan_motor_diff = abs(scan_motor_pos3- scan_motor_pos1);
+valid_lines = scan_motor_diff>median(scan_motor_diff)*0.6;
 % vl_idx = find(valid_lines);
 
 % examine valid columns

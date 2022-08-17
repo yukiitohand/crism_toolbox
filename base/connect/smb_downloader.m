@@ -291,9 +291,9 @@ if ~errflg
                             if verbose
                                 fprintf(['Copy\t' remoteFile '\n\t-->\t' localTarget '\n']);
                             end
-                            [err] = copyfile(localTarget,remoteFile);
+                            [err] = copyfile(remoteFile,localTarget);
                             if verbose
-                                if err
+                                if ~err
                                     fprintf('......Download failed.\n');
                                 else
                                     fprintf('......Done!\n');
@@ -327,10 +327,6 @@ if ~errflg
             fprintf('No file matches %s in %s.\n',basenamePtrn,subdir_remote);
         end
     end
-end
-
-if ~isempty(outfile)
-    fclose(fp);
 end
 
 end

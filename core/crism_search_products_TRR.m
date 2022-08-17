@@ -92,7 +92,7 @@ if ~isempty(search_result.basenames)
     % ----------------------------------------------------------------------- %
     % Central Scan
     % ----------------------------------------------------------------------- %
-    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'}))
+    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP','MSW','HSV','MSV'}))
         cscntr  = obs_counter_ptrn_struct.central_scan; % Central Scan CouNTR
         is_cs = ~cellfun('isempty',regexpi(obscntrscell,cscntr,'ONCE'));
         cs_indx = find(is_cs);
