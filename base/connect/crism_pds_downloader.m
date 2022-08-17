@@ -41,7 +41,6 @@ url_local_root  = crism_env_vars.url_local_root;
 url_remote_root = crism_env_vars.url_remote_root;
 protocol = crism_env_vars.remote_protocol;
 
-
 basenamePtrn  = '.*';
 ext           = '';
 subdir_remote = '';
@@ -51,8 +50,6 @@ dwld          = 0;
 html_file     = '';
 index_cache_update = false;
 verbose = true;
-
-
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -126,13 +123,14 @@ switch protocol
     case {'http'}
         % All the parameters are passed to pds_universal_downloader.m
         url_remote_root = crism_swap_to_remote_path(url_remote_root);
+        index_cache_fname = ['index-' remote_fldsys '.html'];
         [dirs,files] = pds_universal_downloader(subdir_local, ...
             localrootDir, url_local_root, url_remote_root, @crism_get_links_remoteHTML, ...
             'BASENAMEPTRN',basenamePtrn,'SUBDIR_REMOTE',subdir_remote, ...
             'CAPITALIZE_FILENAME', true,'VERBOSE',verbose,'EXT',ext,'DIRSKIP',dirskip, ...
             'protocol',protocol,'overwrite',overwrite,'dwld',dwld, ...
             'HTML_FILE', html_file, ...
-            'INDEX_CACHE_UPDATE',index_cache_update);
+            'INDEX_CACHE_UPDATE',index_cache_update,'INDEX_CACHE_FILENAME',index_cache_fname);
 
     case {'smb'}
         % All the parameters are passed to smb_downloader.m

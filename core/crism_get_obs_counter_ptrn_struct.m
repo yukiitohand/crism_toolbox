@@ -18,7 +18,7 @@ switch obs_class_type
         obs_counter_ptrn_struct.central_scan_df = '0[024]{1}';
         % this could be switched.
         
-    case {'MSP','HSP'}
+    case {'MSP','HSP','MSW','HSV','MSV'}
         obs_counter_ptrn_struct.central_scan    = '01';
         obs_counter_ptrn_struct.central_scan_df = '0[02]{1}';
         
