@@ -125,8 +125,11 @@ switch lower(readmode)
         %                 fprintf('%d\n',c);
         %             end
                     % [datac{datac_isnan}] = deal('NaN');
-                    datac = cellfun(@str2double,datac,'UniformOutput',false);
-                    % datac = num2cell(datac);
+                    idx_invalid = or(cellfun('isempty', datac), strcmpi(strtrim(datac),'"N/A"'));
+                    datac(idx_invalid) = {'NAN'};
+                    datac = sscanf(sprintf('%s*',datac{:}),'%f*');
+                    datac = num2cell(datac);
+                    % 
                     [data.(nameList{c})] = datac{:};
                 case 'ASCII_INTEGER'
                     datac = cellstr(tabc);
@@ -136,7 +139,11 @@ switch lower(readmode)
                     % end
                     % [datac{datac_isnan}] = deal('NaN');
                     try
-                        datac = cellfun(@str2double,datac,'UniformOutput',false);
+                        idx_invalid = or(cellfun('isempty', datac), strcmpi(strtrim(datac),'"N/A"'));
+                        datac(idx_invalid) = {'NAN'};
+                        datac = sscanf(sprintf('%s*',datac{:}),'%d*');
+                        datac = num2cell(datac);
+                        % datac = cellfun(@str2double,datac,'UniformOutput',false);
                         % datac = num2cell(datac);
                     catch
                         fprintf('c:%d - Integer conversion error, string output\n',c);
