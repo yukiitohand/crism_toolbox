@@ -18,6 +18,7 @@ classdef CRISMdata < ENVIRasterMultBand
         is_wa_band_inverse = false;
         is_bp1nan_inverse  = false;
         is_gp1nan_inverse  = false;
+        is_hdr_band_inverse = false;
         basenameHKT
         cdr;
         source_obs;

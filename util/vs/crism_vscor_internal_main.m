@@ -271,8 +271,9 @@ if enable_artifact
         vsart = vsart(1,cList,bList);
     end
     % Perform artifact correction
-    %[img_corr_patched,out_art] = crism_vscor_patch_vs_artifact_v2(waimg,img_corr,vsart);
-    [img_corr_patched,out_art] = crism_vscor_patch_vs_artifact_v3(waimg,img_corr,vsart);
+    [img_corr_patched,out_art] = crism_vscor_patch_vs_artifact_v2(waimg,img_corr,vsart);
+    % for some reason, v3 is not working.
+    % [img_corr_patched,out_art] = crism_vscor_patch_vs_artifact_v3(waimg,img_corr,vsart);
     img_corr = img_corr_patched;
 else
     vsart = [];
