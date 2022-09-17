@@ -127,7 +127,7 @@ switch mode
         wac_min = min(wac); wac_max = max(wac);
         wvspc_valid_idx = and(wvspc>(wac_min-200),wvspc<(wac_max)+200);
         wvspc_valid = wvspc(wvspc_valid_idx);
-        rflspc_valid = rflspc(wvspc_valid_idx);
+        rflspc_valid = rflspc(wvspc_valid_idx,:);
         rflspc_valid_isnotnan = ~isnan(rflspc_valid);
         
         rflspc_rsmp = nan([L,N]);

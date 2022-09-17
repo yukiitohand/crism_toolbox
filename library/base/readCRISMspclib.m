@@ -30,9 +30,9 @@ for i=1:length(folders)
     if ~isempty(regexp(fname,'(.*)\.sli$','once'))
         fbase = regexp(fname,'(.*)\.sli$','tokens');
         fbase = fbase{1}{1};
-        if exist([pdir fbase '.sli.hdr'],'file')
+        if exist(fullfile(pdir,[fbase '.sli.hdr']),'file')
             fname_hdr = [fbase '.sli.hdr']; flg=1;
-        elseif exist([pdir fbase '.hdr'],'file')
+        elseif exist(fullfile(pdir,[fbase '.hdr']),'file')
             fname_hdr = [fbase '.hdr']; flg=1;
         else
             flg=0;
@@ -40,15 +40,15 @@ for i=1:length(folders)
         
         if flg
             CRISMspclib.(fbase) = [];
-            hdr_info = envihdrreadx([pdir fname_hdr]);
-            spc = envidataread([pdir fbase '.sli'],hdr_info);
+            hdr_info = envihdrreadx(fullfile(pdir,fname_hdr));
+            spc = envidataread(fullfile(pdir,[fbase '.sli']),hdr_info);
             CRISMspclib.(fbase).hdr = hdr_info;
             CRISMspclib.(fbase).spc = spc;
             CRISMspclib.(fbase).subfolder = '';
         end
     elseif folders(i).isdir
         if ~strcmp(fname,'.') && ~strcmp(fname,'..')
-            spec_libsub = readCRISMspclib([pdir fname  '/']);
+            spec_libsub = readCRISMspclib(fullfile(pdir,fname));
             field_names = fields(spec_libsub);
             for j=1:length(field_names)
                 field = field_names{j};
