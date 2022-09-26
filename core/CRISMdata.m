@@ -41,80 +41,97 @@ classdef CRISMdata < ENVIRasterMultBand
         function obj = CRISMdata(basename,dirpath,varargin)
             % load property and find out the type of data from "basename"
             exist_flg = 0;
-            if ~isempty(crism_getProp_basenameOBSERVATION(basename))
-                prop = crism_getProp_basenameOBSERVATION(basename);
-                data_type = 'OBSERVATION';
-            elseif ~isempty(crism_getProp_basenameCDR4(basename))
-                prop = crism_getProp_basenameCDR4(basename);
-                data_type = 'CDR4';
-            elseif ~isempty(crism_getProp_basenameCDR6(basename))
-                prop = crism_getProp_basenameCDR6(basename);
-                data_type = 'CDR6';
-            elseif ~isempty(crism_getProp_basenameOTT(basename))
-                prop = crism_getProp_basenameOTT(basename);
-                data_type = 'OTT';
-            elseif ~isempty(crism_getProp_basenameADRVS(basename))
-                prop = crism_getProp_basenameADRVS(basename);
-                data_type = 'ADR_VS';
+            if length(varargin)==1
+                data_type = varargin{1};
+                % switch upper(data_type)
+                %     case 'OBSERVATION'
+                %         prop = crism_getProp_basenameOBSERVATION(basename);
+                % end
             else
-                fprintf('Name %s is not supported.\n', basename);
-                data_type = '';
-            end
-            % find out yyyy_doy and dirname
-            if ~isempty(data_type)
-                switch upper(data_type)
-                    case 'OBSERVATION'
-                        [dir_info] = crism_get_dirpath_observation(basename);
-                    case {'CDR4','CDR6'}
-                        [dir_info] = crism_get_dirpath_cdr(basename);
-                    case {'OTT'}
-                        [dir_info] = crism_get_dirpath_ott(basename);
-                    case {'ADR_VS'}
-                        [dir_info] = crism_get_dirpath_adrvs(basename);
-                    otherwise
-                        fprintf('Undefined data_type %s',data_type);
-                        dir_info = [];
+                if ~isempty(crism_getProp_basenameOBSERVATION(basename))
+                    prop = crism_getProp_basenameOBSERVATION(basename);
+                    data_type = 'OBSERVATION';
+                elseif ~isempty(crism_getProp_basenameCDR4(basename))
+                    prop = crism_getProp_basenameCDR4(basename);
+                    data_type = 'CDR4';
+                elseif ~isempty(crism_getProp_basenameCDR6(basename))
+                    prop = crism_getProp_basenameCDR6(basename);
+                    data_type = 'CDR6';
+                elseif ~isempty(crism_getProp_basenameOTT(basename))
+                    prop = crism_getProp_basenameOTT(basename);
+                    data_type = 'OTT';
+                elseif ~isempty(crism_getProp_basenameADRVS(basename))
+                    prop = crism_getProp_basenameADRVS(basename);
+                    data_type = 'ADR_VS';
+                else
+                    fprintf('Name %s is not supported.\n', basename);
+                    data_type = '';
                 end
-                if ~isempty(dir_info)
+            end
+            if isempty(dirpath)
+                % find out yyyy_doy and dirname
+                if ~isempty(data_type)
                     switch upper(data_type)
-                        case {'OBSERVATION','CDR4','CDR6'}
-                            dirpath_guess = dir_info.dirfullpath_local;
-                            yyyy_doy = dir_info.yyyy_doy;
-                            dirname  = dir_info.dirname;
-                            prop.yyyy_doy = yyyy_doy;
+                        case 'OBSERVATION'
+                            [dir_info] = crism_get_dirpath_observation(basename);
+                        case {'CDR4','CDR6'}
+                            [dir_info] = crism_get_dirpath_cdr(basename);
                         case {'OTT'}
-                            dirpath_guess = dir_info.dirfullpath_local;
-                            yyyy_doy = '';
-                            dirname = '';
+                            [dir_info] = crism_get_dirpath_ott(basename);
                         case {'ADR_VS'}
                             [dir_info] = crism_get_dirpath_adrvs(basename);
-                            dirpath_guess = dir_info.dirfullpath_local;
-                            dirname  = dir_info.dirname;
-                            yyyy_doy = '';
                         otherwise
+                            fprintf('Undefined data_type %s',data_type);
+                            dir_info = [];
                     end
-                    % get dirpath if not specified
-                    if isempty(dirpath)
+                    if ~isempty(dir_info)
+                        switch upper(data_type)
+                            case {'OBSERVATION','CDR4','CDR6'}
+                                dirpath_guess = dir_info.dirfullpath_local;
+                                yyyy_doy = dir_info.yyyy_doy;
+                                dirname  = dir_info.dirname;
+                                prop.yyyy_doy = yyyy_doy;
+                            case {'OTT'}
+                                dirpath_guess = dir_info.dirfullpath_local;
+                                yyyy_doy = '';
+                                dirname = '';
+                            case {'ADR_VS'}
+                                [dir_info] = crism_get_dirpath_adrvs(basename);
+                                dirpath_guess = dir_info.dirfullpath_local;
+                                dirname  = dir_info.dirname;
+                                yyyy_doy = '';
+                            otherwise
+                        end
+                        % get dirpath if not specified
                         dirpath = dirpath_guess;
+                        exist_flg = 1;
+                    else
+                        dirpath = ''; yyyy_doy = ''; dirname = ''; 
                     end
-                    exist_flg = 1;
                 else
-                    dirpath = ''; yyyy_doy = ''; dirname = ''; 
+                    dirpath = ''; yyyy_doy = ''; dirname = '';
                 end
             else
-                dirpath = ''; yyyy_doy = ''; dirname = '';
+                dirpath_guess = '';
+                exist_flg = 1;
             end
-            obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
+            obj@ENVIRasterMultBand(basename,dirpath);
+            % obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
 
             if exist_flg
-                [obj.lblpath] = guessCRISMLBLPATH(basename,dirpath,varargin{:});
-                [obj.tabpath] = guessCRISMTABPATH(basename,dirpath,varargin{:});
+                % obj.lblpath = guessCRISMLBLPATH(basename,dirpath,varargin{:});
+                % obj.tabpath = guessCRISMTABPATH(basename,dirpath,varargin{:});
+                obj.lblpath = guessCRISMLBLPATH(basename,dirpath);
+                obj.tabpath = guessCRISMTABPATH(basename,dirpath);
                 obj.readlblhdr();
-            
-                obj.prop = prop;
+                
+               
                 obj.data_type = data_type;
-                obj.yyyy_doy = yyyy_doy;
-                obj.dirname = dirname;
+                if ~isempty(dirpath_guess)
+                    obj.prop = prop;
+                    obj.yyyy_doy = yyyy_doy;
+                    obj.dirname = dirname;
+                end
                 
                 % switch upper(data_type)
                 %     case 'OBSERVATION'

@@ -8,7 +8,7 @@ switch obs_class_type
         obs_counter_ptrn_struct.epf             = '0[1-59A-D]{1}';
         obs_counter_ptrn_struct.epfdf           = '0[0E]{1}';
         
-    case {'FRS','ATO'}
+    case {'FRS','ATO','ATU'}
         obs_counter_ptrn_struct.central_scan    = '01';
         obs_counter_ptrn_struct.central_scan_df = '0[03]{1}';
         obs_counter_ptrn_struct.un              = '0[24]{1}';

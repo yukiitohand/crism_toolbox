@@ -8,7 +8,7 @@ classdef CRISMDDRdata < CRISMdata
     
     methods 
         function [obj] = CRISMDDRdata(basename,dirpath)
-            obj@CRISMdata(basename,dirpath);
+            obj@CRISMdata(basename,dirpath,'OBSERVATION');
         end
         function [ddr] = readimg(obj,varargin)
             img1 = readimg@CRISMdata(obj,varargin{:});
