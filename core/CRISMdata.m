@@ -43,10 +43,20 @@ classdef CRISMdata < ENVIRasterMultBand
             exist_flg = 0;
             if length(varargin)==1
                 data_type = varargin{1};
-                % switch upper(data_type)
-                %     case 'OBSERVATION'
-                %         prop = crism_getProp_basenameOBSERVATION(basename);
-                % end
+                switch upper(data_type)
+                    case 'OBSERVATION'
+                        prop = crism_getProp_basenameOBSERVATION(basename);
+                    case 'CDR4'
+                        prop = crism_getProp_basenameCDR4(basename);
+                    case 'CDR6'
+                        prop = crism_getProp_basenameCDR6(basename);
+                    case 'OTT'
+                        prop = crism_getProp_basenameOTT(basename);
+                    case 'ADR_VS'
+                        prop = crism_getProp_basenameADRVS(basename);
+                    otherwise
+                        fprintf('Name %s is not supported.\n', basename);
+                end
             else
                 if ~isempty(crism_getProp_basenameOBSERVATION(basename))
                     prop = crism_getProp_basenameOBSERVATION(basename);
@@ -127,8 +137,8 @@ classdef CRISMdata < ENVIRasterMultBand
                 
                
                 obj.data_type = data_type;
+                obj.prop = prop;
                 if ~isempty(dirpath_guess)
-                    obj.prop = prop;
                     obj.yyyy_doy = yyyy_doy;
                     obj.dirname = dirname;
                 end
