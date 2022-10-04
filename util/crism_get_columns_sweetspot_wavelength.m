@@ -27,7 +27,18 @@ switch upper(sensor_id)
                 error('Undefined binning_id: %d',wv_bin_id);
         end
     case 'S'
-        error('Not implemented yet');
+        switch wv_bin_id
+            case 0
+                colsw = 271:370;
+            case 1
+                colsw = 136:185;
+            case 2
+                colsw = 55:74; % 
+            case 3
+                colsw = 28:37;
+            otherwise
+                error('Undefined binning_id: %d',wv_bin_id);
+        end
     otherwise
         error('Undefined sensor_id %s',sensor_id);
 end
