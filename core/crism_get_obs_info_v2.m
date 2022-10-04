@@ -386,7 +386,7 @@ else
     % ----------------------------------------------------------------------- %
     % Central Scan
     % ----------------------------------------------------------------------- %
-    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP','MSW','HSV','MSV'}))
+    if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','ATU','FFC','MSP','HSP','MSW','HSV','MSV'}))
         cscntr  = obs_counter_ptrn_struct.central_scan; % Central Scan CouNTR
         is_cs = ~cellfun('isempty',regexpi(obscntrs_cell,cscntr,'ONCE'));
         is_cs_cell = num2cell(is_cs);
@@ -525,7 +525,7 @@ obs_info.basenames.mtr = search_result_MTR.basenames;
 
 obs_info.sgmnt_info = sgmnt_info;
 
-if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','FFC','MSP','HSP'}))
+if any(strcmpi(obs_class_type,{'FRT','HRL','HRS','FRS','ATO','ATU','FFC','MSP','HSP'}))
     obs_info.central_scan_info = cs_info;
 end
 
