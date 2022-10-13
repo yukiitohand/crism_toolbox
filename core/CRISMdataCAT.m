@@ -9,6 +9,15 @@ classdef CRISMdataCAT < CRISMdata
     methods
         function obj = CRISMdataCAT(basename,dirpath,varargin)
             obj@CRISMdata(basename,dirpath,varargin{:});
+            
+            if isempty(obj.hdr)
+                [obj.hdrpath] = crism_guessLBSPATH(basename,dirpath,varargin{:});
+            end
+            
+            if ~isempty(obj.hdrpath)
+                hdr = envihdrreadx2(obj.hdrpath);
+                obj.hdr = hdr;
+            end
         end
         
         function obj = readCRISMdata_parent(obj,basename_ascend,dirpath_ascend,varargin)

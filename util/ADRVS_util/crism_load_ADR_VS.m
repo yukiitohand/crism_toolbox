@@ -11,6 +11,7 @@ function [ trans_spcs ] = crism_load_ADR_VS( varargin )
 %               (default) 0
 %    'WAVELENGH_FILTER': wavelenth filter, either {0,1,2,3} numeric or single character
 %                       (default) 0
+%    'SCLK': sclk
 %    'VERSION': scalar either [6,8,9] or str "latest". Versions 6 & 8 are not
 %               recommended.
 %              (default) 9
@@ -36,6 +37,7 @@ binning = '0'; wv_filter = '0'; vr = '9'; obs_id_short = '';
 overwrite = false;
 dwld = 0;
 vr_latest = false;
+sclk = 0;
 
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -70,6 +72,8 @@ else
 
             case 'OBS_ID_SHORT'
                 obs_id_short = varargin{i+1};
+            case 'SCLK'
+                sclk = varargin{i+1};
             case 'MODE_ARTIFACT'
                 mode_artifact = varargin{i+1};
             case 'ARTIFACT_IDX'
@@ -86,20 +90,42 @@ else
     end
 end
 
+if strcmpi(binning,'3') && strcmpi(wv_filter,'2')
+    if sclk == 0
+        error('BINNING:3 and WAVELENGTH_FILTER:2 requires sclk input.');
+    end
+else
+    if sclk ~= 0
+        sclk = 0;
+    end
+    
+end
 propADRVSPtr = crism_create_propADRVSbasename();
 if ~isempty(binning), propADRVSPtr.binning = binning; end
 if ~isempty(wv_filter), propADRVSPtr.wavelength_filter = wv_filter; end
 if ~isempty(vr), propADRVSPtr.version = vr; end
 if ~isempty(obs_id_short), propADRVSPtr.obs_id_short = obs_id_short; end
+if ~isempty(sclk), propADRVSPtr.sclk = sclk; end
 
 %%
 
-if isempty(obs_id_short)
-    cachefname = sprintf('adr_VS%1s%1s%1s_art%s_aid%d.mat',...
-        binning,wv_filter,vr,mode_artifact,artifact_idx);
+if strcmpi(binning,'3') && strcmpi(wv_filter,'2')
+    if isempty(obs_id_short)
+        cachefname = sprintf('adr_sclk%010d_VS%1s%1s%1s_art%s_aid%d.mat',...
+            sclk,binning,wv_filter,vr,mode_artifact,artifact_idx);
+    else
+        cachefname = sprintf('adr_sclk%010d_VS_%s_%1s%1s%1s_art%s_aid%d.mat',...
+            sclk,obs_id_short,binning,wv_filter,vr,mode_artifact,artifact_idx);
+    end
 else
-    cachefname = sprintf('adr_VS_%s_%1s%1s%1s_art%s_aid%d.mat',...
-        obs_id_short,binning,wv_filter,vr,mode_artifact,artifact_idx);
+    if isempty(obs_id_short)
+        cachefname = sprintf('adr_VS%1s%1s%1s_art%s_aid%d.mat',...
+            binning,wv_filter,vr,mode_artifact,artifact_idx);
+    else
+        cachefname = sprintf('adr_VS_%s_%1s%1s%1s_art%s_aid%d.mat',...
+            obs_id_short,binning,wv_filter,vr,mode_artifact,artifact_idx);
+    end
+
 end
     
 cachefpath = joinPath(dir_cache,cachefname);
