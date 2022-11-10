@@ -152,6 +152,8 @@ dwld_trrif_cs    = 0;
 dwld_trrra_cs    = 0;
 dwld_trrhkp_cs   = 0;
 dwld_edr_cs_csdf = 0;
+dwld_edr_cs      = 0;
+dwld_edr_csdf    = 0;
 dwld_ddr_cs      = 0;
 dwld_epf         = 0;
 dwld_edr_un      = 0;
@@ -165,6 +167,8 @@ ext_trrif_cs    = '';
 ext_trrra_cs    = '';
 ext_trrhkp_cs   = '';
 ext_edr_cs_csdf = '';
+ext_edr_cs      = '';
+ext_edr_csdf    = '';
 ext_ddr_cs      = '';
 ext_epf         = '';
 ext_edr_un      = '';
@@ -200,6 +204,10 @@ else
                 dwld_trrhkp_cs = varargin{i+1};
             case {'DOWNLOAD_EDR_CS_CSDF','DOWNLOAD_EDRSCDF'}
                 dwld_edr_cs_csdf = varargin{i+1};
+            case {'DOWNLOAD_EDR_CS'}
+                dwld_edr_cs = varargin{i+1};
+            case {'DOWNLOAD_EDR_CSDF'}
+                dwld_edr_csdf = varargin{i+1};
             case 'DOWNLOAD_TER'
                 dwld_ter = varargin{i+1};
             case {'DOWNLOAD_MTR','DOWNLOAD_MTRDR'}
@@ -226,6 +234,10 @@ else
                 ext_trrhkp_cs = varargin{i+1};
             case {'EXT_EDR_CS_CSDF','EXT_EDRSCDF'}
                 ext_edr_cs_csdf = varargin{i+1};
+            case {'EXT_EDR_CS'}
+                ext_edr_cs = varargin{i+1};
+            case {'EXT_EDR_CSDF'}
+                ext_edr_csdf = varargin{i+1};
             case 'EXT_TER'
                 ext_ter = varargin{i+1};
             case {'EXT_MTR','EXT_MTRDR'}
@@ -306,6 +318,8 @@ end
 [search_result_EDR] = crism_search_products_EDR(obs_id, ...
     'OBS_CLASS_TYPE', obs_class_type, 'SENSOR_ID',sensor_id, ...
     'Download_CS_CSDF',dwld_edr_cs_csdf,'EXT_CS_CSDF',ext_edr_cs_csdf,...
+    'Download_CS',dwld_edr_cs,'EXT_CS',ext_edr_cs,...
+    'Download_CSDF',dwld_edr_csdf,'EXT_CSDF',ext_edr_csdf,...
     'Download_EPF',dwld_epf,'EXT_EPF',ext_epf,...
     'Download_UN',dwld_edr_un,'EXT_UN',ext_edr_un,...
     'Download_DF',dwld_edr_df,'EXT_DF',ext_edr_df,...
