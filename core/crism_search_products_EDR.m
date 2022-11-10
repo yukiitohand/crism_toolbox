@@ -13,12 +13,16 @@ vr             = '(?<version>[0-9a-zA-Z]{1})';
 obs_counter_ptrn_struct = '';
 
 ext_cs_csdf = '';
+ext_cs = '';
+ext_csdf = '';
 ext_epf = '';
 ext_un  = '';
 ext_df  = '';
 ext_bi  = '';
 ext_sp  = '';
 dwld_cs_csdf = 0;
+dwld_cs = 0;
+dwld_csdf = 0;
 dwld_epf = 0;
 dwld_un  = 0;
 dwld_df  = 0;
@@ -51,6 +55,10 @@ else
                 obs_counter_ptrn_struct = varargin{i+1};
             case {'DOWNLOAD_CS_CSDF','DOWNLOAD_EDRSCDF'}
                 dwld_cs_csdf = varargin{i+1};
+            case 'DOWNLOAD_CS'
+                dwld_cs = varargin{i+1};
+            case 'DOWNLOAD_CSDF'
+                dwld_csdf = varargin{i+1};
             case 'DOWNLOAD_EPF'
                 dwld_epf = varargin{i+1};
             case 'DOWNLOAD_UN'
@@ -63,6 +71,10 @@ else
                 dwld_sp  = varargin{i+1};
             case {'EXT_CS_CSDF','EXT_EDRSCDF'}
                 ext_cs_csdf = varargin{i+1};
+            case 'EXT_CS'
+                ext_cs = varargin{i+1};
+            case 'EXT_CSDF'
+                ext_csdf = varargin{i+1};
             case 'EXT_EPF'
                 ext_epf = varargin{i+1};
             case 'EXT_UN'
@@ -165,6 +177,52 @@ if ~isempty(search_result.basenames)
             'Subdir_remote',search_result.dir_info.subdir_remote, ...
             'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_cs_csdf);
         search_result.fnamewext_local = union(search_result.fnamewext_local,fnameOBS_wext_local);
+    else
+        if dwld_cs>1
+            edrsc_sgmnt_info = search_result.sgmnt_info(cs_indx);
+            basenameEDRSCptrncell = [];
+            for i_sg=1:length(edrsc_sgmnt_info)
+                for i=1:length(edrsc_sgmnt_info(i_sg).sensor_id)
+                    sensid_i = edrsc_sgmnt_info(i_sg).sensor_id{i};
+                    if any(strcmpi(sensid_i,{'S','L'}))
+                        if isfield(edrsc_sgmnt_info(i_sg).(sensid_i),'SC')
+                            basenameEDRSCptrncell = [basenameEDRSCptrncell edrsc_sgmnt_info(i_sg).(sensid_i).SC];
+                        end
+                        if isfield(edrsc_sgmnt_info(i_sg).(sensid_i),'HKP')
+                            basenameEDRSCptrncell = [basenameEDRSCptrncell edrsc_sgmnt_info(i_sg).(sensid_i).HKP];
+                        end
+                    end
+                end
+            end
+            basenameEDRSCptrn = ['(', strjoin(basenameEDRSCptrncell, '|'), ')'];
+            [basenameOBS,fnameOBS_wext_local,files_dwlded] = crism_readDownloadBasename( ...
+                basenameEDRSCptrn,search_result.dir_info.subdir_local,dwld_cs, ...
+                'Subdir_remote',search_result.dir_info.subdir_remote, ...
+                'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_cs);
+        end
+        if dwld_csdf>1
+            edrcsdf_sgmnt_info = search_result.sgmnt_info(csdf_indx);
+            basenameEDRCSDFptrncell = [];
+            for i_sg=1:length(edrcsdf_sgmnt_info)
+                for i=1:length(edrcsdf_sgmnt_info(i_sg).sensor_id)
+                    sensid_i = edrcsdf_sgmnt_info(i_sg).sensor_id{i};
+                    if any(strcmpi(sensid_i,{'S','L'}))
+                        if isfield(edrcsdf_sgmnt_info(i_sg).(sensid_i),'DF')
+                            basenameEDRCSDFptrncell = [basenameEDRCSDFptrncell edrcsdf_sgmnt_info(i_sg).(sensid_i).DF];
+                        end
+                        if isfield(edrcsdf_sgmnt_info(i_sg).(sensid_i),'HKP')
+                            basenameEDRCSDFptrncell = [basenameEDRCSDFptrncell edrcsdf_sgmnt_info(i_sg).(sensid_i).HKP];
+                        end
+                    end
+                end
+            end
+            basenameEDRCSDFptrn = ['(', strjoin(basenameEDRCSDFptrncell, '|'), ')'];
+            [basenameOBS,fnameOBS_wext_local,files_dwlded] = crism_readDownloadBasename( ...
+                basenameEDRCSDFptrn,search_result.dir_info.subdir_local,dwld_csdf, ...
+                'Subdir_remote',search_result.dir_info.subdir_remote, ...
+                'Match_Exact',true,'overwrite',overwrite,'EXTENSION',ext_csdf);
+        end
+
     end
     
     if dwld_epf>1
