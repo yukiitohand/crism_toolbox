@@ -33,6 +33,6 @@ Anrmd = A ./ Anrm;
 r = abs(scan_motor_diff - Anrmd*x1);
 
 
-valid_lines_bool = and(r < 200,logical(w));
+valid_lines_bool = and(r < 250,logical(w));
 
 end
