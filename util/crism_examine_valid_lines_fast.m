@@ -6,6 +6,22 @@ function [valid_lines_bool] = crism_examine_valid_lines_fast(hkp_fpath,varargin)
 % Output parameters
 %    valid_lines_bool: boolean, ith element is true if the line is valid
 
+is_debug = false;
+
+if (rem(length(varargin),2)==1)
+    error('Optional parameters should always go by pairs');
+else
+    for i=1:2:(length(varargin)-1)
+        switch upper(varargin{i})
+            case 'DEBUG'
+                is_debug = varargin{i+1};
+            otherwise
+                error('Unrecognized option: %s',varargin{i});
+        end
+    end
+end
+
+
 [scan_motor_pos1,scan_motor_pos2,scan_motor_pos3] = crism_hkp_get_scan_motor_pos(hkp_fpath);
 
 scan_motor_pos3(scan_motor_pos3<(-2^21-1)) = scan_motor_pos3(scan_motor_pos3<(-2^21-1)) + (2^22-1);
@@ -33,6 +49,12 @@ Anrmd = A ./ Anrm;
 r = abs(scan_motor_diff - Anrmd*x1);
 
 
-valid_lines_bool = and(r < 250,logical(w));
+valid_lines_bool = and(r < 300,logical(w));
+
+if is_debug
+    figure; plot(scan_motor_diff,'.'); hold on; plot(Anrmd*x1);
+    plot(scan_motor_diff.*convertBoolTo1nan(~valid_lines_bool),'rO');
+    figure; plot(r,'.'); hold on; plot(r.*convertBoolTo1nan(~valid_lines_bool),'rO');
+end
 
 end
