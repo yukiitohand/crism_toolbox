@@ -1,10 +1,12 @@
-function [valid_lines_bool] = crism_examine_valid_lines_fast(hkp_fpath,varargin)
+function [valid_lines_bool,r,w] = crism_examine_valid_lines_fast(hkp_fpath,varargin)
 % [valid_lines_bool] = crism_examine_valid_lines_fast(hkp_fpath)
 % examine valid lines from the scan motor position
 % Input parameters
 %    hkp_fpath: file path to the HKP table file.
 % Output parameters
 %    valid_lines_bool: boolean, ith element is true if the line is valid
+%    r: residual vector
+%    w: flag based on the magnitude of scan_motor_diff
 
 is_debug = false;
 
