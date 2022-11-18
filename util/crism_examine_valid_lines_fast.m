@@ -1,6 +1,7 @@
 function [valid_lines_bool,scan_motor_diff,m,options] = ...
-    crism_examine_valid_lines_fast(hkp_fpath,varargin)
-% [valid_lines_bool] = crism_examine_valid_lines_fast(hkp_fpath)
+    crism_get_disconframe_mask_w_scan_motor_diff(hkp_fpath,varargin)
+% [valid_lines_bool,scan_motor_diff,m,options] = ...
+%     crism_get_disconframe_mask_w_scan_motor_diff(hkp_fpath,varargin)
 % examine valid lines from the scan motor position
 % Input parameters
 %    hkp_fpath: file path to the HKP table file.
