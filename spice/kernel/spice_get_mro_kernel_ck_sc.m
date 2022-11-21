@@ -114,7 +114,7 @@ end
 
 [fnames_mtch,regexp_out] = naif_readDownloadBasename(fname_ck_sc_ptrn, ...
     subdir_local,subdir_remote,1,'ext_ignore',1, ...
-    'match_exact',0,'force',1,'overwrite',overwrite,'verbose',false);
+    'match_exact',0,'overwrite',overwrite,'verbose',false);
 [props] = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), ...
     fnames_mtch, 'UniformOutput', false);
 props = [props{:}];
@@ -164,7 +164,7 @@ else
         end
         [fname_ck_sc_out_1,~] = naif_readDownloadBasename(fname_slctd, ...
             subdir_local,subdir_remote,dwld,'ext_ignore',isempty(ext), ...
-            'force',force,'overwrite',overwrite);
+            'overwrite',overwrite);
         if iscell(fname_ck_sc_out_1)
             fname_ck_sc_out = [fname_ck_sc_out fname_ck_sc_out_1];
         else

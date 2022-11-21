@@ -140,7 +140,7 @@ else
 
     [fname_spk_sc_out,regexp_out] = naif_readDownloadBasename( ...
         fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
-        'ext_ignore',isempty(ext),'force',force,'overwrite',overwrite);
+        'ext_ignore',isempty(ext),'overwrite',overwrite);
 end
 
 
