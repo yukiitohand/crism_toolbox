@@ -50,9 +50,6 @@ function [fname_spkde_out,dirpath,vr_out] = spice_get_mro_kernel_spk_de( ...
 %     if dwld>0, then this is passed to 'pds_downloader'
 %     -1: show the list of file that match the input pattern.
 %     (default) 0
-%  "FORCE": boolean, whether or not to perform procedure for "DOWNLOAD"
-%    forcefully. "DOWNLOAD" option is always triggered if no files matches 
-%    in the local repository regardless of "FORCE"
 %  "OVERWRITE": boolean, whether or not to overwrite the local files with
 %    the files at the remote archive serve.
 %
@@ -66,7 +63,6 @@ vr          = [];
 
 % ## downloading options.
 dwld      = 0;
-force     = false;
 overwrite = false;
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
@@ -81,8 +77,6 @@ else
                 vr = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'FORCE'
-                force = varargin{i+1};
             case 'OVERWRITE'
                 overwrite = varargin{i+1};
             otherwise
@@ -134,38 +128,18 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global naif_archive_env_vars
-% global crism_env_vars
+global spicekrnl_env_vars
+localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = spicekrnl_env_vars.crismlnx_URL;
+local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
-localrootDir    = naif_archive_env_vars.local_naif_archive_rootDir;
-url_local_root  = naif_archive_env_vars.naif_archive_root_URL;
-url_remote_root = naif_archive_env_vars.naif_archive_root_URL;
-
-NAIF_GENERICSPICE_subdir = naif_archive_env_vars.NAIF_GENERICSPICE_subdir;
-NAIF_MROSPICE_subdir     = naif_archive_env_vars.NAIF_MROSPICE_subdir;
-NAIF_MROSPICE_pds_subdir = naif_archive_env_vars.NAIF_MROSPICE_pds_subdir;
-
-switch upper(dirpath_opt)
-    case 'CRISM'
-        subdir_local  = joinPath(NAIF_GENERICSPICE_subdir,'spk');
-        subdir_remote = joinPath(NAIF_GENERICSPICE_subdir,'spk');
-        dirpath = joinPath(localrootDir,url_local_root,subdir_local);
-    case 'GENERIC'
-        subdir_local  = joinPath(NAIF_GENERICSPICE_subdir,'spk','planets');
-        subdir_remote = joinPath(NAIF_GENERICSPICE_subdir,'spk','planets');
-        dirpath = joinPath(localrootDir,url_local_root,subdir_local);
-    case 'GENERIC_OLD'
-        subdir_local  = joinPath(NAIF_MROSPICE_subdir,'spk','planets','a_old_versions');
-        subdir_remote = joinPath(NAIF_MROSPICE_subdir,'spk','planets','a_old_versions');
-        dirpath = joinPath(localrootDir,url_local_root,subdir_local);
-    case 'PDS'
-        subdir_local  = joinPath(NAIF_MROSPICE_pds_subdir,'spk');
-        subdir_remote = joinPath(NAIF_MROSPICE_pds_subdir,'spk');
-        dirpath = joinPath(localrootDir,url_local_root,subdir_local);
-    otherwise
-        error('Undefined dirpath_opt %s',dirpath_opt);
+subdir_local = spicekrnl_get_subdir_spk_de(local_fldsys,dirpath_opt);
+if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
+    subdir_remote = spicekrnl_get_subdir_spk_de(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
+else
+    subdir_remote = '';
 end
-
+dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 %
 %%
 %==========================================================================
@@ -174,7 +148,6 @@ end
 [fname_spkde_out,vr_out] = spice_get_kernel(fname_spkde_ptrn, ...
     'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
     'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
-    'DWLD',dwld, ...
-    'force',force,'overwrite',overwrite);
+    'DWLD',dwld,'overwrite',overwrite);
 
 end

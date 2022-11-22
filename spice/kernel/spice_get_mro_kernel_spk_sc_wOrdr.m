@@ -30,9 +30,6 @@ function [fname_spk_sc_out,dirpath] = spice_get_mro_kernel_spk_sc_wOrdr(...
 %     if dwld>0, then this is passed to 'pds_downloader'
 %     -1: show the list of file that match the input pattern.
 %     (default) 0
-%  "FORCE": boolean, whether or not to perform procedure for "DOWNLOAD"
-%    forcefully. "DOWNLOAD" option is always triggered if no files matches 
-%    in the local repository regardless of "FORCE", not otherwise.
 %  "OVERWRITE": boolean, whether or not to overwrite the local files with
 %    the files at the remote archive serve.
 %
@@ -48,7 +45,7 @@ else
             case 'KERNEL_ORDER'
                 krnl_ordr = varargin{i+1};
                 varargin_rmIdx = [varargin_rmIdx i i+1];
-            case {'EXT','SUFFIX','DWLD','DOWNLOAD','FORCE','OVERWRITE'}
+            case {'EXT','SUFFIX','DWLD','DOWNLOAD','OVERWRITE'}
             otherwise
                 error('Unrecognized option: %s', varargin{i});   
         end

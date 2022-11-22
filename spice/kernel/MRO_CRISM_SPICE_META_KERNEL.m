@@ -65,7 +65,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % sclk
         function set_kernel_sclk_default(obj,varargin)
-            obj.set_kernel_sclk('PDS','FileName',obj.src.sclk,varargin{:});
+            obj.set_kernel_sclk('NAIF','FileName',obj.src.sclk,varargin{:});
         end
         
         % fk
@@ -75,7 +75,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 if strcmpi(fname_fk,'MRO_CRISM_FK_0000_000_N_01.TF')
                     fprintf('MRO_CRISM_FK_0000_000_N_01.TF is skipped.\n');
                 else
-                    obj.set_kernel_fk('PDS','FileName',fname_fk,varargin{:});
+                    obj.set_kernel_fk('NAIF','FileName',fname_fk,varargin{:});
                 end
             end
         end
@@ -87,7 +87,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 if strcmpi(fname_ik,'MRO_CRISM_IK_0000_000_N_10.TI')
                     fprintf('MRO_CRISM_IK_0000_000_N_10.TI is skipped.\n');
                 end
-                obj.set_kernel_ik('PDS',varargin{:});
+                obj.set_kernel_ik('NAIF',varargin{:});
             else
                 error('The number of ik kernel is more than one');
             end
@@ -95,12 +95,12 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % lsk
         function set_kernel_lsk_default(obj,varargin)
-            obj.set_kernel_lsk('PDS','FileName',obj.src.lsk,varargin{:});
+            obj.set_kernel_lsk('NAIF','FileName',obj.src.lsk,varargin{:});
         end
         
         % pck
         function set_kernel_pck_default(obj,varargin)
-            obj.set_kernel_pck('PDS','FileName',obj.src.pck,varargin{:});
+            obj.set_kernel_pck('NAIF','FileName',obj.src.pck,varargin{:});
         end
         
         % spk de
@@ -129,17 +129,17 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 'InputFormat','yyyy-MM-dd''T''HH:mm:ss.SSS');
             end_time = datetime(obj.DEdata.lbl.STOP_TIME, ...
                 'InputFormat','yyyy-MM-dd''T''HH:mm:ss.SSS');
-            obj.set_kernel_spk_sc(strt_time, end_time,'PDS',varargin{:});
+            obj.set_kernel_spk_sc(strt_time, end_time,'NAIF',varargin{:});
         end
         
         % ck sc
         function set_kernel_ck_sc_default(obj,varargin)
-            obj.set_kernel_ck_sc(obj.src.ck,'PDS',varargin{:});
+            obj.set_kernel_ck_sc(obj.src.ck,'NAIF',varargin{:});
         end
         
         % ck crism
         function set_kernel_ck_crism_default(obj,varargin)
-            obj.set_kernel_ck_crism(obj.src.ck,'PDS',varargin{:});
+            obj.set_kernel_ck_crism(obj.src.ck,'NAIF',varargin{:});
         end
         
         %% 
