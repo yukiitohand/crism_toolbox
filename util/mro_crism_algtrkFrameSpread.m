@@ -9,7 +9,7 @@ function [algtrkfrsprd,xyz_iaumars,radii] = mro_crism_algtrkFrameSpread(DEdata,h
 %  DEdata: CRISMDDRdata class obj
 %  hkp_fpath: file path to the house keeping table file.
 
-if ~isa(DEdata,'CRISMNDDRdata')
+if ~isa(DEdata,'CRISMDDRdata')
     error('DEdata must be an obj of class CRISMDDRdata');
 end
 if ~exist(hkp_fpath,'file')
@@ -21,9 +21,9 @@ sclkdec = crism_get_frame_sclkdec(hkp_fpath,{'start','stop'});
 sclkch = crism_sclkdec2sclkch(sclkdec,p);
 % rMars_m = 3396190; % meters
 %% load SPICE KERNELs
-naif_archive_init;
+spicekrnl_init;
 SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata);
-SPICEMetaKrnlsObj.set_defaut('dwld',2);
+SPICEMetaKrnlsObj.set_defaut('dwld',0);
 % SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{''});
 SPICEMetaKrnlsObj.furnsh();
 
