@@ -130,7 +130,7 @@ end
 %
 global spicekrnl_env_vars
 localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.crismlnx_URL;
+url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_spk_de(local_fldsys,dirpath_opt);

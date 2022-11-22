@@ -16,7 +16,7 @@ switch lower(fldsys)
     case 'naif'
         switch upper(dirpath_opt)
             case 'PDS'
-                subdir = fullfile(spicekrnl_env_vars.NAIF_MROSPICE_pds_subdir,'spk','planets');
+                subdir = fullfile(spicekrnl_env_vars.NAIF_MROSPICE_pds_subdir,'spk');
             case 'GENERIC'
                 subdir = fullfile(spicekrnl_env_vars.NAIF_GENERICSPICE_subdir,'spk','planets');
             case 'GENERIC_OLD'

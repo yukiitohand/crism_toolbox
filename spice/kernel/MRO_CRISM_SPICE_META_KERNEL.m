@@ -14,6 +14,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         ck_crism
         src
         DEdata
+        diropt
     end
     
     methods
@@ -22,6 +23,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 DEdata.lbl.SOURCE_PRODUCT_ID);
             obj.DEdata = DEdata;
             obj.src    = spice_krnls;
+            obj.set_default_diropt();
         end
 
         % furnshing and unloading of spice kernels.
@@ -51,6 +53,35 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         %% 
         %==================================================================
         % default kernel loading methods
+        function set_default_diropt(obj)
+            global spicekrnl_env_vars
+            switch lower(spicekrnl_env_vars.local_fldsys)
+                case 'crismlnx'
+                    obj.diropt.sclk = 'NAIF';
+                    obj.diropt.fk   = 'NAIF';
+                    obj.diropt.ik   = 'NAIF';
+                    obj.diropt.lsk  = 'NAIF';
+                    obj.diropt.pck  = 'NAIF';
+                    obj.diropt.spk_de   = 'CRISM';
+                    obj.diropt.spk_sc   = 'NAIF';
+                    obj.diropt.ck_sc    = 'NAIF';
+                    obj.diropt.ck_crism = 'NAIF';
+                case 'naif'
+                    obj.diropt.sclk = 'PDS';
+                    obj.diropt.fk   = 'PDS';
+                    obj.diropt.ik   = 'PDS';
+                    obj.diropt.lsk  = 'PDS';
+                    obj.diropt.pck  = 'PDS';
+                    obj.diropt.spk_de   = 'PDS';
+                    obj.diropt.spk_sc   = 'PDS';
+                    obj.diropt.ck_sc    = 'PDS';
+                    obj.diropt.ck_crism = 'PDS';
+                otherwise
+                    error('Undefined folder system: %s',spicekrnl_env_vars.local_fldsys);
+            end
+        end
+
+
         function set_defaut(obj,varargin)
             obj.set_kernel_sclk_default(varargin{:});
             obj.set_kernel_fk_default(varargin{:});
@@ -65,7 +96,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % sclk
         function set_kernel_sclk_default(obj,varargin)
-            obj.set_kernel_sclk('NAIF','FileName',obj.src.sclk,varargin{:});
+            obj.set_kernel_sclk(obj.diropt.sclk,'FileName',obj.src.sclk,varargin{:});
         end
         
         % fk
@@ -75,7 +106,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 if strcmpi(fname_fk,'MRO_CRISM_FK_0000_000_N_01.TF')
                     fprintf('MRO_CRISM_FK_0000_000_N_01.TF is skipped.\n');
                 else
-                    obj.set_kernel_fk('NAIF','FileName',fname_fk,varargin{:});
+                    obj.set_kernel_fk(obj.diropt.fk,'FileName',fname_fk,varargin{:});
                 end
             end
         end
@@ -87,7 +118,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 if strcmpi(fname_ik,'MRO_CRISM_IK_0000_000_N_10.TI')
                     fprintf('MRO_CRISM_IK_0000_000_N_10.TI is skipped.\n');
                 end
-                obj.set_kernel_ik('NAIF',varargin{:});
+                obj.set_kernel_ik(obj.diropt.ik,varargin{:});
             else
                 error('The number of ik kernel is more than one');
             end
@@ -95,12 +126,12 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % lsk
         function set_kernel_lsk_default(obj,varargin)
-            obj.set_kernel_lsk('NAIF','FileName',obj.src.lsk,varargin{:});
+            obj.set_kernel_lsk(obj.diropt.lsk,'FileName',obj.src.lsk,varargin{:});
         end
         
         % pck
         function set_kernel_pck_default(obj,varargin)
-            obj.set_kernel_pck('NAIF','FileName',obj.src.pck,varargin{:});
+            obj.set_kernel_pck(obj.diropt.pck,'FileName',obj.src.pck,varargin{:});
         end
         
         % spk de
@@ -117,7 +148,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 end
             end
             if ischar(fname_spk_de)
-                obj.set_kernel_spk_de('CRISM','FileName',fname_spk_de,varargin{:});
+                obj.set_kernel_spk_de(obj.diropt.spk_de,'FileName',fname_spk_de,varargin{:});
             else
                 error('Multiple spk de files are detected');
             end
@@ -129,17 +160,17 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 'InputFormat','yyyy-MM-dd''T''HH:mm:ss.SSS');
             end_time = datetime(obj.DEdata.lbl.STOP_TIME, ...
                 'InputFormat','yyyy-MM-dd''T''HH:mm:ss.SSS');
-            obj.set_kernel_spk_sc(strt_time, end_time,'NAIF',varargin{:});
+            obj.set_kernel_spk_sc(strt_time, end_time,obj.diropt.spk_sc,varargin{:});
         end
         
         % ck sc
         function set_kernel_ck_sc_default(obj,varargin)
-            obj.set_kernel_ck_sc(obj.src.ck,'NAIF',varargin{:});
+            obj.set_kernel_ck_sc(obj.src.ck,obj.diropt.ck_sc,varargin{:});
         end
         
         % ck crism
         function set_kernel_ck_crism_default(obj,varargin)
-            obj.set_kernel_ck_crism(obj.src.ck,'NAIF',varargin{:});
+            obj.set_kernel_ck_crism(obj.src.ck,obj.diropt.ck_crism,varargin{:});
         end
         
         %% 
