@@ -146,6 +146,10 @@ NAIF_MROSPICE_subdir     = naif_archive_env_vars.NAIF_MROSPICE_subdir;
 NAIF_MROSPICE_pds_subdir = naif_archive_env_vars.NAIF_MROSPICE_pds_subdir;
 
 switch upper(dirpath_opt)
+    case 'CRISM'
+        subdir_local  = joinPath(NAIF_GENERICSPICE_subdir,'spk');
+        subdir_remote = joinPath(NAIF_GENERICSPICE_subdir,'spk');
+        dirpath = joinPath(localrootDir,url_local_root,subdir_local);
     case 'GENERIC'
         subdir_local  = joinPath(NAIF_GENERICSPICE_subdir,'spk','planets');
         subdir_remote = joinPath(NAIF_GENERICSPICE_subdir,'spk','planets');

@@ -117,7 +117,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                 end
             end
             if ischar(fname_spk_de)
-                obj.set_kernel_spk_de('PDS','FileName',fname_spk_de,varargin{:});
+                obj.set_kernel_spk_de('CRISM','FileName',fname_spk_de,varargin{:});
             else
                 error('Multiple spk de files are detected');
             end
