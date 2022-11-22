@@ -55,6 +55,9 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         % default kernel loading methods
         function set_default_diropt(obj)
             global spicekrnl_env_vars
+            if isempty(spicekrnl_env_vars)
+                error('Perform "spicekrnl_init" first.')
+            end
             switch lower(spicekrnl_env_vars.local_fldsys)
                 case 'crismlnx'
                     obj.diropt.sclk = 'NAIF';
