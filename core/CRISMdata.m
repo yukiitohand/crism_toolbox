@@ -372,17 +372,17 @@ classdef CRISMdata < ENVIRasterMultBand
         end
         
         function [sclk,p] = get_sclk_start(obj)
-            sclkstr = obj.lbl.SPACECRAFT_CLOCK_START_COUNT;
-            sclk = sscanf(sclkstr,'%d/%f');
-            p = sclk(1);
-            sclk = sclk(2);
+            % sclkstr = obj.lbl.SPACECRAFT_CLOCK_START_COUNT;
+            % sclk = sscanf(sclkstr,'%d/%f');
+            % p = sclk(1);
+            % sclk = sclk(2);
         end
             
         function [sclk,p] = get_sclk_stop(obj)
-            sclkstr = obj.lbl.SPACECRAFT_CLOCK_STOP_COUNT;
-            sclk = sscanf(sclkstr,'%d/%f');
-            p = sclk(1);
-            sclk = sclk(2);
+            % sclkstr = obj.lbl.SPACECRAFT_CLOCK_STOP_COUNT;
+            % sclk = sscanf(sclkstr,'%d/%f');
+            % p = sclk(1);
+            % sclk = sclk(2);
         end
         
         function [obs_id] = get_obsid(obj)
