@@ -81,6 +81,10 @@ for i=1:length(ttp)
             end
             tn = (2*(1:n)-1)/(2*n) .* exp_t;
             sclk_i = t_start + tn;
+        case 'BETWEEN'
+            % This option is added for an experiment.
+            t_diff = 0.5*mean(t_start(2:end) - t_start(1:end-1),'omitnan');
+            sclk_i = t_start + t_diff;
         otherwise
             error('Invalid time type parameter: %s',ttp_i);
     end

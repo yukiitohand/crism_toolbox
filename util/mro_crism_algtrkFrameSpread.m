@@ -15,9 +15,9 @@ end
 if ~exist(hkp_fpath,'file')
     error('%s does not exist.',hkp_fpath);
 end
-
+ttp = {'start','mean','between','stop'};
 p = crism_lbl_get_sclk(DEdata.lbl);
-sclkdec = crism_get_frame_sclkdec(hkp_fpath,{'start','mean','stop'});
+sclkdec = crism_get_frame_sclkdec(hkp_fpath,ttp);
 sclkch = crism_sclkdec2sclkch(sclkdec,p);
 % rMars_m = 3396190; % meters
 %% load SPICE KERNELs
@@ -92,7 +92,9 @@ end
 xyz_iaumars = xyz_iaumars * 1000; % Convert to the unit of meters.
 
 % ALonG TRacK FRame SPReaD
-algtrkfrsprd = sqrt(sum((xyz_iaumars(:,:,3) - xyz_iaumars(:,:,1)).^2,2));
+idx_start = find(strcmpi(ttp,'start'),1);
+idx_stop  = find(or(strcmpi(ttp,'stop'),strcmpi(ttp,'end')),1);
+algtrkfrsprd = sqrt(sum((xyz_iaumars(:,:,idx_stop) - xyz_iaumars(:,:,idx_start)).^2,2));
 
 radii = cspice_bodvrd( 'MARS', 'RADII', 3 )*1000;
 
