@@ -1,4 +1,4 @@
-function [algtrkfrsprd,xyz_iaumars,radii] = mro_crism_algtrkFrameSpread(DEdata,hkp_fpath)
+function [algtrkfrsprd,xyz_iaumars,radii_out] = mro_crism_algtrkFrameSpread(DEdata,hkp_fpath,varargin)
 % [algtrkfrsprd,xyz_iaumars] = mro_crism_algtrkFrameSpread(DEdata,hkp_fpath)
 %  Calcuate Along Track Frame Spread which measures how smeared each frame 
 %  is in the along track direction. In specific, how many meters the 
@@ -15,7 +15,25 @@ end
 if ~exist(hkp_fpath,'file')
     error('%s does not exist.',hkp_fpath);
 end
-ttp = {'start','mean','between','stop'};
+
+radii_in = [];
+ttp = {'start','mean','stop'};
+
+if (rem(length(varargin),2)==1)
+    error('Optional parameters should always go by pairs');
+else
+    for i=1:2:(length(varargin)-1)
+        switch upper(varargin{i})
+            case 'RADII'
+                radii_in = varargin{i+1};
+            case 'TTP'
+                ttp = varargin{i+1};
+            otherwise
+                error('Unrecognized option: %s',varargin{i});
+        end
+    end
+end
+
 p = crism_lbl_get_sclk(DEdata.lbl);
 sclkdec = crism_get_frame_sclkdec(hkp_fpath,ttp);
 sclkch = crism_sclkdec2sclkch(sclkdec,p);
@@ -27,6 +45,11 @@ SPICEMetaKrnlsObj.set_defaut('dwld',0);
 % SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{''});
 SPICEMetaKrnlsObj.furnsh();
 
+%% Get center latitude and longitde
+if ~isempty(radii_in)
+    [fpath_pck_mars_mod] = spice_pck_mars_overwrite_radii(radii_in);
+    cspice_furnsh(fpath_pck_mars_mod);
+end
 %% SPICE SETUP
 abcorr  =  'CN+S';
 switch upper(DEdata.prop.sensor_id)
@@ -80,6 +103,9 @@ for l=1:L
         % from MRO to the boresight surface intercept point
         % in IAU_MARS coordinates.
         %
+        % [ spoint, etemit, srfvec, found ] = ...
+        %     cspice_sincpt( method, target, etrec, fixref, ...
+        %                    abcorr, obsrvr, dref, bsight);
         [ spoint, etemit, srfvec, found ] = ...
             cspice_sincpt( method, target, etrec, fixref, ...
                            abcorr, obsrvr, dref, bsight);
@@ -96,7 +122,12 @@ idx_start = find(strcmpi(ttp,'start'),1);
 idx_stop  = find(or(strcmpi(ttp,'stop'),strcmpi(ttp,'end')),1);
 algtrkfrsprd = sqrt(sum((xyz_iaumars(:,:,idx_stop) - xyz_iaumars(:,:,idx_start)).^2,2));
 
-radii = cspice_bodvrd( 'MARS', 'RADII', 3 )*1000;
+radii_out = cspice_bodvrd( 'MARS', 'RADII', 3 )*1000;
 
-SPICEMetaKrnlsObj.unload();
+% SPICEMetaKrnlsObj.unload();
+
+if ~isempty(radii_in)
+    cspice_unload(fpath_pck_mars_mod);
+end
+
 end
