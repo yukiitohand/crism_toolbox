@@ -61,6 +61,24 @@ else
         end
     end
 end
+
+%%
+%==========================================================================
+% Resolving the directory path of the file
+%
+global spicekrnl_env_vars
+localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = spicekrnl_env_vars.url_local_root;
+local_fldsys    = spicekrnl_env_vars.local_fldsys;
+
+subdir_local = spicekrnl_get_subdir_ck_crism(local_fldsys,dirpath_opt);
+if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
+    subdir_remote = spicekrnl_get_subdir_ck_crism(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
+else
+    subdir_remote = '';
+end
+dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+
 %% Get the datetime range of the input spck files
 dt = [];
 if isempty(basenames_ck)
@@ -80,22 +98,7 @@ end
 dt_min_spck = min(dt);
 dt_max_spck = max(dt);
 
-%%
-%==========================================================================
-% Resolving the directory path of the file
-%
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
-subdir_local = spicekrnl_get_subdir_ck_crism(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_ck_crism(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
-dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 
 %%

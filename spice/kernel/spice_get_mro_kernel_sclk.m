@@ -93,77 +93,6 @@ else
 end
 %%
 %==========================================================================
-% Input interpretation
-%==========================================================================
-if strcmpi(ext,'all')
-    ext = '[^\.]*$';
-end
-get_latest = false;
-if ~isempty(fname_sclk)
-    % If the fname_sclk is provided
-    fname_sclk_ptrn_256 = ['MRO_SCLKSCET(\.|_)(?<version>\d{5})\.' ext];
-    fname_sclk_ptrn_65536 = ['MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)65536\.' ext];
-    
-    mtch = regexp(fname_sclk,fname_sclk_ptrn_256,'names');
-    if ~isempty(mtch)
-        %  precision = 'STANDARD';
-        if ischar(vr) && strcmpi(vr,'latest')
-            fname_sclk_ptrn = fname_sclk_ptrn_256;
-            get_latest = true;
-        else
-            fname_sclk_ptrn = sprintf( ...
-                'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', mtch.version);
-            fname_sclk_ptrn = [fname_sclk_ptrn ext];
-        end
-    else
-        mtch = regexp(fname_sclk,fname_sclk_ptrn_65536,'names');
-        if ~isempty(mtch)
-            % precision = 'HIGH';
-            if ischar(vr) && strcmpi(vr,'latest')
-                fname_sclk_ptrn = fname_sclk_ptrn_65536;
-                get_latest = true;
-            else
-                fname_sclk_ptrn = sprintf( ...
-                    'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
-                    mtch.version);
-                fname_sclk_ptrn = [fname_sclk_ptrn ext];
-            end
-        else
-            error('Something wrong with fname_sclk %s',fname_sclk);
-        end
-    end
-    
-else 
-    if isempty(vr)
-        vr_str = '\d{5}';
-    else
-        if isnumeric(vr)
-            vr_str = num2str(vr,'%05d');
-        elseif ischar(vr) && strcmpi(vr,'latest')
-            vr_str = '\d{5}';
-            get_latest = true;
-        else
-            error('Invalid version input');
-        end
-    end
-    switch upper(precision)
-        case {'STANDARD',256}
-            fname_sclk_ptrn = sprintf( ...
-                'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', vr_str);
-        case {'HIGH',65536}
-            fname_sclk_ptrn = sprintf( ...
-                'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
-                vr_str);
-        otherwise
-            error('Undefined presision %s',precision);
-    end
-    
-    fname_sclk_ptrn = [fname_sclk_ptrn ext];
-
-end
-%
-%%
-%==========================================================================
 % Resolving the directory path of the file
 %
 global spicekrnl_env_vars
@@ -178,15 +107,98 @@ else
     subdir_remote = '';
 end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
-%
-%
+
 %%
 %==========================================================================
-% Depending on the version mode, return its fname and version.
-%
-[fname_sclk_out,vr_out] = spice_get_kernel(fname_sclk_ptrn, ...
-    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-    'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
-    'DWLD',dwld,'overwrite',overwrite);
+% Input interpretation
+%==========================================================================
+get_latest = (ischar(vr) && strcmpi(vr,'latest'));
+if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+fname_sclk_ptrn_65536 = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)65536\.' ext];
+fname_sclk_ptrn_256 = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})\.' ext];
+if ~isempty(fname_sclk) && dwld==0 && ~get_latest
+    % If the fname_sclk is provided
+    mtch = regexp(fname_sclk,fname_sclk_ptrn_65536,'names');
+    if isempty(mtch)
+        mtch = regexp(fname_sclk,fname_sclk_ptrn_256,'names');
+        if isempty(mtch)
+            error('Something wrong with the input fname');
+        else
+            vr_out = str2double(mtch.version);
+            fname_sclk_out = fname_sclk;
+        end
+    else
+        vr_out = str2double(mtch.version);
+        fname_sclk_out = fname_sclk;
+    end
+    if ~exist(fullfile(dirpath,fname_sclk_out),'file')
+        error('%s is not found in %s.',fname_sclk_out,dirpath);
+    end
+else
+    if ~isempty(fname_sclk)
+        mtch = regexp(fname_sclk,fname_sclk_ptrn_65536,'names');
+        if ~isempty(mtch)
+            % precision = 'HIGH';
+            if get_latest
+                fname_sclk_ptrn = fname_sclk_ptrn_65536;
+            else
+                fname_sclk_ptrn = sprintf( ...
+                    'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
+                    mtch.version);
+                fname_sclk_ptrn = [fname_sclk_ptrn ext];
+            end
+        else
+            mtch = regexp(fname_sclk,fname_sclk_ptrn_256,'names');
+            if ~isempty(mtch)
+                %  precision = 'STANDARD';
+                if get_latest
+                    fname_sclk_ptrn = fname_sclk_ptrn_256;
+                else
+                    fname_sclk_ptrn = sprintf( ...
+                        'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', mtch.version);
+                    fname_sclk_ptrn = [fname_sclk_ptrn ext];
+                end
+            else
+                error('Something wrong with fname_sclk %s',fname_sclk);
+            end
+        end
+    else 
+        if isempty(vr)
+            vr_str = '\d{5}';
+        else
+            if isnumeric(vr)
+                vr_str = num2str(vr,'%05d');
+            elseif get_latest
+                vr_str = '\d{5}';
+            else
+                error('Invalid version input');
+            end
+        end
+        switch upper(precision)
+            case {'STANDARD',256}
+                fname_sclk_ptrn = sprintf( ...
+                    'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', vr_str);
+            case {'HIGH',65536}
+                fname_sclk_ptrn = sprintf( ...
+                    'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
+                    vr_str);
+            otherwise
+                error('Undefined presision %s',precision);
+        end
+        fname_sclk_ptrn = [fname_sclk_ptrn ext];
+    end
+    %
+    %
+    %
+    %%
+    %==========================================================================
+    % Depending on the version mode, return its fname and version.
+    %
+    [fname_sclk_out,vr_out] = spice_get_kernel(fname_sclk_ptrn, ...
+        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
+        'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
+        'DWLD',dwld,'overwrite',overwrite);
+    
+end
 
 end

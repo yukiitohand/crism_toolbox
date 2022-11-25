@@ -84,46 +84,7 @@ else
         end
     end
 end
-%%
-%==========================================================================
-% Input interpretation
-%==========================================================================
-get_latest = false;
-if strcmpi(ext,'all')
-    ext = '[^\.]*$';
-end
-if ~isempty(fname_ik)
-    % If the fname_sclk is provided
-    fname_ik_ptrn   = ['mro_crism_v(?<version>\d{2})\\.' ext];
-    mtch = regexp(fname_ik,fname_ik_ptrn,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
-    else
-        if ischar(vr) && strcmpi(vr,'latest')
-            get_latest = true;
-        else
-            fname_ik_ptrn=sprintf('mro_crism_v(?<version>%s)\\.', ...
-                mtch.version);
-            fname_ik_ptrn = [fname_ik_ptrn ext];
-        end
-    end
-else
-    if isempty(vr)
-        vr_str = '\d{2}';
-    else
-        if isnumeric(vr)
-            vr_str = num2str(vr,'%02d');
-        elseif ischar(vr) && strcmpi(vr,'latest')
-            vr_str = '\d{2}';
-            get_latest = true;
-        else
-            error('Invalid version input');
-        end
-    end
-    fname_ik_ptrn = sprintf('mro_crism_v(?<version>%s)\\.', vr_str);
-    fname_ik_ptrn = [fname_ik_ptrn ext];
-end
-%
+
 %%
 %==========================================================================
 % Resolving the directory path of the file
@@ -140,15 +101,62 @@ else
     subdir_remote = '';
 end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
-
-%
 %%
 %==========================================================================
-% Depending on the version mode, return its fname and version.
-%
-[fname_ik_out,vr_out] = spice_get_kernel(fname_ik_ptrn, ...
-    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-    'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
-    'DWLD',dwld,'overwrite',overwrite);
+% Input interpretation
+%==========================================================================
+get_latest = (ischar(vr) && strcmpi(vr,'latest'));
+if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+if ~isempty(fname_ik) && dwld==0 && ~get_latest
+    % If the fname_sclk is provided
+    fname_ik_ptrn   = ['^mro_crism_v(?<version>\d{2})\\.' ext];
+    mtch = regexp(fname_ik,fname_ik_ptrn,'names');
+    if isempty(mtch)
+        error('Something wrong with the input fname');
+    else
+        vr_out = str2double(mtch.version);
+        fname_ik_out = fname_ik;
+    end
+    if ~exist(fullfile(dirpath,fname_ik_out),'file')
+        error('%s is not found in %s.',fname_ik_out,dirpath);
+    end
+else
+    if ~isempty(fname_ik)
+        fname_ik_ptrn   = ['^mro_crism_v(?<version>\d{2})\\.' ext];
+        mtch = regexp(fname_ik,fname_ik_ptrn,'names');
+        if isempty(mtch)
+            error('Something wrong with the input fname');
+        else
+            if ~get_latest
+                fname_ik_ptrn=sprintf('^mro_crism_v(?<version>%s)\\.', ...
+                    mtch.version);
+                fname_ik_ptrn = [fname_ik_ptrn ext];
+            end
+        end
+    else
+        if isempty(vr)
+            vr_str = '\d{2}';
+        else
+            if isnumeric(vr)
+                vr_str = num2str(vr,'%02d');
+            elseif get_latest
+                vr_str = '\d{2}';
+            else
+                error('Invalid version input');
+            end
+        end
+        fname_ik_ptrn = sprintf('^mro_crism_v(?<version>%s)\\.', vr_str);
+        fname_ik_ptrn = [fname_ik_ptrn ext];
+    end
+    %%
+    %==========================================================================
+    % Depending on the version mode, return its fname and version.
+    %
+    [fname_ik_out,vr_out] = spice_get_kernel(fname_ik_ptrn, ...
+        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
+        'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
+        'DWLD',dwld,'overwrite',overwrite);
+
+end
 
 end

@@ -15,10 +15,24 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         src
         DEdata
         diropt
+        verbose
     end
     
     methods
-        function obj = MRO_CRISM_SPICE_META_KERNEL(DEdata)
+        function obj = MRO_CRISM_SPICE_META_KERNEL(DEdata,varargin)
+            obj.verbose = true;
+            if (rem(length(varargin),2)==1)
+                error('Optional parameters should always go by pairs');
+            else
+                for i=1:2:(length(varargin)-1)
+                    switch upper(varargin{i})
+                        case 'VERBOSE'
+                            obj.verbose = varargin{i+1};
+                        otherwise
+                            error('Unrecognized option: %s',varargin{i});
+                    end
+                end
+            end
             spice_krnls = crism_organize_source_spice_kernel( ...
                 DEdata.lbl.SOURCE_PRODUCT_ID);
             obj.DEdata = DEdata;
@@ -184,68 +198,83 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         function set_kernel_sclk(obj,varargin)
             [fname_sclk_out,dirpath] = spice_get_mro_kernel_sclk( ...
                 varargin{:},'ext','all');
-            obj.sclk = MRO_CRISM_SPICE_KERNEL(fname_sclk_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.sclk.fname_krnl,dirpath);
+            obj.sclk = MRO_CRISM_SPICE_KERNEL(fname_sclk_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.sclk.fname_krnl,dirpath);
+            end
         end
         
         % fk
         function set_kernel_fk(obj,varargin)
             [fname_fk_out,dirpath] = spice_get_mro_kernel_fk(varargin{:},'ext','all');
-            obj.fk = MRO_CRISM_SPICE_KERNEL(fname_fk_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.fk.fname_krnl,dirpath);
+            obj.fk = MRO_CRISM_SPICE_KERNEL(fname_fk_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.fk.fname_krnl,dirpath);
+            end
         end
         
         % ik
         function set_kernel_ik(obj,varargin)
             [fname_ik_out,dirpath] = spice_get_mro_crism_kernel_ik(varargin{:},'ext','all');
-            obj.ik = MRO_CRISM_SPICE_KERNEL(fname_ik_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.ik.fname_krnl,dirpath);
+            obj.ik = MRO_CRISM_SPICE_KERNEL(fname_ik_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.ik.fname_krnl,dirpath);
+            end
         end
         
         % lsk
         function set_kernel_lsk(obj,varargin)
             [fname_lsk_out,dirpath] = spice_get_mro_kernel_lsk(varargin{:},'ext','all');
-            obj.lsk = MRO_CRISM_SPICE_KERNEL(fname_lsk_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.lsk.fname_krnl,dirpath);
+            obj.lsk = MRO_CRISM_SPICE_KERNEL(fname_lsk_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.lsk.fname_krnl,dirpath);
+            end
         end
         
         % pck
         function set_kernel_pck(obj,varargin)
             [fname_pck_out,dirpath] = spice_get_mro_kernel_pck(varargin{:},'ext','all');
-            obj.pck = MRO_CRISM_SPICE_KERNEL(fname_pck_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.pck.fname_krnl,dirpath);
+            obj.pck = MRO_CRISM_SPICE_KERNEL(fname_pck_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.pck.fname_krnl,dirpath);
+            end
         end
         
         % spk de
         function set_kernel_spk_de(obj,varargin)
             [fname_spkde_out,dirpath] = spice_get_mro_kernel_spk_de(varargin{:},'ext','all');
-            obj.spk_de = MRO_CRISM_SPICE_KERNEL(fname_spkde_out,dirpath);
-            fprintf('Selected %-30s in %s\n',obj.spk_de.fname_krnl,dirpath);
+            obj.spk_de = MRO_CRISM_SPICE_KERNEL(fname_spkde_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                fprintf('Selected %-30s in %s\n',obj.spk_de.fname_krnl,dirpath);
+            end
         end
         
         % spk sc
         function set_kernel_spk_sc(obj,varargin)
             [fname_spk_out,dirpath] = spice_get_mro_kernel_spk_sc_wOrdr(varargin{:},'ext','all');
-            obj.spk_sc = MRO_CRISM_SPICE_KERNEL(fname_spk_out,dirpath);
-            if ischar(obj.spk_sc.fname_krnl)
-                fprintf('Selected %-30s in %s\n',obj.spk_sc.fname_krnl, dirpath);
-            elseif iscell(obj.spk_sc.fname_krnl)
-                for i=1:length(obj.spk_sc.fname_krnl)
-                    fprintf('Selected %-30s in %s\n',obj.spk_sc.fname_krnl{i},dirpath);
+            obj.spk_sc = MRO_CRISM_SPICE_KERNEL(fname_spk_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                if ischar(obj.spk_sc.fname_krnl)
+                    fprintf('Selected %-30s in %s\n',obj.spk_sc.fname_krnl, dirpath);
+                elseif iscell(obj.spk_sc.fname_krnl)
+                    for i=1:length(obj.spk_sc.fname_krnl)
+                        fprintf('Selected %-30s in %s\n',obj.spk_sc.fname_krnl{i},dirpath);
+                    end
                 end
             end
-                
         end
         
         % ck sc
         function set_kernel_ck_sc(obj,varargin)
             [fname_ck_sc_out,dirpath] = spice_get_mro_kernel_ck_sc(varargin{:},'ext','all');
-            obj.ck_sc = MRO_CRISM_SPICE_KERNEL(fname_ck_sc_out,dirpath);
-            if ischar(obj.ck_sc.fname_krnl)
-                fprintf('Selected %-30s in %s\n',obj.ck_sc.fname_krnl,dirpath);
-            elseif iscell(obj.ck_sc.fname_krnl)
-                for i=1:length(obj.ck_sc.fname_krnl)
-                    fprintf('Selected %-30s in %s\n',obj.ck_sc.fname_krnl{i},dirpath);
+            obj.ck_sc = MRO_CRISM_SPICE_KERNEL(fname_ck_sc_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                if ischar(obj.ck_sc.fname_krnl)
+                    fprintf('Selected %-30s in %s\n',obj.ck_sc.fname_krnl,dirpath);
+                elseif iscell(obj.ck_sc.fname_krnl)
+                    for i=1:length(obj.ck_sc.fname_krnl)
+                        fprintf('Selected %-30s in %s\n',obj.ck_sc.fname_krnl{i},dirpath);
+                    end
                 end
             end
         end
@@ -253,12 +282,14 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         % ck crism
         function set_kernel_ck_crism(obj,varargin)    
             [fname_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism(varargin{:},'ext','all');
-            obj.ck_crism = MRO_CRISM_SPICE_KERNEL(fname_ck_crism_out,dirpath);
-            if ischar(obj.ck_crism.fname_krnl)
-                fprintf('Selected %-30s in %s\n',obj.ck_crism.fname_krnl, dirpath);
-            elseif iscell(obj.ck_crism.fname_krnl)
-                for i=1:length(obj.ck_crism.fname_krnl)
-                    fprintf('Selected %-30s in %s\n',obj.ck_crism.fname_krnl{i}, dirpath);
+            obj.ck_crism = MRO_CRISM_SPICE_KERNEL(fname_ck_crism_out,dirpath,'verbose',obj.verbose);
+            if obj.verbose
+                if ischar(obj.ck_crism.fname_krnl)
+                    fprintf('Selected %-30s in %s\n',obj.ck_crism.fname_krnl, dirpath);
+                elseif iscell(obj.ck_crism.fname_krnl)
+                    for i=1:length(obj.ck_crism.fname_krnl)
+                        fprintf('Selected %-30s in %s\n',obj.ck_crism.fname_krnl{i}, dirpath);
+                    end
                 end
             end
         end

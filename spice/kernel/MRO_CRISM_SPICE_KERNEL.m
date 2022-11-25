@@ -7,10 +7,24 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
         fname_lbl
         dirpath
         furnshed = false;
+        verbose;
     end
     
     methods
-        function obj = MRO_CRISM_SPICE_KERNEL(fname,dirpath)
+        function obj = MRO_CRISM_SPICE_KERNEL(fname,dirpath,varargin)
+            obj.verbose = true;
+            if (rem(length(varargin),2)==1)
+                error('Optional parameters should always go by pairs');
+            else
+                for i=1:2:(length(varargin)-1)
+                    switch upper(varargin{i})
+                        case 'VERBOSE'
+                            obj.verbose = varargin{i+1};
+                        otherwise
+                            error('Unrecognized option: %s',varargin{i});
+                    end
+                end
+            end
             obj.dirpath = dirpath;
             if ischar(fname)
                 [~,bname,ext] = fileparts(fname);
@@ -66,12 +80,12 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
             % Following kernel is loaded.
             if ischar(obj.fname_krnl)
                 krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
-                fprintf('Furnshing %s\n',krnlpath);
+                if obj.verbose, fprintf('Furnshing %s\n',krnlpath); end
                 cspice_furnsh(krnlpath);
             elseif iscell(obj.fname_krnl)
                 for i=1:length(obj.fname_krnl)
                     krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
-                    fprintf('Furnshing %s\n',krnlpath);
+                    if obj.verbose, fprintf('Furnshing %s\n',krnlpath); end
                     cspice_furnsh(krnlpath);
                 end
             end
@@ -87,12 +101,12 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
             if obj.furnshed || force
                 if ischar(obj.fname_krnl)
                     krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
-                    fprintf('Unloading %s\n',krnlpath);
+                    if obj.verbose, fprintf('Unloading %s\n',krnlpath); end
                     cspice_unload(krnlpath);
                 elseif iscell(obj.fname_krnl)
                     for i=1:length(obj.fname_krnl)
                         krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
-                        fprintf('Unloading %s\n',krnlpath);
+                        if obj.verbose, fprintf('Unloading %s\n',krnlpath); end
                         cspice_unload(krnlpath);
                     end
                 end
@@ -102,13 +116,15 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
         
         function delete(obj)
             obj.unload();
-            if ischar(obj.fname_krnl)
-                krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
-                fprintf('Unsetting %s\n',krnlpath);
-            elseif iscell(obj.fname_krnl)
-                for i=1:length(obj.fname_krnl)
-                    krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
-                    fprintf('Unsetting %s\n',krnlpath);
+            if obj.verbose
+                if ischar(obj.fname_krnl)
+                    krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
+                     fprintf('Unsetting %s\n',krnlpath);
+                elseif iscell(obj.fname_krnl)
+                    for i=1:length(obj.fname_krnl)
+                        krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
+                        fprintf('Unsetting %s\n',krnlpath);
+                    end
                 end
             end
         end

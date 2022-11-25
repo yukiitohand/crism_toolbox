@@ -1,4 +1,4 @@
-function [fname_spk_sc_out,dirpath] = spice_get_mro_kernel_spk_sc( ...
+function [fnames_spk_sc_out,dirpath] = spice_get_mro_kernel_spk_sc( ...
     strt_datetime, end_datetime,dirpath_opt,varargin)
 % [fname_spk_out,dirpath] = spice_get_mro_kernel_spk_sc( ...
 %     strt_datetime, end_datetime,dirpath_opt,varargin)
@@ -95,36 +95,47 @@ end
 
 idx_slctd = and(cond1,cond2);
 
-if strcmpi(ext,'all')
+if strcmpi(ext,'all') && dwld>0
     ext = '[^\.]*$';
 end
 
 if all(idx_slctd)
     fname_spk_ptrn = ['mro_(ab|cruise|psp\d+)' suffix '\.' ext];
-    [fname_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
+    [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
         fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
         'ext_ignore',isempty(ext),'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
     if isempty(idx_slctd)
         fprintf('Not found\n');
-        fname_spk_sc_out = [];
+        fnames_spk_sc_out = [];
         return;
     end
 
     phases_slctd = {spk_arch_infostruct(idx_slctd).PHASE};
 
-
-    %%
-    %==========================================================================
-    % Connect to the remote server to get archived spck files.
-    %
-    phase_ptrn = ['(' strjoin(phases_slctd,'|') ')'];
-    fname_spk_ptrn = ['mro_' phase_ptrn suffix '\.' ext];
-
-    [fname_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-        fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
-        'ext_ignore',isempty(ext),'overwrite',overwrite);
+    if dwld==0
+        fnames_spk_sc_out = cellfun(@(x) ['mro_' x suffix '.bsp'], ...
+                phases_slctd, 'UniformOutput',false);
+        test_existence = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_spk_sc_out);
+        if ~all(test_existence)
+            idxNotFound = find(~test_existence);
+            for ii = 1:length(idxNotFound)
+                error('%s is not found in %s.',fnames_spk_sc_out{idxNotFound(ii)},dirpath);
+            end
+        end
+    else
+        %%
+        %==========================================================================
+        % Connect to the remote server to get archived spck files.
+        %
+        phase_ptrn = ['(' strjoin(phases_slctd,'|') ')'];
+        fname_spk_ptrn = ['mro_' phase_ptrn suffix '\.' ext];
+    
+        [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
+            fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
+            'ext_ignore',isempty(ext),'overwrite',overwrite);
+    end
 end
 
 

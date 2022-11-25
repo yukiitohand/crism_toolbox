@@ -17,13 +17,13 @@ function [sclkch] = crism_sclkdec2sclkch(sclkdec,partition)
 %
 
 sclk_S  = floor(sclkdec);
-sclk_SS = round((sclkdec-sclk_S)*65536);
+sclk_SS = floor((sclkdec-sclk_S)*65536);
 
 if length(sclkdec)==1
-    sclkch = sprintf('%d/%d:%d',partition,sclk_S,sclk_SS);
+    sclkch = sprintf('%d/%010d:%05d',partition,sclk_S,sclk_SS);
 else
     sclkch = arrayfun( ...
-        @(s,ss) sprintf('%d/%d:%d',partition,s,ss), sclk_S, sclk_SS, ...
+        @(s,ss) sprintf('%d/%010d:%05d',partition,s,ss), sclk_S, sclk_SS, ...
         'UniformOutput',false);
 end
 

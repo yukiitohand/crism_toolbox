@@ -84,45 +84,7 @@ else
         end
     end
 end
-%%
-%==========================================================================
-% Input interpretation
-%==========================================================================
-get_latest = false;
-if strcmpi(ext,'all')
-    ext = '[^\.]*$';
-end
-if ~isempty(fname_pck)
-    % If the fname_sclk is provided
-    fname_pck_ptrn   = ['pck(?<version>\d{5})\.' ext];
-    mtch = regexp(fname_pck,fname_pck_ptrn,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
-    else
-        if ischar(vr) && strcmpi(vr,'latest')
-            get_latest = true;
-        else
-            fname_pck_ptrn=sprintf('pck(?<version>%s)\\.',mtch.version);
-            fname_pck_ptrn = [fname_pck_ptrn ext];
-        end
-    end
-else
-    if isempty(vr)
-        vr_str = '\d{5}';
-    else
-        if isnumeric(vr)
-            vr_str = num2str(vr,'%05d');
-        elseif ischar(vr) && strcmpi(vr,'latest')
-            vr_str = '\d{5}';
-            get_latest = true;
-        else
-            error('Invalid version input');
-        end
-    end
-    fname_pck_ptrn = sprintf('pck(?<version>%s)\\.', vr_str);
-    fname_pck_ptrn = [fname_pck_ptrn ext];
-end
-%
+
 %%
 %==========================================================================
 % Resolving the directory path of the file
@@ -139,14 +101,62 @@ else
     subdir_remote = '';
 end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
-%
+
 %%
 %==========================================================================
-% Depending on the version mode, return its fname and version.
-%
-[fname_pck_out,vr_out] = spice_get_kernel(fname_pck_ptrn, ...
-    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-    'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
-    'DWLD',dwld,'overwrite',overwrite);
+% Input interpretation
+%==========================================================================
+get_latest = (ischar(vr) && strcmpi(vr,'latest'));
+if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+if ~isempty(fname_pck) && dwld==0 && ~get_latest
+    fname_pck_ptrn   = ['^pck(?<version>\d{5})\.' ext];
+    mtch = regexp(fname_pck,fname_pck_ptrn,'names');
+    if isempty(mtch)
+        error('Something wrong with the input fname');
+    else
+        fname_pck_out = fname_pck;
+        vr_out = str2double(mtch.version);
+    end
+    if ~exist(fullfile(dirpath,fname_pck_out),'file')
+        error('%s is not found in %s.',fname_pck_out,dirpath);
+    end
+else
+    if ~isempty(fname_pck)
+        % If the fname_sclk is provided
+        fname_pck_ptrn   = ['^pck(?<version>\d{5})\.' ext];
+        mtch = regexp(fname_pck,fname_pck_ptrn,'names');
+        if isempty(mtch)
+            error('Something wrong with the input fname');
+        else
+            if ~get_latest
+                fname_pck_ptrn=sprintf('^pck(?<version>%s)\\.',mtch.version);
+                fname_pck_ptrn = [fname_pck_ptrn ext];
+            end
+        end
+    else
+        if isempty(vr)
+            vr_str = '\d{5}';
+        else
+            if isnumeric(vr)
+                vr_str = num2str(vr,'%05d');
+            elseif get_lastest
+                vr_str = '\d{5}';
+            else
+                error('Invalid version input');
+            end
+        end
+        fname_pck_ptrn = sprintf('^pck(?<version>%s)\\.', vr_str);
+        fname_pck_ptrn = [fname_pck_ptrn ext];
+    end
+
+    %%
+    %==========================================================================
+    % Depending on the version mode, return its fname and version.
+    %
+    [fname_pck_out,vr_out] = spice_get_kernel(fname_pck_ptrn, ...
+        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
+        'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
+        'DWLD',dwld,'overwrite',overwrite);
+end
 
 end

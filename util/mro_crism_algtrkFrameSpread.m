@@ -40,10 +40,12 @@ sclkch = crism_sclkdec2sclkch(sclkdec,p);
 % rMars_m = 3396190; % meters
 %% load SPICE KERNELs
 spicekrnl_init;
-SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata);
+tic;
+SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata,'VERBOSE',0);
 SPICEMetaKrnlsObj.set_defaut('dwld',0);
 % SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{''});
 SPICEMetaKrnlsObj.furnsh();
+toc;
 
 %% Get center latitude and longitde
 if ~isempty(radii_in)
@@ -124,8 +126,10 @@ algtrkfrsprd = sqrt(sum((xyz_iaumars(:,:,idx_stop) - xyz_iaumars(:,:,idx_start))
 
 radii_out = cspice_bodvrd( 'MARS', 'RADII', 3 )*1000;
 
+tic;
 % SPICEMetaKrnlsObj.unload();
-
+cspice_kclear();
+toc;
 if ~isempty(radii_in)
     cspice_unload(fpath_pck_mars_mod);
 end
