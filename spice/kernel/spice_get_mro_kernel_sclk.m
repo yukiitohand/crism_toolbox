@@ -95,12 +95,12 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
+fldsys    = mro_crism_spicekrnl_env_vars.fldsys;
 
-subdir_local = spicekrnl_get_subdir_sclk(local_fldsys,dirpath_opt);
+subdir_local = spicekrnl_mro_get_subdir_sclk(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -118,7 +118,7 @@ if ~isempty(fname_sclk) && dwld==0 && ~get_latest
     else
         vr_out = str2double(mtch.version);
         fname_sclk_out = fname_sclk;
-        if strcmpi(local_fldsys,'naif')
+        if strcmpi(fldsys,'naif')
             if isempty(mtch.precision)
                 fname_sclk_out = ['MRO_SCLKSCET_',mtch.version, mtch.ext];
             elseif stcmpi(mtch.precision,'65536')
@@ -176,7 +176,8 @@ else
     %==========================================================================
     % Depending on the version mode, return its fname and version.
     %
-    [fname_sclk_out,vr_out] = spice_get_kernel(fname_sclk_ptrn, ...
+    [fname_sclk_out,vr_out] = spice_get_kernel( ...
+        mro_crism_spicekrnl_env_vars, fname_sclk_ptrn, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
         'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
         'DWLD',dwld,'overwrite',overwrite);

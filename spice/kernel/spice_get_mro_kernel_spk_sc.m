@@ -60,19 +60,18 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
 
-subdir_local = spicekrnl_get_subdir_spk_sc(local_fldsys,dirpath_opt);
+subdir_local = spicekrnl_mro_get_subdir_spk_sc(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
 %==========================================================================
 % Find corresponding PHASE
 %
-[spk_arch_infostruct] = mro_spice_get_spk_arch_info();
+[spk_arch_infostruct] = mro_spice_get_spk_sc_arch_info();
 strt_times = [spk_arch_infostruct.START_TIME];
 end_times  = [spk_arch_infostruct.END_TIME]  ;
 
@@ -96,7 +95,7 @@ end
 if all(idx_slctd)
     fname_spk_ptrn = ['mro_(ab|cruise|psp\d+)' suffix dot_ext];
     [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-        fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
+        mro_crism_spicekrnl_env_vars, fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
         'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
@@ -124,7 +123,7 @@ else
         fname_spk_ptrn = ['mro_' phase_ptrn suffix dot_ext];
     
         [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-            fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
+            mro_crism_spicekrnl_env_vars, fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
             'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
     end
 end

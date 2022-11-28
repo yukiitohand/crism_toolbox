@@ -90,13 +90,12 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global crism_spicekrnl_env_vars
-localrootDir    = crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = crism_spicekrnl_env_vars.url_local_root;
-fldsys    = crism_spicekrnl_env_vars.fldsys;
-no_remote = crism_spicekrnl_env_vars.no_remote;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
+no_remote = mro_crism_spicekrnl_env_vars.no_remote;
 
-subdir_local = spicekrnl_get_subdir_lsk(fldsys,dirpath_opt);
+subdir_local = spicekrnl_mro_get_subdir_lsk(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%

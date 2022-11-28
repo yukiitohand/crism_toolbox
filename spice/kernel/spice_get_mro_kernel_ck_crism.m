@@ -36,7 +36,7 @@ function [fnames_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 %
 
-dot_ext    = 'bc';
+dot_ext    = '.bc';
 suffix = '';
 
 % ## downloading options.
@@ -66,17 +66,11 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
 
-subdir_local = spicekrnl_get_subdir_ck_crism(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_ck_crism(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
+subdir_local = spicekrnl_mro_get_subdir_ck_crism(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %% Get the datetime range of the input spck files
@@ -155,7 +149,7 @@ if all(idx_slctd)
     fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix];
     fname_ck_arch_ptrn = [fname_ck_arch_ptrn dot_ext];
     [fnames_ck_crism_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-        fname_ck_arch_ptrn, subdir_local, subdir_local, dwld, ...
+        mro_crism_spicekrnl_env_vars, fname_ck_arch_ptrn, subdir_local, subdir_local, dwld, ...
         'ext_ignore',isempty(dot_ext), 'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
@@ -180,7 +174,8 @@ else
             if ~isempty(fnames_slctd{i})
                 fname_slctd = [fnames_slctd{i} dot_ext];
             end
-            [fname_ck_crism_out_1,~] = spicekrnl_readDownloadBasename(fname_slctd, ...
+            [fname_ck_crism_out_1,~] = spicekrnl_readDownloadBasename( ...
+                mro_crism_spicekrnl_env_vars, fname_slctd, ...
                 subdir_local,subdir_local,dwld,'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
             if iscell(fname_ck_crism_out_1)
                 fnames_ck_crism_out = [fnames_ck_crism_out fname_ck_crism_out_1];

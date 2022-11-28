@@ -72,11 +72,11 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         %==================================================================
         % default kernel loading methods
         function set_default_diropt(obj)
-            global spicekrnl_env_vars
-            if isempty(spicekrnl_env_vars)
+            global mro_crism_spicekrnl_env_vars
+            if isempty(mro_crism_spicekrnl_env_vars)
                 error('Perform "spicekrnl_init" first.')
             end
-            switch lower(spicekrnl_env_vars.local_fldsys)
+            switch lower(mro_crism_spicekrnl_env_vars.fldsys)
                 case 'crismlnx'
                     obj.diropt.sclk = 'NAIF';
                     obj.diropt.fk   = 'NAIF';
@@ -98,7 +98,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
                     obj.diropt.ck_sc    = 'PDS';
                     obj.diropt.ck_crism = 'PDS';
                 otherwise
-                    error('Undefined folder system: %s',spicekrnl_env_vars.local_fldsys);
+                    error('Undefined folder system: %s',mro_crism_spicekrnl_env_vars.fldsys);
             end
         end
 

@@ -33,7 +33,7 @@ function [fnames_ck_sc_out,dirpath] = spice_get_mro_kernel_ck_sc( ...
 %
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 %
-ext      = 'bc';
+dot_ext      = '.bc';
 suffix   = '';
 % ## downloading options.
 dwld      = 0;
@@ -44,7 +44,7 @@ else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
             case 'EXT'
-                ext = varargin{i+1};
+                dot_ext = varargin{i+1};
             case 'SUFFIX'
                 suffix = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
@@ -61,12 +61,11 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
 
-subdir_local = spicekrnl_get_subdir_ck_sc(local_fldsys,dirpath_opt);
+subdir_local = spicekrnl_mro_get_subdir_ck_sc(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %% Get the datetime range of the input spck files
@@ -100,12 +99,14 @@ else
     %
      fname_ck_sc_ptrn = ['mro_sc_(psp|cru)_(?<yymmdd_strt>\d{6})_(?<yymmdd_end>\d{6})' suffix];
     
-    if spicekrnl_env_vars.no_remote
-        [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_sc_ptrn, ...
+    if mro_crism_spicekrnl_env_vars.no_remote
+        [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename( ...
+            mro_crism_spicekrnl_env_vars, fname_ck_sc_ptrn, ...
             subdir_local,subdir_local,0,'ext_ignore',1, ...
             'match_exact',0,'overwrite',overwrite,'verbose',false);
     else
-        [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_sc_ptrn, ...
+        [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename( ...
+            mro_crism_spicekrnl_env_vars, fname_ck_sc_ptrn, ...
             subdir_local,subdir_local,1,'ext_ignore',1, ...
             'match_exact',0,'overwrite',overwrite,'verbose',false);
     end
@@ -131,15 +132,16 @@ else
     idx_slctd = and(cond1,cond2);
     
     fnames_ck_sc_out = [];
-    if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+    if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 
     if all(idx_slctd)
         % If all the files are selected, then just perform the same operation
         % with EXT.
-        fname_ck_sc_ptrn = [fname_ck_sc_ptrn ext];
+        fname_ck_sc_ptrn = [fname_ck_sc_ptrn dot_ext];
         [fnames_ck_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-            fname_ck_sc_ptrn, subdir_local, subdir_local, dwld, ...
-            'ext_ignore',isempty(ext),'overwrite',overwrite);
+            mro_crism_spicekrnl_env_vars, fname_ck_sc_ptrn, ...
+            subdir_local, subdir_local, dwld, ...
+            'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
     else
         idx_slctd = find(idx_slctd);
         if isempty(idx_slctd)
@@ -150,11 +152,12 @@ else
         fnames_slctd = fnames_mtch(idx_slctd);
         for i=1:length(fnames_slctd)
             if ~isempty(fnames_slctd{i})
-                fname_slctd = [fnames_slctd{i} '\.' ext];
+                fname_slctd = [fnames_slctd{i} dot_ext];
             end
-            [fname_ck_sc_out_1,~] = spicekrnl_readDownloadBasename(fname_slctd, ...
-                subdir_local,subdir_remote,dwld,'ext_ignore',isempty(ext), ...
-                'overwrite',overwrite);
+            [fname_ck_sc_out_1,~] = spicekrnl_readDownloadBasename( ...
+                mro_crism_spicekrnl_env_vars, fname_slctd, ...
+                subdir_local,subdir_remote,dwld, ...
+                'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
             if iscell(fname_ck_sc_out_1)
                 fnames_ck_sc_out = [fnames_ck_sc_out fname_ck_sc_out_1];
             else

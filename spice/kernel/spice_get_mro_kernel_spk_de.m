@@ -88,12 +88,11 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global mro_crism_spicekrnl_env_vars
+localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
 
-subdir_local = spicekrnl_get_subdir_spk_de(local_fldsys,dirpath_opt);
+subdir_local = spicekrnl_mro_get_subdir_spk_de(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -141,7 +140,8 @@ else
     %==========================================================================
     % Depending on the version mode, return its fname and version.
     %
-    [fname_spkde_out,vr_out] = spice_get_kernel(fname_spkde_ptrn, ...
+    [fname_spkde_out,vr_out] = spice_get_kernel( ...
+        mro_crism_spicekrnl_env_vars, mro_crism_spicekrnl_env_vars, fname_spkde_ptrn, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
         'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
         'DWLD',dwld,'overwrite',overwrite);
