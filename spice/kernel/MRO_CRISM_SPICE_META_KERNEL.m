@@ -47,8 +47,12 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         % furnshing and unloading of spice kernels.
         function furnsh(obj)
             obj.sclk.furnsh();
-            obj.fk.furnsh();
-            obj.ik.furnsh();
+            for i=1:length(obj.fk)
+                obj.fk(i).furnsh();
+            end
+            for i=1:length(obj.ik)
+                obj.ik(i).furnsh();
+            end
             obj.lsk.furnsh();
             obj.pck.furnsh();
             obj.spk_de.furnsh();
@@ -94,12 +98,12 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % fk
         function set_kernel_fk_default(obj,varargin)
-            obj.set_kernel_fk(obj.diropt.fk,'FileName',fname_fk,varargin{:});
+            obj.set_kernel_fk(obj.diropt.fk,'FileName',obj.src.fk,'VERBOSE',obj.verbose,varargin{:});
         end
         
         % ik
         function set_kernel_ik_default(obj,varargin)
-            obj.set_kernel_ik(obj.diropt.ik,'FileName',fname_ik,varargin{:});
+            obj.set_kernel_ik(obj.diropt.ik,'FileName',obj.src.ik,'VERBOSE',obj.verbose,varargin{:});
         end
         
         % lsk
@@ -168,21 +172,44 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % fk
         function set_kernel_fk(obj,varargin)
+            obj.fk = [];
             [fname_fk_out,dirpath] = spice_get_mro_kernel_fk(varargin{:},'ext','all');
-            obj.fk = MRO_CRISM_SPICE_KERNEL(fname_fk_out,dirpath, ...
-                'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose);
-            if obj.verbose
-                fprintf('Selected %-30s in %s\n',obj.fk.fname_krnl,dirpath);
+            if iscell(dirpath)
+                for i=1:length(dirpath)
+                    obj.fk = [obj.fk MRO_CRISM_SPICE_KERNEL(fname_fk_out{i},dirpath{i}, ...
+                        'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose)];
+                    if obj.verbose
+                        fprintf('Selected %-30s in %s\n',fname_fk_out{i},dirpath{i});
+                    end
+                end
+            else
+                obj.fk = MRO_CRISM_SPICE_KERNEL(fname_fk_out,dirpath, ...
+                    'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose);
+                if obj.verbose
+                    fprintf('Selected %-30s in %s\n',obj.fk.fname_krnl,dirpath);
+                end
             end
+            
         end
         
         % ik
         function set_kernel_ik(obj,varargin)
+            obj.ik = [];
             [fname_ik_out,dirpath] = spice_get_mro_crism_kernel_ik(varargin{:},'ext','all');
-            obj.ik = MRO_CRISM_SPICE_KERNEL(fname_ik_out,dirpath,...
-                'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose);
-            if obj.verbose
-                fprintf('Selected %-30s in %s\n',obj.ik.fname_krnl,dirpath);
+            if iscell(dirpath)
+                for i=1:length(dirpath)
+                    obj.ik = [obj.ik MRO_CRISM_SPICE_KERNEL(fname_ik_out{i},dirpath{i}, ...
+                        'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose)];
+                    if obj.verbose
+                        fprintf('Selected %-30s in %s\n',fname_ik_out{i},dirpath{i});
+                    end
+                end
+            else
+                obj.ik = MRO_CRISM_SPICE_KERNEL(fname_ik_out,dirpath, ...
+                    'UNLOAD_ON_DELETE',obj.unload_on_delete,'verbose',obj.verbose);
+                if obj.verbose
+                    fprintf('Selected %-30s in %s\n',obj.ik.fname_krnl,dirpath);
+                end
             end
         end
         

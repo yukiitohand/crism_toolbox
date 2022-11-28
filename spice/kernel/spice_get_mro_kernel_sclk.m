@@ -99,6 +99,7 @@ global mro_crism_spicekrnl_env_vars
 localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
 url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
 fldsys    = mro_crism_spicekrnl_env_vars.fldsys;
+no_remote = mro_crism_spicekrnl_env_vars.no_remote;
 
 subdir_local = spicekrnl_mro_get_subdir_sclk(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
@@ -110,11 +111,10 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
 if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 fname_sclk_ptrn = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)*(?<precision>[65536]*)' dot_ext];
-if ~isempty(fname_sclk) && dwld==0 && ~get_latest
+if (no_remote || dwld==0) && ~isempty(fname_sclk) && ~get_latest
     % If the fname_sclk is provided
     mtch = regexpi(fname_sclk,fname_sclk_ptrn,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
+    if isempty(mtch), error('Something wrong with the input fname');
     else
         vr_out = str2double(mtch.version);
         fname_sclk_out = fname_sclk;
@@ -150,14 +150,10 @@ else
             error('Something wrong with fname_sclk %s',fname_sclk);
         end
     else 
-        if isempty(vr) || get_latest
-            vr_str = '\d{5}';
-        elseif isnumeric(vr)
-            vr_str = sprintf('%05d',vr);
-        elseif ischar(vr)
-            vr_str = sprintf('%05s',vr);
-        else
-            error('Invalid version input');
+        if isempty(vr) || get_latest, vr_str = '\d{5}';
+        elseif isnumeric(vr)        , vr_str = sprintf('%05d',vr);
+        elseif ischar(vr)           , vr_str = sprintf('%05s',vr);
+        else, error('Invalid version input');
         end
         switch upper(precision)
             case {'STANDARD',256}
@@ -173,9 +169,7 @@ else
     %
     %
     %%
-    %==========================================================================
-    % Depending on the version mode, return its fname and version.
-    %
+    if no_remote, dwld = 0; end
     [fname_sclk_out,vr_out] = spice_get_kernel( ...
         mro_crism_spicekrnl_env_vars, fname_sclk_ptrn, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...

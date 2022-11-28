@@ -63,9 +63,11 @@ end
 global mro_crism_spicekrnl_env_vars
 localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
 url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
+no_remote = mro_crism_spicekrnl_env_vars.no_remote;
 
 subdir_local = spicekrnl_mro_get_subdir_spk_sc(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+if no_remote, dwld = 0; end
 
 %%
 %==========================================================================
@@ -75,22 +77,16 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 strt_times = [spk_arch_infostruct.START_TIME];
 end_times  = [spk_arch_infostruct.END_TIME]  ;
 
-if isempty(end_datetime)
-    cond1 = true(size(strt_times));
-else
-    cond1 = strt_times <= end_datetime;
+if isempty(end_datetime), cond1 = true(size(strt_times));
+else, cond1 = strt_times <= end_datetime;
 end
-if isempty(strt_datetime)
-    cond2 = true(size(end_times));
-else
-    cond2 = end_times  >= strt_datetime;
+if isempty(strt_datetime), cond2 = true(size(end_times));
+else, cond2 = end_times  >= strt_datetime;
 end
 
 idx_slctd = and(cond1,cond2);
 
-if strcmpi(dot_ext,'all') && dwld>0
-    dot_ext = '(?<ext>\.[^\.]*)*$';
-end
+if strcmpi(dot_ext,'all') && dwld>0, dot_ext = '(?<ext>\.[^\.]*)*$'; end
 
 if all(idx_slctd)
     fname_spk_ptrn = ['mro_(ab|cruise|psp\d+)' suffix dot_ext];

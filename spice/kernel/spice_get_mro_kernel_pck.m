@@ -92,6 +92,7 @@ end
 global mro_crism_spicekrnl_env_vars
 localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
 url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
+no_remote = mro_crism_spicekrnl_env_vars.no_remote;
 
 subdir_local = spicekrnl_mro_get_subdir_pck(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
@@ -102,11 +103,10 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 %==========================================================================
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
 if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
-if ~isempty(fname_pck) && dwld==0 && ~get_latest
+if (no_remote || dwld==0) && ~isempty(fname_pck) && ~get_latest
     fname_pck_ptrn   = ['^pck(?<version>\d{5})' dot_ext];
     mtch = regexpi(fname_pck,fname_pck_ptrn,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
+    if isempty(mtch), error('Something wrong with the input fname');
     else % if ~get_latest
         fname_pck_out = fname_pck;
         vr_out = str2double(mtch.version);
@@ -119,20 +119,15 @@ else
         % If the fname_sclk is provided
         fname_pck_ptrn   = ['^pck(?<version>\d{5})' dot_ext];
         mtch = regexp(fname_pck,fname_pck_ptrn,'names');
-        if isempty(mtch)
-            error('Something wrong with the input fname');
+        if isempty(mtch), error('Something wrong with the input fname');
         elseif ~get_latest
             fname_pck_ptrn=sprintf('^pck(?<version>%s)',mtch.version);
         end
     else
-        if isempty(vr) || get_latest
-            vr_str = '\d{5}';
-        elseif isnumeric(vr)
-            vr_str = sprintf('%05d',vr);
-        elseif ischar(vr)
-            vr_str = sprintf('%05s',vr);
-        else
-            error('Invalid version input');
+        if isempty(vr) || get_latest, vr_str = '\d{5}';
+        elseif isnumeric(vr)        , vr_str = sprintf('%05d',vr);
+        elseif ischar(vr)           , vr_str = sprintf('%05s',vr);
+        else, error('Invalid version input');
         end
         fname_pck_ptrn=sprintf('^pck(?<version>%s)',vr_str);
     end
@@ -141,6 +136,7 @@ else
     %==========================================================================
     % Depending on the version mode, return its fname and version.
     %
+    if no_remote, dwld = 0; end
     [fname_pck_out,vr_out] = spice_get_kernel( ...
         mro_crism_spicekrnl_env_vars, fname_pck_ptrn, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...

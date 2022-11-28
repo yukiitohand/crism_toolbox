@@ -69,9 +69,11 @@ end
 global mro_crism_spicekrnl_env_vars
 localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
 url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
+no_remote = mro_crism_spicekrnl_env_vars.no_remote;
 
 subdir_local = spicekrnl_mro_get_subdir_ck_crism(mro_crism_spicekrnl_env_vars,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+if no_remote, dwld = 0; end
 
 %% Get the datetime range of the input spck files
 dt = [];
@@ -127,16 +129,12 @@ end_times  = datetime(ck_crm_arch_tbl(:,3),'InputFormat','yyMMdd');
 %==========================================================================
 % Select 
 %
-if isempty(dt_max_spck)
-    cond1 = true(size(strt_times));
-else
-    cond1 = strt_times<=dt_max_spck;
+if isempty(dt_max_spck), cond1 = true(size(strt_times));
+else, cond1 = strt_times<=dt_max_spck;
 end
 
-if isempty(dt_min_spck)
-    cond2 = true(size(end_times));
-else
-    cond2 = end_times>=dt_min_spck;
+if isempty(dt_min_spck), cond2 = true(size(end_times));
+else, cond2 = end_times>=dt_min_spck;
 end
 
 idx_slctd = and(cond1,cond2);
