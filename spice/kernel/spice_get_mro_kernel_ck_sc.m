@@ -67,17 +67,11 @@ url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_ck_sc(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_ck_sc(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %% Get the datetime range of the input spck files
 if ischar(fnames_ck), fnames_ck = {fnames_ck}; elseif isempty(fnames_ck), fnames_ck = {}; end
-props_ck = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), ...
-    fnames_ck,'UniformOutput',false);
+props_ck = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), fnames_ck,'UniformOutput',false);
 is_cksc = ~isempties(props_ck);
 fnames_ck_sc = fnames_ck(is_cksc);
 
@@ -104,20 +98,18 @@ else
     %==========================================================================
     % Get all archived spck files.
     %
-     fname_ck_sc_ptrn = ...
-         ['mro_sc_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
+     fname_ck_sc_ptrn = ['mro_sc_(psp|cru)_(?<yymmdd_strt>\d{6})_(?<yymmdd_end>\d{6})' suffix];
     
-    if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
+    if spicekrnl_env_vars.no_remote
         [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_sc_ptrn, ...
-            subdir_local,subdir_remote,1,'ext_ignore',1, ...
+            subdir_local,subdir_local,0,'ext_ignore',1, ...
             'match_exact',0,'overwrite',overwrite,'verbose',false);
     else
         [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_sc_ptrn, ...
-            subdir_local,subdir_remote,0,'ext_ignore',1, ...
+            subdir_local,subdir_local,1,'ext_ignore',1, ...
             'match_exact',0,'overwrite',overwrite,'verbose',false);
     end
-    [props] = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), ...
-        fnames_mtch, 'UniformOutput', false);
+    [props] = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x),fnames_mtch,'UniformOutput',false);
     props = [props{:}];
     strt_times = [props.start_time];
     end_times  = [props.end_time]  ;
@@ -146,7 +138,7 @@ else
         % with EXT.
         fname_ck_sc_ptrn = [fname_ck_sc_ptrn ext];
         [fnames_ck_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-            fname_ck_sc_ptrn, subdir_local, subdir_remote, dwld, ...
+            fname_ck_sc_ptrn, subdir_local, subdir_local, dwld, ...
             'ext_ignore',isempty(ext),'overwrite',overwrite);
     else
         idx_slctd = find(idx_slctd);

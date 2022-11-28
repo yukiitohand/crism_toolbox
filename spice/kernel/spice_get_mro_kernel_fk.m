@@ -57,7 +57,7 @@ function [fname_fk_out,dirpath,vr_out] = spice_get_mro_kernel_fk( ...
 %
 
 fname_fk = '';
-ext      = 'tf';
+dot_ext  = '.tf';
 vr       = [];
 
 % ## downloading options.
@@ -71,7 +71,7 @@ else
             case 'FILENAME'
                 fname_fk = varargin{i+1};
             case 'EXT'
-                ext = varargin{i+1};
+                dot_ext = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
@@ -94,11 +94,6 @@ url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_fk(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_fk(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -106,11 +101,11 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 % Input interpretation
 %==========================================================================
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
-if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 if ~isempty(fname_fk) && dwld==0 && ~get_latest
     % If the fname_fk is provided
-    fname_fk_ptrn = ['^mro_v(?<version>\d{2})\.' ext];
-    mtch = regexp(fname_fk,fname_fk_ptrn,'names');
+    fname_fk_ptrn_naif = ['^mro_v(?<version>\d{2})' dot_ext];
+    mtch = regexpi(fname_fk,fname_fk_ptrn_naif,'names');
     if isempty(mtch)
         error('Something wrong with the input fname');
     else
@@ -123,15 +118,15 @@ if ~isempty(fname_fk) && dwld==0 && ~get_latest
 else
     if ~isempty(fname_fk)
         % If the fname_fk is provided
-        fname_fk_ptrn = ['^mro_v(?<version>\d{2})\.' ext];
-        mtch = regexp(fname_fk,fname_fk_ptrn,'names');
+        fname_fk_ptrn_naif = ['^mro_v(?<version>\d{2})\.' dot_ext];
+        mtch = regexp(fname_fk,fname_fk_ptrn_naif,'names');
         if isempty(mtch)
             error('Something wrong with the input fname');
         else
             if ~get_latest
-                fname_fk_ptrn=sprintf('^mro_v(?<version>%s)\\.', ...
+                fname_fk_ptrn_naif=sprintf('^mro_v(?<version>%s)\\.', ...
                     mtch.version);
-                fname_fk_ptrn = [fname_fk_ptrn ext];
+                fname_fk_ptrn_naif = [fname_fk_ptrn_naif dot_ext];
             end
         end
     else
@@ -146,17 +141,17 @@ else
                 error('Invalid version input');
             end
         end
-        fname_fk_ptrn = sprintf('^mro_v(?<version>%s)\\.', vr_str);
-        fname_fk_ptrn = [fname_fk_ptrn ext];
+        fname_fk_ptrn_naif = sprintf('^mro_v(?<version>%s)\\.', vr_str);
+        fname_fk_ptrn_naif = [fname_fk_ptrn_naif dot_ext];
     end
 
     %%
     %==========================================================================
     % Depending on the version mode, return its fname and version.
     %
-    [fname_fk_out,vr_out] = spice_get_kernel(fname_fk_ptrn, ...
+    [fname_fk_out,vr_out] = spice_get_kernel(fname_fk_ptrn_naif, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-        'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
+        'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
         'DWLD',dwld,'overwrite',overwrite);
 
 end

@@ -32,8 +32,8 @@ function [fnames_spk_sc_out,dirpath] = spice_get_mro_kernel_spk_sc( ...
 %
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 %
-ext      = 'bsp';
-suffix   = '';
+dot_ext = '.bsp';
+suffix  = '';
 % ## downloading options.
 dwld      = 0;
 overwrite = false;
@@ -43,7 +43,7 @@ else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
             case 'EXT'
-                ext = varargin{i+1};
+                dot_ext = varargin{i+1};
             case 'SUFFIX'
                 suffix = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
@@ -66,11 +66,6 @@ url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_spk_sc(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_spk_sc(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -80,7 +75,6 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 [spk_arch_infostruct] = mro_spice_get_spk_arch_info();
 strt_times = [spk_arch_infostruct.START_TIME];
 end_times  = [spk_arch_infostruct.END_TIME]  ;
-
 
 if isempty(end_datetime)
     cond1 = true(size(strt_times));
@@ -95,15 +89,15 @@ end
 
 idx_slctd = and(cond1,cond2);
 
-if strcmpi(ext,'all') && dwld>0
-    ext = '[^\.]*$';
+if strcmpi(dot_ext,'all') && dwld>0
+    dot_ext = '(?<ext>\.[^\.]*)*$';
 end
 
 if all(idx_slctd)
-    fname_spk_ptrn = ['mro_(ab|cruise|psp\d+)' suffix '\.' ext];
+    fname_spk_ptrn = ['mro_(ab|cruise|psp\d+)' suffix dot_ext];
     [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-        fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
-        'ext_ignore',isempty(ext),'overwrite',overwrite);
+        fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
+        'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
     if isempty(idx_slctd)
@@ -115,8 +109,7 @@ else
     phases_slctd = {spk_arch_infostruct(idx_slctd).PHASE};
 
     if dwld==0
-        fnames_spk_sc_out = cellfun(@(x) ['mro_' x suffix '.bsp'], ...
-                phases_slctd, 'UniformOutput',false);
+        fnames_spk_sc_out = cellfun(@(x) ['mro_' x suffix '.bsp'],phases_slctd, 'UniformOutput',false);
         idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_spk_sc_out);
         if ~all(idxFound)
             fnames_notfound = fnames_spk_sc_out(~idxFound);
@@ -128,11 +121,11 @@ else
         % Connect to the remote server to get archived spck files.
         %
         phase_ptrn = ['(' strjoin(phases_slctd,'|') ')'];
-        fname_spk_ptrn = ['mro_' phase_ptrn suffix '\.' ext];
+        fname_spk_ptrn = ['mro_' phase_ptrn suffix dot_ext];
     
         [fnames_spk_sc_out,regexp_out] = spicekrnl_readDownloadBasename( ...
-            fname_spk_ptrn,subdir_local,subdir_remote,dwld, ...
-            'ext_ignore',isempty(ext),'overwrite',overwrite);
+            fname_spk_ptrn,subdir_local,subdir_local,dwld, ...
+            'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
     end
 end
 

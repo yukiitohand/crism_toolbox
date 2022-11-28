@@ -39,7 +39,7 @@ function [fname_lsk_out,dirpath,vr_out] = spice_get_mro_kernel_lsk( ...
 %    files with this extension is returned. If empty, filename with no
 %    extension is returned. If 'all', filename with any extension is
 %    returned.
-%    (default) 'tls'
+%    (default) '.tls'
 %  "VERSION"  : scalar or 'latest'
 %    The version number. If empty, all the versions are matched.
 %   (default) []
@@ -58,7 +58,7 @@ function [fname_lsk_out,dirpath,vr_out] = spice_get_mro_kernel_lsk( ...
 
 
 fname_lsk = '';
-dot_ext = '.tls';
+dot_ext   = '.tls';
 vr        = [];
 
 % ## downloading options.
@@ -90,12 +90,13 @@ end
 %==========================================================================
 % Resolving the directory path of the file
 %
-global spicekrnl_env_vars
-localrootDir    = spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
-url_local_root  = spicekrnl_env_vars.url_local_root;
-local_fldsys    = spicekrnl_env_vars.local_fldsys;
+global crism_spicekrnl_env_vars
+localrootDir    = crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
+url_local_root  = crism_spicekrnl_env_vars.url_local_root;
+fldsys    = crism_spicekrnl_env_vars.fldsys;
+no_remote = crism_spicekrnl_env_vars.no_remote;
 
-subdir_local = spicekrnl_get_subdir_lsk(local_fldsys,dirpath_opt);
+subdir_local = spicekrnl_get_subdir_lsk(fldsys,dirpath_opt);
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -105,11 +106,10 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
 if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 
-if ~isempty(fname_lsk) && dwld==0 && ~get_latest
+if (no_remote || dwld==0) && ~isempty(fname_lsk) && ~get_latest
     fname_lsk_ptrn = ['^naif(?<version>\d{4})' dot_ext];
-    mtch = regexp(fname_lsk,fname_lsk_ptrn,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
+    mtch = regexpi(fname_lsk,fname_lsk_ptrn,'names');
+    if isempty(mtch), error('Something wrong with the input fname');
     else
         fname_lsk_out = fname_lsk;
         vr_out = str2double(mtch.version);
@@ -120,36 +120,22 @@ if ~isempty(fname_lsk) && dwld==0 && ~get_latest
 else
     if ~isempty(fname_lsk)
         % If the fname_sclk is provided
-        fname_lsk_ptrn = ['^naif(?<version>\d{4})\.' dot_ext];
-        mtch = regexp(fname_lsk,fname_lsk_ptrn,'names');
-        if isempty(mtch)
-            error('Something wrong with the input fname');
-        else
-            if ~get_latest
-                fname_lsk_ptrn = sprintf('^naif(?<version>%s)\\.',mtch.version);
-                fname_lsk_ptrn = [fname_lsk_ptrn dot_ext];
-            end
+        fname_lsk_ptrn = ['^naif(?<version>\d{4})' dot_ext];
+        mtch = regexpi(fname_lsk,fname_lsk_ptrn,'names');
+        if isempty(mtch)  , error('Something wrong with the input fname');
+        elseif ~get_latest, fname_lsk_ptrn = sprintf('^naif(?<version>%s)',mtch.version);
         end
     else
-        if isempty(vr)
-            vr_str = '\d{4}';
-        else
-            if isnumeric(vr)
-                vr_str = num2str(vr,'%04d');
-            elseif get_lastest
-                vr_str = '\d{4}';
-            else
-                error('Invalid version input');
-            end
+        if isempty(vr) || get_latest, vr_str = '\d{4}';
+        elseif isnumeric(vr)        , vr_str = sprintf('%04d',vr);
+        elseif ischar(vr)           , vr_str = sprintf('%04s',vr);
+        else, error('Invalid version input');
         end
-        fname_lsk_ptrn = sprintf('^naif(?<version>%s)\\.', vr_str);
-        fname_lsk_ptrn = [fname_lsk_ptrn dot_ext];
-
+        fname_lsk_ptrn = sprintf('^naif(?<version>%s)', vr_str);
     end
+    fname_lsk_ptrn = [fname_lsk_ptrn dot_ext];
     %%
-    %==========================================================================
-    % Depending on the version mode, return its fname and version.
-    %
+    if no_remote, dwld=0; end
     [fname_lsk_out,vr_out] = spice_get_kernel(fname_lsk_ptrn, ...
         'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
         'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...

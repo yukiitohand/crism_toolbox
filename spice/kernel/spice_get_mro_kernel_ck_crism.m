@@ -36,7 +36,7 @@ function [fnames_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 %
 
-ext    = 'bc';
+dot_ext    = 'bc';
 suffix = '';
 
 % ## downloading options.
@@ -49,7 +49,7 @@ else
     for i=1:2:(length(varargin)-1)
         switch upper(varargin{i})
             case 'EXT'
-                ext = varargin{i+1};
+                dot_ext = varargin{i+1};
             case 'SUFFIX'
                 suffix = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
@@ -147,16 +147,16 @@ end
 
 idx_slctd = and(cond1,cond2);
 
-if strcmpi(ext,'all'), ext = '[^\.]*$'; end
+if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 
 if all(idx_slctd)
     % If all the files are selected, then just perform the same operation
     % with EXT.
-    fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
-    fname_ck_arch_ptrn = [fname_ck_arch_ptrn ext];
+    fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix];
+    fname_ck_arch_ptrn = [fname_ck_arch_ptrn dot_ext];
     [fnames_ck_crism_out,regexp_out] = spicekrnl_readDownloadBasename( ...
         fname_ck_arch_ptrn, subdir_local, subdir_local, dwld, ...
-        'ext_ignore',isempty(ext), 'overwrite',overwrite);
+        'ext_ignore',isempty(dot_ext), 'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
     if isempty(idx_slctd)
@@ -178,11 +178,10 @@ else
         fnames_ck_crism_out = [];
         for i=1:length(fnames_slctd)
             if ~isempty(fnames_slctd{i})
-                fname_slctd = [fnames_slctd{i} '\.' ext];
+                fname_slctd = [fnames_slctd{i} dot_ext];
             end
             [fname_ck_crism_out_1,~] = spicekrnl_readDownloadBasename(fname_slctd, ...
-                subdir_local,subdir_local,dwld,'ext_ignore',isempty(ext), ...
-                'overwrite',overwrite);
+                subdir_local,subdir_local,dwld,'ext_ignore',isempty(dot_ext),'overwrite',overwrite);
             if iscell(fname_ck_crism_out_1)
                 fnames_ck_crism_out = [fnames_ck_crism_out fname_ck_crism_out_1];
             else

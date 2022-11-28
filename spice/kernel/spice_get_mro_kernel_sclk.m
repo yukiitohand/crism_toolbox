@@ -62,7 +62,7 @@ function [fname_sclk_out,dirpath,vr_out] = spice_get_mro_kernel_sclk( ...
 
 fname_sclk = '';
 precision = 'HIGH';
-dot_ext = '.tsc';
+dot_ext   = '.tsc';
 vr = [];
 
 % ## downloading options.
@@ -120,11 +120,11 @@ if ~isempty(fname_sclk) && dwld==0 && ~get_latest
         fname_sclk_out = fname_sclk;
         if strcmpi(local_fldsys,'naif')
             if isempty(mtch.precision)
-                fname_sclk_out = sprintf('MRO_SCLKSCET_%05s%s',mtch.version,mtch.ext);
+                fname_sclk_out = ['MRO_SCLKSCET_',mtch.version, mtch.ext];
             elseif stcmpi(mtch.precision,'65536')
-                fname_sclk_out = sprintf('MRO_SCLKSCET_%05s_65536%s',mtch.version,mtch.ext);
+                fname_sclk_out = ['MRO_SCLKSCET_',mtch.version,'_65536',mtch.ext];
             end
-        end  
+        end
     end
     if ~exist(fullfile(dirpath,fname_sclk_out),'file')
         error('%s is not found in %s.',fname_sclk_out,dirpath);
@@ -141,9 +141,9 @@ else
                 end
             else
                 if isempty(mtch.precision)
-                    fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)%05s',mtch.version);
+                    fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)(?<version>%s)',mtch.version);
                 elseif stcmpi(mtch.precision,'65536')
-                    fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)%05s(\\.|_)65536',mtch.version);
+                    sprintf('MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536',mtch.version);
                 end
             end
         else
