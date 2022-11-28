@@ -72,34 +72,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         %==================================================================
         % default kernel loading methods
         function set_default_diropt(obj)
-            global mro_crism_spicekrnl_env_vars
-            if isempty(mro_crism_spicekrnl_env_vars)
-                error('Perform "spicekrnl_init" first.')
-            end
-            switch lower(mro_crism_spicekrnl_env_vars.fldsys)
-                case 'crismlnx'
-                    obj.diropt.sclk = 'NAIF';
-                    obj.diropt.fk   = 'NAIF';
-                    obj.diropt.ik   = 'NAIF';
-                    obj.diropt.lsk  = 'NAIF';
-                    obj.diropt.pck  = 'NAIF';
-                    obj.diropt.spk_de   = 'CRISM';
-                    obj.diropt.spk_sc   = 'NAIF';
-                    obj.diropt.ck_sc    = 'NAIF';
-                    obj.diropt.ck_crism = 'NAIF';
-                case 'naif'
-                    obj.diropt.sclk = 'PDS';
-                    obj.diropt.fk   = 'PDS';
-                    obj.diropt.ik   = 'PDS';
-                    obj.diropt.lsk  = 'PDS';
-                    obj.diropt.pck  = 'PDS';
-                    obj.diropt.spk_de   = 'PDS';
-                    obj.diropt.spk_sc   = 'PDS';
-                    obj.diropt.ck_sc    = 'PDS';
-                    obj.diropt.ck_crism = 'PDS';
-                otherwise
-                    error('Undefined folder system: %s',mro_crism_spicekrnl_env_vars.fldsys);
-            end
+            obj.diropt = mro_crism_spicekrnl_get_diropt_default();
         end
 
 
@@ -134,11 +107,9 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % ik
         function set_kernel_ik_default(obj,varargin)
-            global spicekrnl_env_vars
             if ischar(obj.src.ik)
                 fname_ik = obj.src.ik;
                 if strcmpi(fname_ik,'MRO_CRISM_IK_0000_000_N_10.TI')
-                    % if strcmpi(spicekrnl_env_vars.local_fldsys,'crismlnx') && strcmpi(diropt,'CRISM')
 
                 end
                 obj.set_kernel_ik(obj.diropt.ik,'FileName',fname_ik,varargin{:});
