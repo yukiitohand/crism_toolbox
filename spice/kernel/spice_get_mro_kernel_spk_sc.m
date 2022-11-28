@@ -117,12 +117,10 @@ else
     if dwld==0
         fnames_spk_sc_out = cellfun(@(x) ['mro_' x suffix '.bsp'], ...
                 phases_slctd, 'UniformOutput',false);
-        test_existence = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_spk_sc_out);
-        if ~all(test_existence)
-            idxNotFound = find(~test_existence);
-            for ii = 1:length(idxNotFound)
-                error('%s is not found in %s.',fnames_spk_sc_out{idxNotFound(ii)},dirpath);
-            end
+        idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_spk_sc_out);
+        if ~all(idxFound)
+            fnames_notfound = fnames_spk_sc_out(~idxFound);
+            error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
         end
     else
         %%

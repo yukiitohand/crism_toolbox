@@ -82,14 +82,12 @@ is_cksc = ~isempties(props_ck);
 fnames_ck_sc = fnames_ck(is_cksc);
 
 if ~isempty(fnames_ck_sc) && dwld==0
-    test_existence = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_sc);
-    if all(test_existence)
+    idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_sc);
+    if all(idxFound)
         fnames_ck_sc_out = fnames_ck_sc;
     else
-        idxNotFound = find(~test_existence);
-        for ii = 1:length(idxNotFound)
-            error('%s is not found in %s.',fnames_ck_sc{idxNotFound(ii)},dirpath);
-        end
+        fnames_notfound = fnames_ck_sc(~idxFound);
+        error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
     end
 else
     if ~isempty(fnames_ck_sc)

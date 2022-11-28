@@ -41,7 +41,7 @@ sclkch = crism_sclkdec2sclkch(sclkdec,p);
 %% load SPICE KERNELs
 spicekrnl_init;
 tic;
-SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata,'VERBOSE',0);
+SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata,'VERBOSE',0,'UNLOAD_ON_DELETE',0);
 SPICEMetaKrnlsObj.set_defaut('dwld',0);
 % SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{''});
 SPICEMetaKrnlsObj.furnsh();
@@ -49,8 +49,7 @@ toc;
 
 %% Get center latitude and longitde
 if ~isempty(radii_in)
-    [fpath_pck_mars_mod] = spice_pck_mars_overwrite_radii(radii_in);
-    cspice_furnsh(fpath_pck_mars_mod);
+    spice_pck_mars_overwrite_radii(radii_in);
 end
 %% SPICE SETUP
 abcorr  =  'CN+S';
@@ -126,12 +125,7 @@ algtrkfrsprd = sqrt(sum((xyz_iaumars(:,:,idx_stop) - xyz_iaumars(:,:,idx_start))
 
 radii_out = cspice_bodvrd( 'MARS', 'RADII', 3 )*1000;
 
-tic;
 % SPICEMetaKrnlsObj.unload();
 cspice_kclear();
-toc;
-if ~isempty(radii_in)
-    cspice_unload(fpath_pck_mars_mod);
-end
 
 end

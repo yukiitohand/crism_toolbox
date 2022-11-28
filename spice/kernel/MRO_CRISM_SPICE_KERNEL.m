@@ -8,11 +8,13 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
         dirpath
         furnshed = false;
         verbose;
+        unload_on_delete
     end
     
     methods
         function obj = MRO_CRISM_SPICE_KERNEL(fname,dirpath,varargin)
             obj.verbose = true;
+            obj.unload_on_delete = true;
             if (rem(length(varargin),2)==1)
                 error('Optional parameters should always go by pairs');
             else
@@ -20,6 +22,8 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
                     switch upper(varargin{i})
                         case 'VERBOSE'
                             obj.verbose = varargin{i+1};
+                        case 'UNLOAD_ON_DELETE'
+                            obj.unload_on_delete = varargin{i+1};
                         otherwise
                             error('Unrecognized option: %s',varargin{i});
                     end
@@ -115,15 +119,17 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
         end
         
         function delete(obj)
-            obj.unload();
-            if obj.verbose
-                if ischar(obj.fname_krnl)
-                    krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
-                     fprintf('Unsetting %s\n',krnlpath);
-                elseif iscell(obj.fname_krnl)
-                    for i=1:length(obj.fname_krnl)
-                        krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
-                        fprintf('Unsetting %s\n',krnlpath);
+            if obj.unload_on_delete
+                obj.unload();
+                if obj.verbose
+                    if ischar(obj.fname_krnl)
+                        krnlpath = joinPath(obj.dirpath,obj.fname_krnl);
+                         fprintf('Unsetting %s\n',krnlpath);
+                    elseif iscell(obj.fname_krnl)
+                        for i=1:length(obj.fname_krnl)
+                            krnlpath = joinPath(obj.dirpath,obj.fname_krnl{i});
+                            fprintf('Unsetting %s\n',krnlpath);
+                        end
                     end
                 end
             end

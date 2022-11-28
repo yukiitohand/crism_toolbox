@@ -95,11 +95,6 @@ url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_pck(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_pck(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -154,7 +149,7 @@ else
     % Depending on the version mode, return its fname and version.
     %
     [fname_pck_out,vr_out] = spice_get_kernel(fname_pck_ptrn, ...
-        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
+        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
         'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
         'DWLD',dwld,'overwrite',overwrite);
 end

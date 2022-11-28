@@ -1,6 +1,6 @@
-function [fname_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
-    basenames_ck,dirpath_opt,varargin)
-% [fname_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
+function [fnames_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
+    fnames_ck,dirpath_opt,varargin)
+% [fnames_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
 %     basenames_ck,dirpath_opt,varargin)
 %  Get corresponding ck crism kernel in the NAIF archive repository from
 %  the list of filenames of ck crism kernel stored in "SOURCE_PRODUCT_ID"
@@ -12,7 +12,7 @@ function [fname_ck_crism_out,dirpath] = spice_get_mro_kernel_ck_crism( ...
 %    kernel, then all the ck crism kernels will be returned.
 %  dirpath_opt: {'MRO','PDS'}
 % OUTPUTS
-%  fname_ck_crism_out: char/string selected filename of its cell array
+%  fnames_ck_crism_out: char/string selected filename of its cell array
 %  dirpath       : directory path to the selected filename
 % OPTIONAL Parameters
 %  "EXT"  : char/string, extension
@@ -81,13 +81,13 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %% Get the datetime range of the input spck files
 dt = [];
-if isempty(basenames_ck)
+if isempty(fnames_ck)
 else
-    if ischar(basenames_ck)
-        basenames_ck = {basenames_ck};
+    if ischar(fnames_ck)
+        fnames_ck = {fnames_ck};
     end
-    for i=1:length(basenames_ck)
-        prop = crism_getProp_spice_ck_crism_basename(basenames_ck{i});
+    for i=1:length(fnames_ck)
+        prop = crism_getProp_spice_ck_crism_basename(fnames_ck{i});
         if ~isempty(prop)
             [MM,DD] = doy2MMDD(prop.doy,prop.yyyy);
             dti = datetime(prop.yyyy,MM,DD);
@@ -105,27 +105,30 @@ dt_max_spck = max(dt);
 %==========================================================================
 % Connect to the remote server to get archived spck files.
 %
-fname_ck_arch_ptrn = ...
-    ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
+% fname_ck_arch_ptrn = ...
+%     ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
+% 
+% 
+% if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
+%     [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_arch_ptrn, ...
+%     subdir_local,subdir_remote,1,'ext_ignore',1, ...
+%     'match_exact',0,'overwrite',overwrite,'verbose',false);
+% else
+%     [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_arch_ptrn, ...
+%     subdir_local,subdir_remote,0,'ext_ignore',1, ...
+%     'match_exact',0,'overwrite',overwrite,'verbose',false);
+% end
+% 
+% 
+% [props] = cellfun(@(x) crism_getProp_spice_ck_crism_arch_basename(x), ...
+%     fnames_mtch, 'UniformOutput', false);
+% props = [props{:}];
+% strt_times = [props.start_time];
+% end_times  = [props.end_time]  ;
+[ck_crm_arch_tbl] = mro_crism_spice_kernel_ck_crism_arch_info();
+strt_times = datetime(ck_crm_arch_tbl(:,2),'InputFormat','yyMMdd');
+end_times  = datetime(ck_crm_arch_tbl(:,3),'InputFormat','yyMMdd');
 
-
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_arch_ptrn, ...
-    subdir_local,subdir_remote,1,'ext_ignore',1, ...
-    'match_exact',0,'overwrite',overwrite,'verbose',false);
-else
-    [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename(fname_ck_arch_ptrn, ...
-    subdir_local,subdir_remote,0,'ext_ignore',1, ...
-    'match_exact',0,'overwrite',overwrite,'verbose',false);
-end
-
-
-[props] = cellfun(@(x) crism_getProp_spice_ck_crism_arch_basename(x), ...
-    fnames_mtch, 'UniformOutput', false);
-props = [props{:}];
-strt_times = [props.start_time];
-end_times  = [props.end_time]  ;
-%
 %%
 %==========================================================================
 % Select 
@@ -144,44 +147,52 @@ end
 
 idx_slctd = and(cond1,cond2);
 
-if strcmpi(ext,'all')
-    ext = '[^\.]*$';
-end
+if strcmpi(ext,'all'), ext = '[^\.]*$'; end
 
 if all(idx_slctd)
     % If all the files are selected, then just perform the same operation
     % with EXT.
+    fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
     fname_ck_arch_ptrn = [fname_ck_arch_ptrn ext];
-    [fname_ck_crism_out,regexp_out] = spicekrnl_readDownloadBasename( ...
+    [fnames_ck_crism_out,regexp_out] = spicekrnl_readDownloadBasename( ...
         fname_ck_arch_ptrn, subdir_local, subdir_local, dwld, ...
         'ext_ignore',isempty(ext), 'overwrite',overwrite);
 else
     idx_slctd = find(idx_slctd);
     if isempty(idx_slctd)
         fprintf('Not found\n');
-        fname_ck_crism_out = [];
+        fnames_ck_crism_out = [];
         return;
     end
-
-    fnames_slctd = fnames_mtch(idx_slctd);
-
-    fname_ck_crism_out = [];
-    for i=1:length(fnames_slctd)
-        if ~isempty(fnames_slctd{i})
-            fname_slctd = [fnames_slctd{i} '\.' ext];
+    if dwld==0
+        fnames_ck_crism_out = cellfun(@(ph,tstrt,tend) sprintf('mro_crm_%s_%s_%s.bc',ph,tstrt,tend), ...
+                ck_crm_arch_tbl(idx_slctd,1), ck_crm_arch_tbl(idx_slctd,2), ck_crm_arch_tbl(idx_slctd,3), ...
+                'UniformOutput',false);
+        idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_crism_out);
+        if ~all(idxFound)
+            fnames_notfound = fnames_ck_crism_out(~idxFound);
+            error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
         end
-        [fname_ck_crism_out_1,~] = spicekrnl_readDownloadBasename(fname_slctd, ...
-            subdir_local,subdir_local,dwld,'ext_ignore',isempty(ext), ...
-            'overwrite',overwrite);
-        if iscell(fname_ck_crism_out_1)
-            fname_ck_crism_out = [fname_ck_crism_out fname_ck_crism_out_1];
-        else
-            fname_ck_crism_out = [fname_ck_crism_out {fname_ck_crism_out_1}];
+    else
+        fnames_slctd = fnames_mtch(idx_slctd);
+        fnames_ck_crism_out = [];
+        for i=1:length(fnames_slctd)
+            if ~isempty(fnames_slctd{i})
+                fname_slctd = [fnames_slctd{i} '\.' ext];
+            end
+            [fname_ck_crism_out_1,~] = spicekrnl_readDownloadBasename(fname_slctd, ...
+                subdir_local,subdir_local,dwld,'ext_ignore',isempty(ext), ...
+                'overwrite',overwrite);
+            if iscell(fname_ck_crism_out_1)
+                fnames_ck_crism_out = [fnames_ck_crism_out fname_ck_crism_out_1];
+            else
+                fnames_ck_crism_out = [fnames_ck_crism_out {fname_ck_crism_out_1}];
+            end
         end
-    end
-
-    if length(fname_ck_crism_out)==1
-        fname_ck_crism_out = fname_ck_crism_out{1};
+    
+        if length(fnames_ck_crism_out)==1
+            fnames_ck_crism_out = fnames_ck_crism_out{1};
+        end
     end
 end
 

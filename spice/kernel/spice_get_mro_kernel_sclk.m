@@ -42,7 +42,7 @@ function [fname_sclk_out,dirpath,vr_out] = spice_get_mro_kernel_sclk( ...
 %    files with this extension is returned. If empty, filename with no
 %    extension is returned. If 'all', filename with any extension is
 %    returned.
-%    (default) 'tsc'
+%    (default) '.tsc'
 %  "VERSION"  : scalar or 'latest'
 %    The version number. If empty, all the versions are matched.
 %   (default) []
@@ -62,7 +62,7 @@ function [fname_sclk_out,dirpath,vr_out] = spice_get_mro_kernel_sclk( ...
 
 fname_sclk = '';
 precision = 'HIGH';
-ext = 'tsc';
+dot_ext = '.tsc';
 vr = [];
 
 % ## downloading options.
@@ -79,7 +79,7 @@ else
             case 'PRECISION'
                 precision = varargin{i+1};
             case 'EXT'
-                ext = varargin{i+1};
+                dot_ext = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
@@ -101,11 +101,6 @@ url_local_root  = spicekrnl_env_vars.url_local_root;
 local_fldsys    = spicekrnl_env_vars.local_fldsys;
 
 subdir_local = spicekrnl_get_subdir_sclk(local_fldsys,dirpath_opt);
-if isfield(spicekrnl_env_vars,'remote_fldsys') && ~isempty(spicekrnl_env_vars.remote_fldsys)
-    subdir_remote = spicekrnl_get_subdir_sclk(spicekrnl_env_vars.remote_fldsys,dirpath_opt);
-else
-    subdir_remote = '';
-end
 dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 
 %%
@@ -113,80 +108,67 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 % Input interpretation
 %==========================================================================
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
-if strcmpi(ext,'all'), ext = '[^\.]*$'; end
-fname_sclk_ptrn_65536 = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)65536\.' ext];
-fname_sclk_ptrn_256 = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})\.' ext];
+if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
+fname_sclk_ptrn = ['^MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)*(?<precision>[65536]*)' dot_ext];
 if ~isempty(fname_sclk) && dwld==0 && ~get_latest
     % If the fname_sclk is provided
-    mtch = regexp(fname_sclk,fname_sclk_ptrn_65536,'names');
+    mtch = regexpi(fname_sclk,fname_sclk_ptrn,'names');
     if isempty(mtch)
-        mtch = regexp(fname_sclk,fname_sclk_ptrn_256,'names');
-        if isempty(mtch)
-            error('Something wrong with the input fname');
-        else
-            vr_out = str2double(mtch.version);
-            fname_sclk_out = fname_sclk;
-        end
+        error('Something wrong with the input fname');
     else
         vr_out = str2double(mtch.version);
         fname_sclk_out = fname_sclk;
+        if strcmpi(local_fldsys,'naif')
+            if isempty(mtch.precision)
+                fname_sclk_out = sprintf('MRO_SCLKSCET_%05s%s',mtch.version,mtch.ext);
+            elseif stcmpi(mtch.precision,'65536')
+                fname_sclk_out = sprintf('MRO_SCLKSCET_%05s_65536%s',mtch.version,mtch.ext);
+            end
+        end  
     end
     if ~exist(fullfile(dirpath,fname_sclk_out),'file')
         error('%s is not found in %s.',fname_sclk_out,dirpath);
     end
 else
     if ~isempty(fname_sclk)
-        mtch = regexp(fname_sclk,fname_sclk_ptrn_65536,'names');
+        mtch = regexpi(fname_sclk,fname_sclk_ptrn,'names');
         if ~isempty(mtch)
-            % precision = 'HIGH';
             if get_latest
-                fname_sclk_ptrn = fname_sclk_ptrn_65536;
-            else
-                fname_sclk_ptrn = sprintf( ...
-                    'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
-                    mtch.version);
-                fname_sclk_ptrn = [fname_sclk_ptrn ext];
-            end
-        else
-            mtch = regexp(fname_sclk,fname_sclk_ptrn_256,'names');
-            if ~isempty(mtch)
-                %  precision = 'STANDARD';
-                if get_latest
-                    fname_sclk_ptrn = fname_sclk_ptrn_256;
-                else
-                    fname_sclk_ptrn = sprintf( ...
-                        'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', mtch.version);
-                    fname_sclk_ptrn = [fname_sclk_ptrn ext];
+                if isempty(mtch.precision)
+                    fname_sclk_ptrn = 'MRO_SCLKSCET(\.|_)(?<version>\d{5})';
+                elseif stcmpi(mtch.precision,'65536')
+                    fname_sclk_ptrn = 'MRO_SCLKSCET(\.|_)(?<version>\d{5})(\.|_)65536';
                 end
             else
-                error('Something wrong with fname_sclk %s',fname_sclk);
+                if isempty(mtch.precision)
+                    fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)%05s',mtch.version);
+                elseif stcmpi(mtch.precision,'65536')
+                    fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)%05s(\\.|_)65536',mtch.version);
+                end
             end
+        else
+            error('Something wrong with fname_sclk %s',fname_sclk);
         end
     else 
-        if isempty(vr)
+        if isempty(vr) || get_latest
             vr_str = '\d{5}';
+        elseif isnumeric(vr)
+            vr_str = sprintf('%05d',vr);
+        elseif ischar(vr)
+            vr_str = sprintf('%05s',vr);
         else
-            if isnumeric(vr)
-                vr_str = num2str(vr,'%05d');
-            elseif get_latest
-                vr_str = '\d{5}';
-            else
-                error('Invalid version input');
-            end
+            error('Invalid version input');
         end
         switch upper(precision)
             case {'STANDARD',256}
-                fname_sclk_ptrn = sprintf( ...
-                    'MRO_SCLKSCET(\\.|_)(?<version>%s)\\.', vr_str);
+                fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)(?<version>%s)',vr_str);
             case {'HIGH',65536}
-                fname_sclk_ptrn = sprintf( ...
-                    'MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536\\.', ...
-                    vr_str);
+                fname_sclk_ptrn = sprintf('MRO_SCLKSCET(\\.|_)(?<version>%s)(\\.|_)65536',vr_str);
             otherwise
                 error('Undefined presision %s',precision);
         end
-        fname_sclk_ptrn = [fname_sclk_ptrn ext];
     end
+    fname_sclk_ptrn = [fname_sclk_ptrn dot_ext];
     %
     %
     %
@@ -195,8 +177,8 @@ else
     % Depending on the version mode, return its fname and version.
     %
     [fname_sclk_out,vr_out] = spice_get_kernel(fname_sclk_ptrn, ...
-        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-        'ext_ignore',isempty(ext), 'GET_LATEST',get_latest, ...
+        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
+        'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
         'DWLD',dwld,'overwrite',overwrite);
     
 end
