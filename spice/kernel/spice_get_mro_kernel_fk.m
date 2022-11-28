@@ -56,9 +56,12 @@ function [fname_fk_out,dirpath,vr_out] = spice_get_mro_kernel_fk( ...
 % Copyright (C) 2021 Yuki Itoh <yukiitohand@gmail.com>
 %
 
-fname_fk = '';
-dot_ext  = '.tf';
-vr       = [];
+fname_fk  = '';
+dot_ext   = '.tf';
+arch_code = 'NAIF'; % {'NAIF','INTERNAL'}
+vr        = [];
+verbose   = true;
+
 
 % ## downloading options.
 dwld      = 0;
@@ -74,6 +77,10 @@ else
                 dot_ext = varargin{i+1};
             case 'VERSION'
                 vr = varargin{i+1};
+            case 'ARCHIVE_CODE'
+                arch_code = varargin{i+1};
+            case 'VERBOSE'
+                verbose = varargin{i+1};
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
             case 'OVERWRITE'
@@ -91,9 +98,8 @@ end
 global mro_crism_spicekrnl_env_vars
 localrootDir    = mro_crism_spicekrnl_env_vars.local_SPICEkernel_archive_rootDir;
 url_local_root  = mro_crism_spicekrnl_env_vars.url_local_root;
-
-subdir_local = spicekrnl_mro_get_subdir_fk(mro_crism_spicekrnl_env_vars,dirpath_opt);
-dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+no_remote       = mro_crism_spicekrnl_env_vars.no_remote;
+fldsys          = mro_crism_spicekrnl_env_vars.fldsys;
 
 %%
 %==========================================================================
@@ -101,59 +107,139 @@ dirpath = fullfile(localrootDir,url_local_root,subdir_local);
 %==========================================================================
 get_latest = (ischar(vr) && strcmpi(vr,'latest'));
 if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
-if ~isempty(fname_fk) && dwld==0 && ~get_latest
+if (no_remote || dwld==0) && ~isempty(fname_fk) && ~get_latest
     % If the fname_fk is provided
-    fname_fk_ptrn_naif = ['^mro_v(?<version>\d{2})' dot_ext];
-    mtch = regexpi(fname_fk,fname_fk_ptrn_naif,'names');
-    if isempty(mtch)
-        error('Something wrong with the input fname');
-    else
-        fname_fk_out =fname_fk;
-        vr_out = str2double(mtch.version);
-    end
-    if ~exist(fullfile(dirpath,fname_fk_out),'file')
-        error('%s is not found in %s.',fname_fk_out,dirpath);
+    fname_fk_ptrn_naifver  = ['^mro_v(?<version>\d{2})' dot_ext];
+    fname_fk_ptrn_internalver = ['^MRO_CRISM_FK_0000_000_N_(?<version>\d+)' dot_ext];
+    mtch_naifver     = regexpi(fname_fk,fname_fk_ptrn_naifver,'names');
+    mtch_internalver = regexpi(fname_fk,fname_fk_ptrn_internalver,'names');
+
+    fname_fk_out = []; dirpath = []; vr_out = [];
+    for i=1:length(mtch_naifver)
+        fname_fk_i = fname_fk{i};
+        if ~isempty(mtch_internalver{i})
+            mtch_internalver_i = mtch_internalver{i};
+            if strcmpi(fldsys,'naif') % You won't find this in the naif spice archive
+                if verbose
+                    fprintf('Skipping %s\nWill not be found if fldsys==%s.\n', fname_fk_i, fldsys);
+                end
+            else
+                subdir_local = spicekrnl_mro_get_subdir_fk_internal_version(mro_crism_spicekrnl_env_vars);
+                dirpath_i = fullfile(localrootDir,url_local_root,subdir_local);
+                if exist(fullfile(dirpath_i,fname_fk_i),'file')
+                    vr_out = [vr_out str2double(mtch_internalver_i.version)];
+                    fname_fk_out = [fname_fk_out {fname_fk_i}];
+                    dirpath = [dirpath {dirpath_i}];
+                else
+                    error('%s is not found in %s.',fname_fk_i,dirpath_i);
+                end
+            end
+        elseif ~isempty(mtch_naifver{i})
+            mtch_naifver_i = mtch_naifver{i};
+            subdir_local = spicekrnl_mro_get_subdir_fk_naifarchive_version(mro_crism_spicekrnl_env_vars,dirpath_opt);
+            dirpath_i = fullfile(localrootDir,url_local_root,subdir_local);
+            if exist(fullfile(dirpath_i,fname_fk_i),'file')
+                vr_out = [vr_out str2double(mtch_naifver_i.version)];
+                fname_fk_out = [fname_fk_out {fname_fk_i}];
+                dirpath = [dirpath {dirpath_i}];
+            else
+                error('%s is not found in %s.',fname_fk_i,dirpath_i);
+            end
+        else
+            error('Something wrong with the input fname');
+        end
     end
 else
     if ~isempty(fname_fk)
         % If the fname_fk is provided
-        fname_fk_ptrn_naif = ['^mro_v(?<version>\d{2})\.' dot_ext];
-        mtch = regexp(fname_fk,fname_fk_ptrn_naif,'names');
-        if isempty(mtch)
-            error('Something wrong with the input fname');
-        else
-            if ~get_latest
-                fname_fk_ptrn_naif=sprintf('^mro_v(?<version>%s)\\.', ...
-                    mtch.version);
-                fname_fk_ptrn_naif = [fname_fk_ptrn_naif dot_ext];
+        fname_fk_ptrn_naifver     = ['^mro_v(?<version>\d{2})' dot_ext];
+        fname_fk_ptrn_internal = ['^MRO_CRISM_FK_0000_000_N_(?<version>\d+)' dot_ext];
+        mtch_naifver     = regexpi(fname_fk,fname_fk_ptrn_naifver,'names');
+        mtch_internalver = regexpi(fname_fk,fname_fk_ptrn_internal,'names');
+    
+        fname_fk_out = []; dirpath = []; vr_out = [];
+        for i=1:length(mtch_naifver)
+            fname_fk_i = fname_fk{i};
+            if ~isempty(mtch_internalver{i})
+                mtch_internalver_i = mtch_internalver{i};
+                if strcmpi(fldsys,'naif') % You won't find this in the naif spice archive
+                    if verbose
+                        fprintf('Skipping %s\nWill not be found if fldsys==%s.\n', fname_fk_i, fldsys);
+                    end
+                else
+                    if ~get_latest
+                        fname_fk_ptrn_internal= sprintf('^MRO_CRISM_FK_0000_000_N_(?<version>%s)',mtch_internalver_i.version);
+                        fname_fk_ptrn_internal = [fname_fk_ptrn_naifver dot_ext];
+                    end
+                    subdir_local = spicekrnl_mro_get_subdir_fk_internal_version(mro_crism_spicekrnl_env_vars);
+                    dirpath_i = fullfile(localrootDir,url_local_root,subdir_local);
+                    [fname_fk_out,vr_out] = spice_get_kernel( ...
+                    mro_crism_spicekrnl_env_vars, fname_fk_ptrn_internal, ...
+                        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
+                    'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
+                    'DWLD',dwld,'overwrite',overwrite);
+                
+                    vr_out = [vr_out str2double(mtch_internalver_i.version)];
+                    fname_fk_out = [fname_fk_out {fname_fk_i}];
+                    dirpath = [dirpath {dirpath_i}];
+                end
+            elseif ~isempty(mtch_naifver{i})
+                mtch_naifver_i = mtch_naifver{i};
+                subdir_local = spicekrnl_mro_get_subdir_fk_naifarchive_version(mro_crism_spicekrnl_env_vars,dirpath_opt);
+                dirpath_i = fullfile(localrootDir,url_local_root,subdir_local);
+                if ~get_latest
+                    fname_fk_ptrn_naifver=sprintf('^mro_v(?<version>%s)',mtch_naifver_i.version);
+                    fname_fk_ptrn_naifver = [fname_fk_ptrn_naifver dot_ext];
+                end
+                [fname_fk_out,vr_out] = spice_get_kernel( ...
+                    mro_crism_spicekrnl_env_vars, fname_fk_ptrn_naifver, ...
+                    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
+                    'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
+                    'DWLD',dwld,'overwrite',overwrite);
+                
+                vr_out = [vr_out str2double(mtch_naifver_i.version)];
+                fname_fk_out = [fname_fk_out {fname_fk_i}];
+                dirpath = [dirpath {dirpath_i}];
+            else
+                error('Something wrong with the input fname');
             end
         end
     else
-        if isempty(vr)
-            vr_str = '\d{2}';
-        else
-            if isnumeric(vr)
-                vr_str = num2str(vr,'%02d');
-            elseif get_latest
-                vr_str = '\d{2}';
-            else
-                error('Invalid version input');
-            end
+        switch upper(arch_code)
+            case 'NAIF'
+                if isempty(vr) || get_latest, vr_str = '\d{2}';
+                elseif isnumeric(vr)        , vr_str = sprntf('%02d',vr);
+                elseif ischar(vr)           , vr_str = sprntf('%02s',vr);
+                else, error('Invalid version input');
+                end
+                subdir_local = spicekrnl_mro_get_subdir_fk_naifarchive_version(mro_crism_spicekrnl_env_vars,dirpath_opt);
+                dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+                fname_fk_ptrn_naifver = sprintf('^mro_v(?<version>%s)', vr_str);
+                fname_fk_ptrn_naifver = [fname_fk_ptrn_naifver dot_ext];
+                [fname_fk_out,vr_out] = spice_get_kernel( ...
+                    mro_crism_spicekrnl_env_vars, fname_fk_ptrn_naifver, ...
+                    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
+                    'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
+                    'DWLD',dwld,'overwrite',overwrite);
+            case 'INTERNAL'
+                if isempty(vr) || get_latest, vr_str = '\d+';
+                elseif isnumeric(vr)        , vr_str = sprntf('(%02d|%d)',vr,vr);
+                elseif ischar(vr)           , vr_str = sprntf('(%02s|%s)',vr,vr);
+                else, error('Invalid version input');
+                end
+                subdir_local = spicekrnl_mro_get_subdir_fk_internal_version(mro_crism_spicekrnl_env_vars);
+                dirpath = fullfile(localrootDir,url_local_root,subdir_local);
+                fname_fk_ptrn_internal= sprintf('^MRO_CRISM_FK_0000_000_N_(?<version>%s)',vr_str);
+                fname_fk_ptrn_internal = [fname_fk_ptrn_internal dot_ext];
+                [fname_fk_out,vr_out] = spice_get_kernel( ...
+                    mro_crism_spicekrnl_env_vars, fname_fk_ptrn_internal, ...
+                    'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_local, ...
+                    'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
+                    'DWLD',dwld,'overwrite',overwrite);
+            otherwise
+                error('Undefined ARCHIVE_CODE = %s',arch_code);
         end
-        fname_fk_ptrn_naif = sprintf('^mro_v(?<version>%s)\\.', vr_str);
-        fname_fk_ptrn_naif = [fname_fk_ptrn_naif dot_ext];
     end
-
-    %%
-    %==========================================================================
-    % Depending on the version mode, return its fname and version.
-    %
-    [fname_fk_out,vr_out] = spice_get_kernel( ...
-        mro_crism_spicekrnl_env_vars, fname_fk_ptrn_naif, ...
-        'SUBDIR_LOCAL',subdir_local,'SUBDIR_REMOTE',subdir_remote, ...
-        'ext_ignore',isempty(dot_ext), 'GET_LATEST',get_latest, ...
-        'DWLD',dwld,'overwrite',overwrite);
-
 end
 
 end

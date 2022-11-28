@@ -75,7 +75,6 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
             obj.diropt = mro_crism_spicekrnl_get_diropt_default();
         end
 
-
         function set_defaut(obj,varargin)
             obj.set_kernel_sclk_default(varargin{:});
             obj.set_kernel_fk_default(varargin{:});
@@ -95,27 +94,12 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
         
         % fk
         function set_kernel_fk_default(obj,varargin)
-            for i=1:length(obj.src.fk)
-                fname_fk = obj.src.fk{i};
-                if strcmpi(fname_fk,'MRO_CRISM_FK_0000_000_N_01.TF')
-                    fprintf('MRO_CRISM_FK_0000_000_N_01.TF is skipped.\n');
-                else
-                    obj.set_kernel_fk(obj.diropt.fk,'FileName',fname_fk,varargin{:});
-                end
-            end
+            obj.set_kernel_fk(obj.diropt.fk,'FileName',fname_fk,varargin{:});
         end
         
         % ik
         function set_kernel_ik_default(obj,varargin)
-            if ischar(obj.src.ik)
-                fname_ik = obj.src.ik;
-                if strcmpi(fname_ik,'MRO_CRISM_IK_0000_000_N_10.TI')
-
-                end
-                obj.set_kernel_ik(obj.diropt.ik,'FileName',fname_ik,varargin{:});
-            else
-                error('The number of ik kernel is more than one');
-            end
+            obj.set_kernel_ik(obj.diropt.ik,'FileName',fname_ik,varargin{:});
         end
         
         % lsk
@@ -133,7 +117,7 @@ classdef MRO_CRISM_SPICE_META_KERNEL < handle
             fname_spk_de = [];
             for i=1:length(obj.src.spk)
                 fname_spk = obj.src.spk{i};
-                if ~isempty(regexpi(fname_spk,'de\d+.*','once'))
+                if ~isempty(regexpi(fname_spk,'^de\d+.*','once'))
                     if isempty(fname_spk_de)
                         fname_spk_de = fname_spk;
                     else
