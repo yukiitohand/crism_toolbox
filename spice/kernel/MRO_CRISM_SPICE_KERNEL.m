@@ -75,7 +75,7 @@ classdef MRO_CRISM_SPICE_KERNEL < handle
                     
                 end
             else
-                error('Input is invalid');
+                error('crism_toolbox:spice:InvalidKernel','Input is invalid');
             end
             
         end

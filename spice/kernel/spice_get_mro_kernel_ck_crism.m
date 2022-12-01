@@ -160,6 +160,12 @@ else
         fnames_ck_crism_out = cellfun(@(ph,tstrt,tend) sprintf('mro_crm_%s_%s_%s.bc',ph,tstrt,tend), ...
                 ck_crm_arch_tbl(idx_slctd,1), ck_crm_arch_tbl(idx_slctd,2), ck_crm_arch_tbl(idx_slctd,3), ...
                 'UniformOutput',false);
+        % Just filename in the archive is incorrect for mro_crm_psp_110223_110228
+        % mro_crm_psp_110223_101112
+        idx_patch = find(~cellfun('isempty',regexpi(fnames_ck_crism_out,'^mro_crm_psp_110223_110228(\.[a-z0-9]+)*$','once')));
+        for i=1:length(idx_patch)
+            fnames_ck_crism_out{idx_patch} = strrep(fnames_ck_crism_out{idx_patch},'110228','101128');
+        end
         idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_crism_out);
         if ~all(idxFound)
             fnames_notfound = fnames_ck_crism_out(~idxFound);
