@@ -39,38 +39,16 @@ side      = prop.side;
 sensor_id = prop.sensor_id;
 vr        = prop.version;
 
-if isnumeric(level)
-    level = sprintf('%1d',level);
-end
-
-if isnumeric(partition)
-    partition = sprintf('%1d',partition);
-end
-if isnumeric(sclk)
-    sclk = sprintf('%010d',sclk);
-end
-if isnumeric(frate)
-    frate = sprintf('%1d',frate);
-end
-if isnumeric(binning)
-    binning = sprintf('%1d',binning);
-end
-if isnumeric(exposure)
-    exposure = sprintf('%03d',exposure);
-end
-if isnumeric(wv_filter)
-    wv_filter = sprintf('%1d',wv_filter);
-end
-if isnumeric(side)
-    side = sprintf('%1d',side);
-end
-if isnumeric(vr)
-    vr = sprintf('%1d',vr);
-end
-
-if ~strcmpi(level,'4')
-    error('This is not CDR4 basename property');
-end
+if isnumeric(level)    , level = sprintf('%1d',level);                end
+if ~strcmpi(level,'4') , error('This is not CDR4 basename property'); end
+if isnumeric(partition), partition = sprintf('%1d',partition);        end
+if isnumeric(sclk)     , sclk = sprintf('%010d',sclk);                end
+if isnumeric(frate)    , frate = sprintf('%1d',frate);                end
+if isnumeric(binning)  , binning = sprintf('%1d',binning);            end
+if isnumeric(exposure) , exposure = sprintf('%03d',exposure);         end
+if isnumeric(wv_filter), wv_filter = sprintf('%1d',wv_filter);        end
+if isnumeric(side)     , side = sprintf('%1d',side);                  end
+if isnumeric(vr)       , vr = sprintf('%1d',vr);                      end
 
 basenameCDR4 = sprintf('CDR%s%s%s_%s%s%s%s%s%s%s_%s',level,partition,sclk,...
                   acro,frate,binning,exposure,wv_filter,side,sensor_id,vr);

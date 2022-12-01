@@ -23,24 +23,29 @@ function [prop] = crism_getProp_basenameOBSERVATION(basename,varargin)
 %    'sensor_id'
 %    'version'
 
-[ prop ]       = crism_create_propOBSbasename();
-[basenameptrn] = crism_get_basenameOBS_fromProp(prop);
+[ prop_init ]       = crism_create_propOBSbasename();
+[basenameptrn] = crism_get_basenameOBS_fromProp(prop_init);
 
 % baenameptrn = '(?<obs_class_type>[a-zA-Z]{3})(?<obs_id>[0-9a-fA-F]{8})_(?<obs_counter>[0-9a-fA-F]{2})_(?<activity_id>[a-zA-Z]{2})(?<activity_macro_num>[0-9]{3})(?<sensor_id>[sljSLJ]{1})_(?<product_type>[a-zA-Z]{3})(?<version>[0-9]{1})';
 
-prop_basename = regexpi(basename,basenameptrn,'names');
-if ~isempty(prop_basename)
-    fldnms = fieldnames(prop_basename);
-    for i=1:length(fldnms)
-        fldnm = fldnms{i};
-        prop.(fldnm) = prop_basename.(fldnm);
-    end
-    prop.activity_macro_num = str2num(prop.activity_macro_num);
-    if ~isempty(str2num(prop.version))
-        prop.version = str2num(prop.version);
+prop = regexpi(basename,basenameptrn,'names','once');
+
+if length(prop)==1
+    if ~isempty(prop)
+        prop.activity_macro_num = str2double(prop.activity_macro_num);
+        if ~isnan(str2double(prop.version))
+            prop.version = str2double(prop.version);
+        end
     end
 else
-    prop = [];
+    for i = 1:length(prop)
+        if ~isempty(prop)
+            prop{i}.activity_macro_num = str2double(prop{i}.activity_macro_num);
+            if ~isnan(str2double(prop{i}.version))
+                prop{i}.version = str2double(prop{i}.version);
+            end
+        end
+    end
 end
 
 end

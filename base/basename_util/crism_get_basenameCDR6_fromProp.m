@@ -24,23 +24,11 @@ acro      = prop.acro_calibration_type;
 sensor_id = prop.sensor_id;
 vr        = prop.version;
 
-if isnumeric(level)
-    level = sprintf('%1d',level);
-end
-
-if isnumeric(partition)
-    partition = sprintf('%1d',partition);
-end
-if isnumeric(sclk)
-    sclk = sprintf('%010d',sclk);
-end
-if isnumeric(vr)
-    vr = sprintf('%1d',vr);
-end
-
-if ~strcmpi(level,'6')
-    error('This is not CDR6 basename property');
-end
+if isnumeric(level)    , level = sprintf('%1d',level);                end
+if ~strcmpi(level,'6') , error('This is not CDR6 basename property'); end
+if isnumeric(partition), partition = sprintf('%1d',partition);        end
+if isnumeric(sclk)     , sclk = sprintf('%010d',sclk);                end
+if isnumeric(vr)       , vr = sprintf('%1d',vr);                      end
 
 basenameCDR6 = sprintf('CDR%s_%s_%s_%s_%s_%s',level,partition,sclk,...
                   acro,sensor_id,vr);

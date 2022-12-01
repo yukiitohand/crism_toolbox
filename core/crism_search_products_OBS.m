@@ -69,7 +69,9 @@ search_result.basenames = basenames;
 search_result.fnamewext_local = fnamewext_local;
 
 if ~isempty(basenames)
-    props = cellfun(@(x) crism_getProp_basenameOBSERVATION(x), basenames);
+    % props = cellfun(@(x) crism_getProp_basenameOBSERVATION(x), basenames);
+    props = crism_getProp_basenameOBSERVATION(basenames);
+    props = [props{:}];
     [obscntrs_unq,~,ic_obscntrs] = unique({props.obs_counter});
     obscntrs_unq = sort(obscntrs_unq);
     sgmnt_info = [];
