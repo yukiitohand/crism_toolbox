@@ -8,14 +8,14 @@ switch upper(TRRIFdata.prop.obs_class_type)
         if TRRIFdata.hdr.samples ~= 640
             fprintf(['%s: OBS_COUNTER=%s is not a central scan. ' ...
                      'Not a standard segment structure. \n'], ...
-                     TRRIFdata.dirname,cs_counter);
+                     TRRIFdata.dirname,TRRIFdata.prop.obs_counter);
             errcode = 1;
         end
     case {'HRL','HRS'}
         if TRRIFdata.hdr.samples ~=320
             fprintf(['%s: OBS_COUNTER=%s is not a central scan. ' ...
                      'Not a standard segment structure. \n'], ...
-                     TRRIFdata.dirname,cs_counter);
+                     TRRIFdata.dirname,TRRIFdata.prop.obs_counter);
             errcode = 1;
         end
     otherwise
