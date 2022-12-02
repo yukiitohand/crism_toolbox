@@ -13,9 +13,19 @@ bname_ptrn = 'spck_(?<yyyy>\d{4})_(?<doy>\d{3})_r_1\.bc';
 
 prop = regexpi(basename_ck,bname_ptrn,'names');
 
-if ~isempty(prop)
-    prop.yyyy = str2double(prop.yyyy);
-    prop.doy  = str2double(prop.doy);
+if length(prop)==1
+    if ~isempty(prop)
+        prop.yyyy = str2double(prop.yyyy);
+        prop.doy  = str2double(prop.doy);
+    end
+elseif length(prop) > 1
+    for i=1:length(prop)
+        if ~isempty(prop{i})
+            prop{i}.yyyy = str2double(prop{i}.yyyy);
+            prop{i}.doy  = str2double(prop{i}.doy);
+        end
+    end
 end
+
 
 end

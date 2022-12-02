@@ -72,11 +72,15 @@ if no_remote, dwld = 0; end
 
 %% Get the datetime range of the input spck files
 if ischar(fnames_ck), fnames_ck = {fnames_ck}; elseif isempty(fnames_ck), fnames_ck = {}; end
-props_ck = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), fnames_ck,'UniformOutput',false);
+props_ck = crism_getProp_spice_ck_sc_basename(fnames_ck);
 is_cksc = ~isempties(props_ck);
 fnames_ck_sc = fnames_ck(is_cksc);
 
-if ~isempty(fnames_ck_sc) && dwld==0
+props_ck_nonarchvr = crism_getProp_spice_ck_sc_basename_nonarchvr(fnames_ck);
+is_cksc_nonar = ~isempties(props_ck_nonarchvr);
+fnames_ck_sc_nonar = fnames_ck(is_cksc_nonar);
+
+if (~isempty(fnames_ck_sc) || ~isempty(fnames_ck_sc_nonar)) && dwld==0
     idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_sc);
     if all(idxFound)
         fnames_ck_sc_out = fnames_ck_sc;
@@ -84,11 +88,13 @@ if ~isempty(fnames_ck_sc) && dwld==0
         fnames_notfound = fnames_ck_sc(~idxFound);
         error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
     end
+    
 else
     if ~isempty(fnames_ck_sc)
-        [props_cksc] = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x), ...
-            fnames_ck_sc, 'UniformOutput', false);
-        props_cksc = [props_cksc{:}];
+        [props_cksc] = crism_getProp_spice_ck_sc_basename(fnames_ck_sc);
+        if length(props_cksc)>1
+            props_cksc = [props_cksc{:}];
+        end
         dt_min_cksc = min([props_cksc.start_time]);
         dt_max_cksc = max([props_cksc.end_time]);
     else
@@ -112,7 +118,7 @@ else
             subdir_local,subdir_local,1,'ext_ignore',1, ...
             'match_exact',0,'overwrite',overwrite,'verbose',false);
     end
-    [props] = cellfun(@(x) crism_getProp_spice_ck_sc_basename(x),fnames_mtch,'UniformOutput',false);
+    [props] = crism_getProp_spice_ck_sc_basename(fnames_mtch);
     props = [props{:}];
     strt_times = [props.start_time];
     end_times  = [props.end_time]  ;

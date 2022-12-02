@@ -79,17 +79,11 @@ if no_remote, dwld = 0; end
 dt = [];
 if isempty(fnames_ck)
 else
-    if ischar(fnames_ck)
-        fnames_ck = {fnames_ck};
-    end
-    for i=1:length(fnames_ck)
-        prop = crism_getProp_spice_ck_crism_basename(fnames_ck{i});
-        if ~isempty(prop)
-            [MM,DD] = doy2MMDD(prop.doy,prop.yyyy);
-            dti = datetime(prop.yyyy,MM,DD);
-            dt = [dt dti];
-        end
-    end
+    if ischar(fnames_ck), fnames_ck = {fnames_ck}; end
+    prop = crism_getProp_spice_ck_crism_basename(fnames_ck);
+    prop =[prop{:}];
+    [MM,DD] = arrayfun(@(doy,yyyy) doy2MMDD(doy,yyyy), [prop.doy],[prop.yyyy]);
+    dt = datetime([prop.yyyy],MM,DD);
 end
 dt_min_spck = min(dt);
 dt_max_spck = max(dt);
