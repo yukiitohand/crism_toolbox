@@ -115,9 +115,9 @@ dt_max_spck = max(dt);
 % props = [props{:}];
 % strt_times = [props.start_time];
 % end_times  = [props.end_time]  ;
-[ck_crm_arch_tbl] = mro_crism_spice_kernel_ck_crism_arch_info();
-strt_times = datetime(ck_crm_arch_tbl(:,2),'InputFormat','yyMMdd');
-end_times  = datetime(ck_crm_arch_tbl(:,3),'InputFormat','yyMMdd');
+[archinfo] = mro_crism_spice_kernel_ck_crism_arch_info();
+strt_times = datetime(archinfo.start_time,'InputFormat','yyMMdd');
+end_times  = datetime(archinfo.end_time,'InputFormat','yyMMdd');
 
 %%
 %==========================================================================
@@ -138,7 +138,7 @@ if strcmpi(dot_ext,'all'), dot_ext = '(?<ext>\.[^\.]*)*$'; end
 if all(idx_slctd)
     % If all the files are selected, then just perform the same operation
     % with EXT.
-    fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix];
+    fname_ck_arch_ptrn = ['mro_crm_(psp|cru)_(?<yymmdd_strt>\d{6})()_(?<yymmdd_end>\d{6})' suffix '\.'];
     fname_ck_arch_ptrn = [fname_ck_arch_ptrn dot_ext];
     [fnames_ck_crism_out,regexp_out] = spicekrnl_readDownloadBasename( ...
         mro_crism_spicekrnl_env_vars, fname_ck_arch_ptrn, subdir_local, subdir_local, dwld, ...
@@ -151,9 +151,12 @@ else
         return;
     end
     if dwld==0
-        fnames_ck_crism_out = cellfun(@(ph,tstrt,tend) sprintf('mro_crm_%s_%s_%s.bc',ph,tstrt,tend), ...
-                ck_crm_arch_tbl(idx_slctd,1), ck_crm_arch_tbl(idx_slctd,2), ck_crm_arch_tbl(idx_slctd,3), ...
-                'UniformOutput',false);
+        nis = length(idx_slctd);
+        fnames_ck_crism_out = [repmat('mro_crm_',[nis,1]), ...
+            archinfo.phase(idx_slctd,:),repmat('_',[nis,1]), ...
+            archinfo.start_time(idx_slctd,:),repmat('_',[nis,1]), ...
+            archinfo.end_time(idx_slctd,:),repmat('.bc',[nis,1])];
+        fnames_ck_crism_out = reshape(cellstr(fnames_ck_crism_out),1,[]);
         % Just filename in the archive is incorrect for mro_crm_psp_110223_110228
         % mro_crm_psp_110223_101112
         idx_patch = find(~cellfun('isempty',regexpi(fnames_ck_crism_out,'^mro_crm_psp_110223_110228(\.[a-z0-9]+)*$','once')));

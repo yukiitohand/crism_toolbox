@@ -82,21 +82,70 @@ fnames_ck_sc_nonar = fnames_ck(is_cksc_nonar);
 
 if (~isempty(fnames_ck_sc) || ~isempty(fnames_ck_sc_nonar)) && dwld==0
     idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_sc);
-    if all(idxFound)
-        fnames_ck_sc_out = fnames_ck_sc;
+    if all(idxFound), fnames_ck_sc_out = fnames_ck_sc;
     else
         fnames_notfound = fnames_ck_sc(~idxFound);
         error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
     end
     
+    if ~isempty(fnames_ck_sc_nonar)
+        props_ck_nonarchvr = [props_ck_nonarchvr{:}];
+        dt_min_cksc_na = min([props_ck_nonarchvr.time]);
+        dt_max_cksc_na = max([props_ck_nonarchvr.time]);
+        
+        [archinfo] = spice_get_mro_kernel_ck_sc_arch_info();
+
+        start_time_arch = datetime(archinfo.start_time,'InputFormat','yyMMdd');
+        end_time_arch = datetime(archinfo.end_time,'InputFormat','yyMMdd');
+
+        cond1 = start_time_arch <= dt_max_cksc_na;
+        cond2 = end_time_arch   >= dt_min_cksc_na;
+
+        idx_slctd = find(and(cond1,cond2));
+        if isempty(idx_slctd)
+            fprintf('Not found\n');
+        else
+            nis = length(idx_slctd);
+            fnames_ck_sc_na = [repmat('mro_sc_',[nis,1]), ...
+                archinfo.phase(idx_slctd,:),repmat('_',[nis,1]), ...
+                archinfo.start_time(idx_slctd,:),repmat('_',[nis,1]), ...
+                archinfo.end_time(idx_slctd,:),repmat('.bc',[nis,1])];
+            fnames_ck_sc_na = reshape(cellstr(fnames_ck_sc_na),1,[]);
+
+            idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_ck_sc_na);
+            if all(idxFound), fnames_ck_sc_out = [fnames_ck_sc_out fnames_ck_sc_na];
+            else
+                fnames_notfound = fnames_ck_sc_na(~idxFound);
+                error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
+            end
+
+            
+        end
+
+    end
+
+    
 else
     if ~isempty(fnames_ck_sc)
-        [props_cksc] = crism_getProp_spice_ck_sc_basename(fnames_ck_sc);
-        if length(props_cksc)>1
-            props_cksc = [props_cksc{:}];
+        if length(props_ck)>1
+            props_ck = [props_ck{:}];
+            dt_min_cksc = min([props_ck.start_time]);
+            dt_max_cksc = max([props_ck.end_time]);
+        else
+            dt_min_cksc = []; dt_max_cksc = [];
         end
-        dt_min_cksc = min([props_cksc.start_time]);
-        dt_max_cksc = max([props_cksc.end_time]);
+        
+        if length(props_ck_nonarchvr)>1
+            props_ck_nonarchvr = [props_ck_nonarchvr{:}];
+            dt_min_cksc_na = min([props_ck_nonarchvr.time]);
+            dt_max_cksc_na = max([props_ck_nonarchvr.time]);
+        else
+            dt_min_cksc_na = []; dt_max_cksc_na = [];
+        end
+        dt_min_cksc = min(dt_min_cksc,dt_min_cksc_na);
+        dt_max_cksc = min(dt_max_cksc,dt_max_cksc_na);
+
+
     else
         dt_min_cksc = []; dt_max_cksc = [];
     end
@@ -105,7 +154,7 @@ else
     %==========================================================================
     % Get all archived spck files.
     %
-     fname_ck_sc_ptrn = ['mro_sc_(psp|cru)_(?<yymmdd_strt>\d{6})_(?<yymmdd_end>\d{6})' suffix];
+     fname_ck_sc_ptrn = ['mro_sc_(psp|cru)_(?<yymmdd_strt>\d{6})_(?<yymmdd_end>\d{6})' suffix '\.'];
     
     if mro_crism_spicekrnl_env_vars.no_remote
         [fnames_mtch,regexp_out] = spicekrnl_readDownloadBasename( ...

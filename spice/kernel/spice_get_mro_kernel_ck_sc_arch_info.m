@@ -1,6 +1,6 @@
-function [archinfo] = mro_crism_spice_kernel_ck_crism_arch_info()
+function [archinfo] = spice_get_mro_kernel_ck_sc_arch_info()
 
-archinfo_fpath = 'mro_spice_ck_crism_arch_info.txt';
+archinfo_fpath = 'mro_spice_ck_sc_arch_info.txt';
 fid = fopen(archinfo_fpath,'r');
 archinfo_txt = textscan(fid,'%s','Delimiter','\r\n');
 archinfo_txt = archinfo_txt{1};
