@@ -43,7 +43,7 @@ sclkch = crism_sclkdec2sclkch(sclkdec,p);
 %tic;
 SPICEMetaKrnlsObj = MRO_CRISM_SPICE_META_KERNEL(DEdata,'VERBOSE',0,'UNLOAD_ON_DELETE',0);
 SPICEMetaKrnlsObj.set_defaut('dwld',0);
-% SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{''});
+% SPICEMetaKrnlsObj.set_kernel_spk_sc_default('KERNEL_ORDER',{'_ssd_mro95a'});
 SPICEMetaKrnlsObj.furnsh();
 %toc;
 

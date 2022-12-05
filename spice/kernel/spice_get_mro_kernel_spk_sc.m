@@ -107,8 +107,9 @@ else
         fnames_spk_sc_out = cellfun(@(x) ['mro_' x suffix '.bsp'],phases_slctd, 'UniformOutput',false);
         idxFound = cellfun(@(x) exist(fullfile(dirpath,x),'file'),fnames_spk_sc_out);
         if ~all(idxFound)
-            fnames_notfound = fnames_spk_sc_out(~idxFound);
-            error(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
+            fnames_notfound = fnames_spk_sc_out(idxFound==0);
+            fprintf(['%s is not found in ' dirpath '\n'], fnames_notfound{:});
+            fnames_spk_sc_out = fnames_spk_sc_out(idxFound>0);
         end
     else
         %%
