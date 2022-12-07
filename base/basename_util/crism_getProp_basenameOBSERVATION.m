@@ -30,7 +30,7 @@ function [prop] = crism_getProp_basenameOBSERVATION(basename,varargin)
 
 prop = regexpi(basename,basenameptrn,'names','once');
 
-if length(prop)==1
+if ~iscell(prop)
     if ~isempty(prop)
         prop.activity_macro_num = str2double(prop.activity_macro_num);
         if ~isnan(str2double(prop.version))
