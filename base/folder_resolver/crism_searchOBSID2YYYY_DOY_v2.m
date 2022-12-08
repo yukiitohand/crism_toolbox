@@ -26,9 +26,28 @@ if ischar(obs_id)
     if isempty(idx_row)
         yyyy_doy = -1;
         obs_classType = -1;
-    else
+    elseif length(idx_row)==1
         obs_classType = CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:);
         yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx_row),CRISM_INDEX_DOY(idx_row));
+    else
+        obs_classType = cellstr(CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:));
+        mtch_unk = strcmpi(obs_classType,'UNK');
+        if any(mtch_unk)
+            fprintf('Dropping UNK.\n');
+            idx_row = idx_row(~mtch_unk);
+        end
+        obs_classType = cellstr(CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:));
+        mtch_epf = strcmpi(obs_classType,'EPF');
+        if any(mtch_epf)
+            fprintf('Dropping EPF.\n');
+            idx_row = idx_row(~mtch_epf);
+        end
+        if length(idx_row)==1
+            yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx_row),CRISM_INDEX_DOY(idx_row));
+            obs_classType = cellstr(CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:));
+        else
+            fprintf('Ambiguity: multiple observation class types are matched: %s\n',strjoin(obs_classType,','));
+        end
     end
 
 elseif iscell(obs_id)
