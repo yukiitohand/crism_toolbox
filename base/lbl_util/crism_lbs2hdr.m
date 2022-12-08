@@ -39,8 +39,13 @@ else
     hdr.interleave = pds3_bst2envihdr_interleave(lbs.BAND_STORAGE_TYPE);
     
     if isfield(lbs,'BAND_NAME')
-        band_names = strsplit(lbs.BAND_NAME(2:end-1),',');
-        hdr.band_names = cellfun(@(x) str2double(rmdq(x)),band_names);
+        band_names= strip(lbs.BAND_NAME,'both','"');
+        hdr.band_names = cellfun(@(x) str2double(x), band_names);
+    end
+
+    if isfield(lbs,'ROWNUM')
+        rownum = strip(lbs.ROWNUM,'both','"');
+        hdr.rownum = cellfun(@(x) str2double(x), rownum);
     end
     
     hdr.data_ignore_value = missing_constant;

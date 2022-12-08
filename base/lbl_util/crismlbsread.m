@@ -37,14 +37,14 @@ lbs.zzz = zzz;
 
 fclose(fid);
 
-if isfield(lbs,'band_names')
-    line = lbs.band_names;
-    line = line(2:end-1);
-    line = strsplit(line,',');
-    for i=1:length(line)
-        line{i} = strtrim(line{i});
-    end
-    lbs.band_names = line;
+if isfield(lbs,'BAND_NAME')
+    band_name = strip(strip(lbs.BAND_NAME,'left', '('),'right',')');
+    lbs.BAND_NAME = strsplit(band_name,',');
+end
+
+if isfield(lbs,'ROWNUM')
+    rownum = strip(strip(lbs.ROWNUM,'left', '('),'right',')');
+    lbs.ROWNUM = strsplit(rownum,',');
 end
 
 
