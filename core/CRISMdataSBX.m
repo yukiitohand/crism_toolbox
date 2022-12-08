@@ -1,18 +1,38 @@
-classdef CRISMdataCAT < CRISMdata
+classdef CRISMdataSBX < CRISMdata
     %UNTITLED2 Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
+        lbspath
+        lbs
         CRISMdata_parent;
     end
     
     methods
-        function obj = CRISMdataCAT(basename,dirpath,varargin)
+        function obj = CRISMdataSBX(basename,dirpath,varargin)
             obj@CRISMdata(basename,dirpath,varargin{:});
+            
+            if isempty(obj.hdr)
+                obj.lbspath = crism_guessLBSPATH(basename,dirpath,varargin{:});
+                obs.readlbshdr();
+            end
             
             if ~isempty(obj.hdrpath)
                 hdr = envihdrreadx2(obj.hdrpath);
                 obj.hdr = hdr;
+            end
+        end
+
+        function [] = readlbshdr(obj)
+            if ~isempty(obj.lbspath)
+                obj.lbs = crismlbsread(obj.lbspath);
+                obj.hdr = crism_lbs2hdr(obj.lbs,'missing_constant',obj.missing_constant_img);                 
+            elseif ~isempty(obj.hdrpath)
+                obj.lbs = [];
+                obj.hdr = envihdrreadx2(obj.hdrpath);
+            else
+                obj.lbs = [];
+                obj.hdr = [];
             end
         end
         
@@ -63,4 +83,3 @@ classdef CRISMdataCAT < CRISMdata
         end
     end
 end
-
