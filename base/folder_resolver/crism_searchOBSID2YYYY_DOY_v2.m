@@ -44,7 +44,7 @@ if ischar(obs_id)
         end
         if length(idx_row)==1
             yyyy_doy = sprintf('%04d_%03d',CRISM_INDEX_YYYY(idx_row),CRISM_INDEX_DOY(idx_row));
-            obs_classType = cellstr(CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:));
+            obs_classType = CRISM_INDEX_OBS_CLASS_TYPE(idx_row,:);
         else
             fprintf('Ambiguity: multiple observation class types are matched: %s\n',strjoin(obs_classType,','));
         end
