@@ -14,7 +14,7 @@ classdef CRISMdataSBX < CRISMdata
             
             if isempty(obj.hdr)
                 obj.lbspath = crism_guessLBSPATH(basename,dirpath,varargin{:});
-                obs.readlbshdr();
+                obj.readlbshdr();
             end
             
             if ~isempty(obj.hdrpath)
