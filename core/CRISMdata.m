@@ -125,7 +125,16 @@ classdef CRISMdata < ENVIRasterMultBand
                 dirpath_guess = '';
                 exist_flg = 1;
             end
-            obj@ENVIRasterMultBand(basename,dirpath);
+            warning_hdr_not_found = false;
+            
+            if strcmpi(data_type,'CDR6')
+                warning_img_not_found = false;
+            else
+                warning_img_not_found = true;
+            end
+            obj@ENVIRasterMultBand(basename,dirpath, ...
+                'WARNING_HDR_NOT_FOUND',warning_hdr_not_found, ...
+                'WARNING_IMG_NOT_FOUND',warning_img_not_found);
             % obj@ENVIRasterMultBand(basename,dirpath,varargin{:});
 
             if exist_flg
