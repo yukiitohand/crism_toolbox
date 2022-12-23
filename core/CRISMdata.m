@@ -150,6 +150,37 @@ classdef CRISMdata < ENVIRasterMultBand
                 if ~isempty(dirpath_guess)
                     obj.yyyy_doy = yyyy_doy;
                     obj.dirname = dirname;
+                else
+                    switch upper(data_type)
+                        case 'OBSERVATION'
+                            [dir_info] = crism_get_dirpath_observation(basename);
+                        case {'CDR4','CDR6'}
+                            [dir_info] = crism_get_dirpath_cdr(basename);
+                        case {'OTT'}
+                            [dir_info] = crism_get_dirpath_ott(basename);
+                        case {'ADR_VS'}
+                            [dir_info] = crism_get_dirpath_adrvs(basename);
+                        otherwise
+                            fprintf('Undefined data_type %s',data_type);
+                            dir_info = [];
+                    end
+                    switch upper(data_type)
+                        case {'OBSERVATION','CDR4','CDR6'}
+                            yyyy_doy = dir_info.yyyy_doy;
+                            dirname  = dir_info.dirname;
+                            prop.yyyy_doy = yyyy_doy;
+                        case {'OTT'}
+                            yyyy_doy = '';
+                            dirname = '';
+                        case {'ADR_VS'}
+                            [dir_info] = crism_get_dirpath_adrvs(basename);
+                            dirname  = dir_info.dirname;
+                            yyyy_doy = '';
+                        otherwise
+                    end
+                    obj.yyyy_doy = yyyy_doy;
+                    obj.dirname = dirname;
+                    
                 end
                 
                 % switch upper(data_type)
