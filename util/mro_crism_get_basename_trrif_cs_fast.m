@@ -4,6 +4,7 @@ function [basename_trrif_cs,errcode,dir_trr,basename_trrhkp_cs] = mro_crism_get_
 % =========================================================================
 %       SEARCH FILENAME OF CENTRAL SCAN I/F IMAGE CUBE FILE
 % =========================================================================
+obs_id = upper(obs_id);
 dirname    = sprintf('%3s%08s',obs_class_type,obs_id);
 subdir_trr = crism_get_subdir_OBS_crismlnx(yyyy_doy,dirname,'trr');
 cs_counter = mro_crism_get_cs_counter_default(obs_class_type);

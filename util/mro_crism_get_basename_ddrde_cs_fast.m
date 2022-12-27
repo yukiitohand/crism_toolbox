@@ -1,6 +1,7 @@
 function [basename_ddrde_cs,errcode,dir_ddr] = mro_crism_get_basename_ddrde_cs_fast( ...
     obs_id,yyyy_doy,obs_class_type,sensor_id,activity_macro_num)
 
+obs_id = upper(obs_id);
 dirname    = sprintf('%3s%08s',obs_class_type,obs_id);
 subdir_ddr = crism_get_subdir_OBS_crismlnx(yyyy_doy,dirname,'ddr');
 cs_counter = mro_crism_get_cs_counter_default(obs_class_type);
