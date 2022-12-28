@@ -11,8 +11,7 @@ function [WVdata] = crism_getWVfromWA(WAdata,varargin)
 propWVgen = crism_create_propCDR6basename('acro','WV');
 [dir_info,basenameWV,fnameWV_wext_local] = crism_search_cdr_fromProp(propWVgen,varargin{:});
 if isempty(fnameWV_wext_local)
-    [dir_info,basenameWV,fnameWV_wext_local] = crism_search_cdr_fromProp( ...
-            propWVgen,'dwld',2,'Force',1);
+    [dir_info,basenameWV,fnameWV_wext_local] = crism_search_cdr_fromProp(propWVgen,'dwld',2);
 end
 
 if isempty(WAdata.img), WAdata.readimgi(); end

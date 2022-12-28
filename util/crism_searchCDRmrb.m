@@ -22,8 +22,6 @@ localCATrootDir = crism_env_vars.localCATrootDir;
 no_remote = crism_env_vars.no_remote;
 
 dwld = 0;
-force = false;
-outfile = '';
 if (rem(length(varargin),2)==1)
     error('Optional parameters should always go by pairs');
 else
@@ -31,10 +29,6 @@ else
         switch upper(varargin{i})
             case {'DWLD','DOWNLOAD'}
                 dwld = varargin{i+1};
-            case 'FORCE'
-                force = varargin{i+1};
-            case 'OUT_FILE'
-                outfile = varargin{i+1};
         end
     end
 end
