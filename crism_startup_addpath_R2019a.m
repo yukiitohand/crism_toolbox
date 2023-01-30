@@ -124,7 +124,13 @@ if ~check_path_exist(crism_toolbox_dir, pathCell)
 end
 
 %% SPICE/MICE
-spice_dirname = 'spice';
+if ~verLessThan('matlab','9.9') % ge R2020b
+    spice_dirname = 'spice';
+elseif ~verLessThan('matlab','9.4') % ge R2018a
+    spice_dirname = 'spice-r2020a';
+else
+     spice_dirname = 'spice-r2017b';
+end
 spice_toolbox_dir = fullfile(toolbox_root_dir,spice_dirname);
 spice_mice_toolbox_dir = fullfile(spice_toolbox_dir,'mice');
 if exist(spice_mice_toolbox_dir,'dir')
