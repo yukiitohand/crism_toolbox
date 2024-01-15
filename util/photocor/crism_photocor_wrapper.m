@@ -157,11 +157,17 @@ hdr_cor.cat_history = [hdr_cor.cat_history '_PHCc'];
 hdr_cor.cat_input_files = [in_crismdata.basename ', ' DEdata.basename];
 
 if isempty(default_bands)
-    if strcmpi(hdr_cor.wavelength_units,'Micrometers')
-        hdr_cor.default_bands = get_default_bands(hdr_cor.wavelength*1000);
-    else
-        hdr_cor.default_bands = get_default_bands(hdr_cor.wavelength);
+    wv = hdr_cor.wavelength * 1000 ^double(strcmpi(hdr_cor.wavelength_units,'Micrometers'));
+    switch upper(in_crismdata.prop.sensor_id)
+        case 'L'
+            hdr_cor.default_bands = crism_get_default_bands_L(wv);
+        case 'S'
+            hdr_cor.default_bands = crism_get_default_bands_S(wv,1);
+        otherwise
+            error('Unsupported sensor_id %s',in_crismdata.prop.sensor_id);
     end
+else
+    hdr_cor.default_bands = default_bands;
 end
 
 %% saving the image
