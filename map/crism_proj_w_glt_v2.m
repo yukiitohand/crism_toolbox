@@ -180,6 +180,8 @@ end
 hdr_proj.cat_input_files = [in_crismdata.basename ', ' GLTdata.basename];
 hdr_proj.map_info = GLTdata.hdr.map_info;
 hdr_proj.projection_info = GLTdata.hdr.projection_info;
+hdr_proj.coordinate_system_string = GLTdata.hdr.coordinate_system_string;
+% hdr_proj.coordinate_system_struct = GLTdata.hdr.coordinate_system_struct;
 
 if set_default_bands
     if isempty(default_bands)
