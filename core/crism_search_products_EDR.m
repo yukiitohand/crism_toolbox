@@ -103,7 +103,10 @@ if isempty(obs_counter_ptrn_struct)
     obs_counter_ptrn_struct = crism_get_obs_counter_ptrn_struct(obs_class_type);
 end
 
-dwld_list = min(max([dwld_cs_csdf,dwld_epf,dwld_un,dwld_df]),1);
+dwld_csdf = max(dwld_cs_csdf, dwld_csdf);
+dwld_df = max(dwld_cs_csdf, dwld_df);
+
+dwld_list = min(max([dwld_csdf,dwld_epf,dwld_un,dwld_df]),1);
 [search_result] = crism_search_products_OBS(obs_id, product_type, ...
     'OBS_CLASS_TYPE', obs_class_type, 'OBS_COUNTER', obs_counter, ...
     'ACTIVITY_ID', activity_id,'ACTIVITY_MACRO_NUM',activity_macro_num, ...
