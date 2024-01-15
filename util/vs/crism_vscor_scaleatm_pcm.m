@@ -68,6 +68,23 @@ switch bandset_id
         % Find the scaling factor:
         % (slope corrected CO2 depth in obs/CO2 depth in transmission spectrum)
         scale_factor = alti./log(arg2);
+    
+    case {'yuki',2}
+        bi1995 = crism_lookupwv(2059,waimg);
+        bi1989 = crism_lookupwv(2092,waimg);
+
+        bi1995 = crism_lookupwv(1998,waimg);
+        bi1989 = crism_lookupwv(1989,waimg);
+        
+        R1995 = hsi_slice_bandBycolumn(img,bi1995);
+        R1989 = hsi_slice_bandBycolumn(img,bi1989);
+        arg3  = R1995 ./ R1989;
+        atmt1995 = hsi_slice_bandBycolumn(atmt,bi1995);
+        atmt1989 = hsi_slice_bandBycolumn(atmt,bi1989);
+        arg4  = atmt1995 ./ atmt1989;
+        arg3(arg3<0) = nan;
+        arg4(arg4<0) = nan;
+        scale_factor = log(arg3) ./ log(arg4);
               
     otherwise
         if isnumeric(bandset_id)
