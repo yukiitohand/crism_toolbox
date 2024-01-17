@@ -171,7 +171,7 @@ else
                 save_dir_yyyy_doy = varargin{i+1};
             case 'FORCE'
                 force = varargin{i+1};
-            case 'SKIP_IFEXIST'
+            case {'SKIP_IFEXIST', 'SKIP_IF_EXIST'}
                 skip_ifexist = varargin{i+1};
             case 'SUFFIX'
                 suffix = varargin{i+1};
