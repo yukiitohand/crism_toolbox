@@ -111,7 +111,7 @@ switch folder_type
             end
         end
         if ~exist_flg
-            dirfullpath_local=''; subdir_remote=''; basenameCDR='';
+            dirfullpath_local=''; subdir_remote=''; basenameCDR=''; subdir_local='';
             warning('%s cannot be found in the local directory',basenameCDRPtrn);
         end
     case 2
