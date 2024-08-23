@@ -126,7 +126,7 @@ end
 
 
 %% construct header file
-if isfield(in_crismdata,'lbl') && ~isempty(in_crismdata.lbl)
+if (isfield(in_crismdata,'lbl') || isprop(in_crismdata, 'lbl')) && ~isempty(in_crismdata.lbl)
     % assume direct processing from pds image
     hdr_cor = crism_const_cathdr(in_crismdata,band_inverse);
 else

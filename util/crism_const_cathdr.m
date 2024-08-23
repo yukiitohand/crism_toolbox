@@ -59,7 +59,7 @@ switch upper(TRRdata.prop.sensor_id)
     case 'L'
         hdr_cat.default_bands = crism_get_default_bands_L(wv_sweetspot);
     case 'S'
-        hdr_cat.default_bands = crism_get_default_bands_S(wv_sweetspot);
+        hdr_cat.default_bands = crism_get_default_bands_S(wv_sweetspot,1);
     otherwise
         error('Undefined sensor_id %s',TRRdata.prop.sensor_id);
 end
