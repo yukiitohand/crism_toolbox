@@ -107,7 +107,9 @@ else
     in_crismdata.readimg();
 end
 
-DEdata.readimg();
+if isempty(DEdata.ddr)
+    DEdata.readimg();
+end
 
 img = in_crismdata.img;
 
