@@ -126,16 +126,16 @@ classdef CRISMTRRdataset < dynamicprops
             end
         end
         
-        function delete(obj)
-            for i=1:length(obj.data_prop_names)
-                obj.delete_HSI(obj.data_prop_names{i});
-            end
-        end
-        
-        function delete_HSI(obj,prop)
-            if ~isempty(obj.(prop)) && isvalid(obj.(prop))
-                delete(obj.(prop));
-            end
-        end
+%         function delete(obj)
+%             for i=1:length(obj.data_prop_names)
+%                 obj.delete_HSI(obj.data_prop_names{i});
+%             end
+%         end
+%         
+%         function delete_HSI(obj,prop)
+%             if ~isempty(obj.(prop)) && isvalid(obj.(prop))
+%                 delete(obj.(prop));
+%             end
+%         end
     end
 end

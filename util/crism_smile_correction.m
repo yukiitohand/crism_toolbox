@@ -55,7 +55,7 @@ end
 
 % only applied to bands
 img_b = img(:,:,bands);
-wa_b_sq = squeeze(wa(:,:,bands))';
+wa_b_sq = permute(wa(:,:,bands),[3, 2, 1]);
 img_b_ds = nan([L,S,Btar]);
 
 for c=1:S

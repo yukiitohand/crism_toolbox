@@ -95,6 +95,9 @@ if ~check_path_exist(crism_toolbox_dir, pathCell)
     );
     cmp_arch = computer('arch');
     switch cmp_arch
+        case 'maca64'
+            % For Mac computers
+            crism_mex_build_path = fullfile(crism_toolbox_dir,'mex_build','maca64');
         case 'maci64'
             % For Mac computers
             crism_mex_build_path = fullfile(crism_toolbox_dir,'mex_build','maci64');
